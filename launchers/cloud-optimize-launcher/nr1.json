@@ -1,0 +1,8 @@
+{
+    "schemaType": "LAUNCHER",
+    "id": "cloud-optimize-launcher",
+    "description": "Cloud Optimizer",
+    "displayName": "Cloud Optimize",
+    "icon": "hardware-&-software_software_cloud",
+    "rootNerdletId": "07764337-da60-4155-976e-36da70372591.cloud-optimize-nerdlet"
+}
