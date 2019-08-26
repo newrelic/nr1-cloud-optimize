@@ -1,4 +1,4 @@
-# @REPO@
+# Cloud Optimize
 
 ## Getting started
 
