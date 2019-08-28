@@ -12,8 +12,8 @@ export default class HeaderCost extends React.Component {
 
     render() {
         return (
-            <Segment inverted style={{marginBottom:"0px", textAlign:"center"}}> 
-                <Statistic inverted horizontal style={{marginBottom:"0px"}}>
+            <Segment inverted={false} className="header-bar header-bar-light"> 
+                <Statistic inverted={false} horizontal style={{marginBottom:"0px"}}>
                     <Popup content='Estimated cost associated to EC2 Optimization Candidates before Right Sizing' trigger={<Statistic.Label>{this.props.title} &nbsp;&nbsp;&nbsp;&nbsp; Non-Optimized &nbsp;&nbsp;</Statistic.Label>} />
                     <Statistic.Value>${(this.props.totals.nonOptimizedCost * this.props.multiplier).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Statistic.Value>
                     <Popup content='New Estimated cost associated to EC2 Optimization Candidates after Right Sizing' trigger={<Statistic.Label>Optimized &nbsp;&nbsp;</Statistic.Label>} />

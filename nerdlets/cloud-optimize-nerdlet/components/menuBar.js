@@ -1,21 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Menu, Dropdown } from 'semantic-ui-react'
 import Configuration from './config'
 import SnapshotList from './snapshots/snapshotList'
 const awsRegions = require('../awsRegions.json')
 
 export default class MenuBar extends React.Component {
-
-    // static propTypes = {
-    //     config: PropTypes.object.isRequired,
-    //     handleParentState: PropTypes.object.isRequired,
-    //     fetchAwsPricing: PropTypes.object.isRequired,
-    //     instanceLength: PropTypes.object.isRequired,
-    //     cloudOptimizeSnapshots: PropTypes.object.isRequired,
-    //     fetchSnapshots: PropTypes.object.isRequired,
-    //     snapshots: PropTypes.object.isRequired
-    // }
 
     constructor(props){
         super(props)
@@ -63,7 +52,7 @@ export default class MenuBar extends React.Component {
         }))
 
         return(
-            <Menu inverted style={{marginBottom:"0px", marginTop:"5px", textAlign:"center"}}>
+            <Menu inverted={false} className="menu-bar">
                 <Menu.Item>Group By:</Menu.Item>
                 <Dropdown 
                     options={groupOptions} simple item

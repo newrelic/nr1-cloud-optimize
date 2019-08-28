@@ -39,7 +39,7 @@ export default class SnapshotList extends React.Component {
             this.props.snapshots.length > 0 ?
                 <Modal size="fullscreen" trigger={<Menu.Item>View Snapshots ({this.props.snapshots.length}) &nbsp;<Icon name='clone' /></Menu.Item>}>
                     <Modal.Header>All Snapshots</Modal.Header>
-                    <Modal.Content scrolling style={{backgroundColor:"black",color:"white"}}>
+                    <Modal.Content scrolling>
                         {this.renderSnapshotList(this.props.snapshots)}
                     </Modal.Content>
                 </Modal>

@@ -44,37 +44,37 @@ export default class Config extends React.Component {
         return (
             <Modal size="small" trigger={<Menu.Item>Configuration &nbsp;<Icon name='cog' /></Menu.Item>}>
                 <Modal.Header>Advanced Configuration</Modal.Header>
-                <Modal.Content style={{backgroundColor:"black"}}>
-                    <Form inverted>
+                <Modal.Content className="config config-dark">
+                    <Form inverted={false}>
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Inclusion Period (hours)</label>
-                            <Input inverted value={this.props.config.lastReportPeriod} onChange={(e,data)=>{this.handleConfigurator(e,data,"lastReportPeriod")}}/>
+                            <Input inverted={false} value={this.props.config.lastReportPeriod} onChange={(e,data)=>{this.handleConfigurator(e,data,"lastReportPeriod")}}/>
                         </Form.Field>
                         <label>Instance needs to have reported at least once within this period.</label>
                         <Divider />
 
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Discount Multiplier</label>
-                            <Input inverted value={this.props.config.discountMultiplier} onChange={(e,data)=>{this.handleConfigurator(e,data,"discountMultiplier")}}/>
+                            <Input inverted={false} value={this.props.config.discountMultiplier} onChange={(e,data)=>{this.handleConfigurator(e,data,"discountMultiplier")}}/>
                         </Form.Field>
                         <label>Factor any discounts in such as EDP, eg. 0.9 equals 10% discount.</label>
                         <Divider />
 
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Stale Instance CPU %</label>
-                            <Input inverted value={this.props.config.staleInstanceCpu} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleInstanceCpu")}}/>
+                            <Input inverted={false} value={this.props.config.staleInstanceCpu} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleInstanceCpu")}}/>
                         </Form.Field>
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Stale Instance Memory %</label>
-                            <Input inverted value={this.props.config.staleInstanceMem} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleInstanceMem")}}/>
+                            <Input inverted={false} value={this.props.config.staleInstanceMem} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleInstanceMem")}}/>
                         </Form.Field>
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Stale Transmit Bytes/s</label>
-                            <Input inverted value={this.props.config.staleTransmitBytesPerSecond} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleTransmitBytesPerSecond")}}/>
+                            <Input inverted={false} value={this.props.config.staleTransmitBytesPerSecond} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleTransmitBytesPerSecond")}}/>
                         </Form.Field>
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Stale Receive Bytes/s</label>
-                            <Input inverted value={this.props.config.staleReceiveBytesPerSecond} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleReceiveBytesPerSecond")}}/>
+                            <Input inverted={false} value={this.props.config.staleReceiveBytesPerSecond} onChange={(e,data)=>{this.handleConfigurator(e,data,"staleReceiveBytesPerSecond")}}/>
                         </Form.Field>
                         <label>Automatically class instances as stale using max values. Anything set to 0 will disable the stale check.</label>
                         <Divider />
@@ -100,11 +100,11 @@ export default class Config extends React.Component {
 
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Right Size CPU %</label>
-                            <Input inverted value={this.props.config.rightSizeCpu} onChange={(e,data)=>{this.handleConfigurator(e,data,"rightSizeCpu")}}/>
+                            <Input inverted={false} value={this.props.config.rightSizeCpu} onChange={(e,data)=>{this.handleConfigurator(e,data,"rightSizeCpu")}}/>
                         </Form.Field>
                         <Form.Field inline>
                             <label style={{width:labelWidth}}>Right Size Memory %</label>
-                            <Input inverted value={this.props.config.rightSizeMem} onChange={(e,data)=>{this.handleConfigurator(e,data,"rightSizeMem")}}/>
+                            <Input inverted={false} value={this.props.config.rightSizeMem} onChange={(e,data)=>{this.handleConfigurator(e,data,"rightSizeMem")}}/>
                         </Form.Field>
                         <label>The instance(s) that get dynamically selected for right sizing can be tuned here.</label>
 

@@ -1,15 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Button, Table, Icon, Modal } from 'semantic-ui-react'
 import CsvDownload from 'react-json-to-csv'
 import _ from 'lodash'
 
 export default class OptimizationCandidates extends React.Component {
-
-    // static propTypes = {
-    //     nr1: PropTypes.object.isRequired,
-    //     instances: PropTypes.object.isRequired,
-    // }
 
     constructor(props){
         super(props)
@@ -39,14 +33,14 @@ export default class OptimizationCandidates extends React.Component {
 
     renderSuggestionsModal(suggestedInstanceType, suggestions){
         return (
-            <Modal inverted trigger={
-                <Button style={{width:"100%"}} size="mini" inverted 
+            <Modal trigger={
+                <Button style={{width:"100%"}} size="mini" inverted={false} 
                     content={<span>{suggestedInstanceType}&nbsp;<Icon style={{float:"right"}} name="list alternate outline"/></span>   
                 } />
             }>
                 <Modal.Header>Alternate Suggestions</Modal.Header>
-                <Modal.Content style={{backgroundColor:"black"}} >
-                    <Table inverted striped>
+                <Modal.Content>
+                    <Table inverted={false} striped>
                         <Table.Header>
                             <Table.HeaderCell>instanceType</Table.HeaderCell>
                             <Table.HeaderCell>instanceFamily</Table.HeaderCell>
@@ -103,8 +97,8 @@ export default class OptimizationCandidates extends React.Component {
                         }} data={exported}>Export Data
                     </CsvDownload></span>
                 </Modal.Header>
-                <Modal.Content style={{backgroundColor:"black"}}>
-                    <Table inverted striped sortable size="small">
+                <Modal.Content>
+                    <Table inverted={false} striped sortable size="small">
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell
@@ -178,7 +172,7 @@ export default class OptimizationCandidates extends React.Component {
                                     let link = "https://one.newrelic.com/redirect/entity/"+instance.entityGuid
                                     return (
                                         <Table.Row key={i} active={instance.suggestedInstanceType == "stale"}>
-                                            <Table.Cell><a style={{color: instance.suggestedInstanceType == "stale" ? "black" : "white"}} href={link} rel="noopener noreferrer" target="_blank">{instance.hostname} <Icon name='external alternate' /></a></Table.Cell>
+                                            <Table.Cell><a style={{color: instance.suggestedInstanceType == "stale" ? "black" : "black"}} href={link} rel="noopener noreferrer" target="_blank">{instance.hostname} <Icon name='external alternate' /></a></Table.Cell>
                                             <Table.Cell>{instance.maxCpuPercent.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{instance.maxMemoryPercent.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{instance.transmitBytesPerSecond.toFixed(2)}</Table.Cell>

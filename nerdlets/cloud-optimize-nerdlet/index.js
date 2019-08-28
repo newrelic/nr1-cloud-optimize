@@ -287,24 +287,26 @@ export default class CloudOptimize extends React.Component {
 
     render() {
         return (
-            <div style={{height:"5000%", paddingTop:"5px",paddingLeft:"5px", backgroundColor:"black"}}>
-                <HeaderCosts title="YEARLY " multiplier={720 * 12} totals={this.state.totals} loading={this.state.loading}/>
-                <MenuBar 
-                    handleParentState={this.handleParentState} 
-                    config={this.state.config} 
-                    instanceLength={this.state.sorted.length} 
-                    fetchAwsPricing={this.fetchAwsPricing} 
-                    fetchSnapshots={this.fetchSnapshots}
-                    snapshots={this.state.snapshots}
-                />
-                <AccountCards 
-                    config={this.state.config} 
-                    sorted={this.state.sorted} 
-                    groupByDefault={this.state.groupByDefault} 
-                    handleParentState={this.handleParentState} 
-                    fetchSnapshots={this.fetchSnapshots}
-                    snapshots={this.state.snapshots}
-                />
+            <div>
+                <div className="main main-light">
+                    <HeaderCosts title="YEARLY " multiplier={720 * 12} totals={this.state.totals} loading={this.state.loading}/>
+                    <MenuBar 
+                        handleParentState={this.handleParentState} 
+                        config={this.state.config} 
+                        instanceLength={this.state.sorted.length} 
+                        fetchAwsPricing={this.fetchAwsPricing} 
+                        fetchSnapshots={this.fetchSnapshots}
+                        snapshots={this.state.snapshots}
+                    />
+                    <AccountCards 
+                        config={this.state.config} 
+                        sorted={this.state.sorted} 
+                        groupByDefault={this.state.groupByDefault} 
+                        handleParentState={this.handleParentState} 
+                        fetchSnapshots={this.fetchSnapshots}
+                        snapshots={this.state.snapshots}
+                    />
+                </div>
             </div>
         )
     }

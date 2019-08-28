@@ -31,17 +31,17 @@ export default class AccountCards extends React.Component {
                         header = (header == "null" || !header) ? "uncategorized" : header
 
                         if((this.props.config.groupBy || this.props.groupByDefault) == "accountName"){
-                            header = <a style={{color:"white"}} href={`https://rpm.newrelic.com/accounts/${item.instances[0].accountId}`} rel="noopener noreferrer" target="_blank">{header} <Icon name='external alternate' /></a>
+                            header = <a className="card-content-light" href={`https://rpm.newrelic.com/accounts/${item.instances[0].accountId}`} rel="noopener noreferrer" target="_blank">{header} <Icon name='external alternate' /></a>
                         }
 
                         return (
-                            <Card key={i} style={{marginBottom:"1px", width:"400px", backgroundColor:"rgb(51, 51, 51)"}} color="green">
-                            <Card.Content style={{color:"white"}} >
-                                <span style={{fontWeight:"bold", fontSize:"13px"}}>{header}</span>
+                            <Card key={i} className="card card-light" color="green">
+                            <Card.Content className="card-content-light">
+                                <span style={{fontSize:"13px"}}>{header}</span>
                                 <span style={{float:"right"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>
                             </Card.Content>
                             <Card.Content>
-                            <Table celled inverted>
+                            <Table celled inverted={false}>
                                 <Table.Header>
                                     <Table.Row>
                                         <Table.HeaderCell></Table.HeaderCell>

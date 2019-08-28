@@ -116,9 +116,11 @@ export default class SnapshotCard extends React.Component {
                     {this.writeSnapshotButton()}
                     {this.configDifferWarningButton(snapshots)}
                 </Modal.Header>
-                <Modal.Content scrolling style={{backgroundColor:"black"}}>
-                    <div style={{overflow:"scroll"}}>
-                        <div style={{position:"absolute"}}>{<SnapshotTable data={this.props.data} fetchSnapshots={this.props.fetchSnapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/>}</div>
+                <Modal.Content scrolling style={{height:"100%", padding: "0px"}}>
+                    <div style={{overflow:"scroll", height:"100%", minHeight:"275px"}}>
+                        <div style={{position:"absolute", height:"100%", zIndex:100}}>{
+                            <SnapshotTable data={this.props.data} fetchSnapshots={this.props.fetchSnapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/>}
+                        </div>
                         <div style={{display: "flex", paddingLeft:"415px"}}>
                             {snapshots.map((snapshot,i)=><SnapshotTable key={i} data={snapshot} fetchSnapshots={this.props.fetchSnapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots} />)}
                         </div>

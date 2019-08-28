@@ -1,15 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Button, Table } from 'semantic-ui-react'
 import { deleteDocument } from '../../utils'
 export default class SnapshotTable extends React.Component {
-
-    // static propTypes = {
-    //     nr1: PropTypes.object.isRequired,
-    //     data: PropTypes.object.isRequired,
-    //     fetchSnapshots: PropTypes.object.isRequired,
-    //     cloudOptimizeSnapshots: PropTypes.object.isRequired
-    // }
 
     constructor(props){
         super(props)
@@ -26,11 +18,11 @@ export default class SnapshotTable extends React.Component {
         let timestamp = data.t ? new Date(data.t).toString().split(" ").filter((item,i)=>i<5&&i>0).join(' ') : ""
         let currentTimestamp = new Date().toString().split(" ").filter((item,i)=>i<5&&i>0).join(' ')
         return(
-            <Table color={"black"} celled inverted style={{
+            <Table celled inverted={false} style={{
                 width:"400px", 
                 minWidth: "400px",
                 margin: "5px",
-                overflowX: "auto",
+                // overflowX: "auto",
               }}>
                 <Table.Header>
                     <Table.Row>
@@ -60,7 +52,7 @@ export default class SnapshotTable extends React.Component {
                     <Table.Row>
                         <Table.HeaderCell style={{textAlign:"right"}} colSpan={3}>
                             {(data.nonOptimizedCount||data.noi)}/{(data.totalInstances||(data.noi+data.oi))} Instances to Optimize | {data.nonOptimizedCost||data.noc > 0 ? ((Math.abs(data.saving||data.s)/(data.nonOptimizedCost||data.noc)) * 100).toFixed(2) : 0}% Cost Saving <br/>
-                            {data.t? <span><br/><Button inverted size="mini" content="Delete Snapshot" onClick={()=>this.deleteSnapshot(data.t)} /></span>:<span><br/>{currentTimestamp}<br/></span>}
+                            {data.t? <span><br/><Button inverted={false} size="mini" content="Delete Snapshot" onClick={()=>this.deleteSnapshot(data.t)} /></span>:<span><br/>{currentTimestamp}<br/></span>}
                         </Table.HeaderCell>
                     </Table.Row>
                 </Table.Footer>
