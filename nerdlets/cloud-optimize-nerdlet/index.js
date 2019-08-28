@@ -47,6 +47,7 @@ export default class CloudOptimize extends React.Component {
         }
         this.handleParentState = this.handleParentState.bind(this)
         this.fetchSnapshots = this.fetchSnapshots.bind(this)
+        this.fetchAwsPricing = this.fetchAwsPricing.bind(this)
     }
 
     nerdLog(msg){
