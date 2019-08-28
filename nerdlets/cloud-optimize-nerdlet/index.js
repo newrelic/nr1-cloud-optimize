@@ -59,7 +59,7 @@ export default class CloudOptimize extends React.Component {
     handleParentState(key,val,trigger){
         // store config updates back into nerdStore
         if(key == "config"){
-            writeDocument("cloudOptimizeCfgx", "main", val)
+            writeDocument("cloudOptimizeCfg", "main", val)
         }
         this.setState({[key]:val})
         switch(trigger) {
@@ -81,19 +81,19 @@ export default class CloudOptimize extends React.Component {
     }
 
     async fetchSnapshots(){
-        let snapshots = await getCollection("cloudOptimizeSnapshotsX")
+        let snapshots = await getCollection("cloudOptimizeSnapshots")
         this.setState({snapshots: snapshots.reverse()})
     }
 
     async handleUserConfig(){
         this.nerdLog("fetching newrelic user config from nerdstore")
-        let configs = await getCollection("cloudOptimizeCfgx")
+        let configs = await getCollection("cloudOptimizeCfg")
         if(configs.length === 1 && configs[0].id == "main"){ // set existing config
             this.nerdLog("loading existing config")
             this.setState({config: configs[0].document}) 
         }else{ // write in default config
             this.nerdLog("writing default config")
-            await writeDocument("cloudOptimizeCfgx", "main", this.state.config)
+            await writeDocument("cloudOptimizeCfg", "main", this.state.config)
         }
     }
 

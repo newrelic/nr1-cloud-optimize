@@ -32,7 +32,7 @@ export default class SnapshotCard extends React.Component {
             noi: data.nonOptimizedCount,
             oi: data.optimizedCount,
         }
-        await writeDocument("cloudOptimizeSnapshotsX", `ss_${payload.t}`, payload)
+        await writeDocument("cloudOptimizeSnapshots", `ss_${payload.t}`, payload)
         this.props.fetchSnapshots()
     }
 

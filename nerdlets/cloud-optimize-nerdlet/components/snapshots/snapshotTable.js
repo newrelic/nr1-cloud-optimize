@@ -9,7 +9,7 @@ export default class SnapshotTable extends React.Component {
     }
 
     async deleteSnapshot(timestamp){
-        await deleteDocument("cloudOptimizeSnapshotsX", `ss_${timestamp}`)
+        await deleteDocument("cloudOptimizeSnapshots", `ss_${timestamp}`)
         this.props.fetchSnapshots()
     }
 

@@ -1,5 +1,14 @@
 # Cloud Optimize
 
+Cloud Optimization Nerdpack, determine potential savings across your environment.
+
+To maximise the use of this Nerdpack it is suggested to:
+- Install the EC2 integration for additional metadata to allow for grouping by your Cloud Provider Account.
+- Install APM on your applications for grouping by application.
+
+#### Currently Supports
+- AWS
+
 ## Getting started
 
 Run the following scripts:
