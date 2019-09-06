@@ -1,4 +1,6 @@
-# Cloud Optimize
+# Cloud Optimize (nr1-cloud-optimize)
+
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) ![AppVeyor](https://img.shields.io/appveyor/ci/newrelic/nr1-cloud-optimize) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
 
 ## Usage
 
@@ -16,6 +18,10 @@ Currently Supports:
 This project is distributed under the [Apache 2 license](blob/master/LICENSE).
 
 ## What do you need to make this work?
+
+Required:
+
+- [New Relic Infrastructure Agent(s) installed](https://newrelic.com/products/infrastructure) on your cloud computing devices and the related access to [New Relic One](https://newrelic.com/platform).
 
 To maximise the use of this Nerdpack it is suggested to:
 
@@ -60,7 +66,7 @@ _Please do not report issues with this software to New Relic Global Technical Su
 
 New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorer's Hub. You can find this project's topic/threads here:
 
-[https://discuss.newrelic.com/c/build-on-new-relic/nr1-cloud-optimize-nerdpack](https://discuss.newrelic.com/c/build-on-new-relic/nr1-cloud-optimize-nerdpack)
+[https://discuss.newrelic.com/c/build-on-new-relic/nerdpack/nr1-cloud-optimize](https://discuss.newrelic.com/c/build-on-new-relic/nerdpack/nr1-cloud-optimize)
 *(Note: URL subject to change before GA)*
 
 ### Issues / Enhancement Requests
