@@ -35,6 +35,7 @@ Clone this repository and run the following scripts:
 ```bash
 git clone https://github.com/newrelic/nr1-cloud-optimize.git
 cd nr1-cloud-optimize
+nr1 nerdpack:uuid -gf
 npm install
 npm start
 ```
