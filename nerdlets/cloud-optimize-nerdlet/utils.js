@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
  
 export const getCollection = async (collection) => {
     let result = await UserStorageQuery.query({ collection: collection })
-    let collectionResult = ((((result || {}).data || {}).actor || {}).nerdStorage || {}).collection || []
+    let collectionResult = (result || {}).data || []
     return collectionResult
 }
 
