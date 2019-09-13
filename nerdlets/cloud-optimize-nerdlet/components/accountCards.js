@@ -26,7 +26,7 @@ export default class AccountCards extends React.Component {
                             <Card key={i} className="card card-light" color="green" style={{minWidth:"330px"}}>
                             <Card.Content className="card-content-light">
                                 <span style={{fontSize:"13px"}}>{header}</span>
-                                <span style={{float:"right"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>
+                                <span style={{float:"right", cursor:"pointer"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>
                             </Card.Content>
                             <Card.Content>
                             <Table celled inverted={false}>
