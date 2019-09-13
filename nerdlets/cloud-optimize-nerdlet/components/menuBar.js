@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu, Dropdown } from 'semantic-ui-react'
+import { Menu, Dropdown, Popup } from 'semantic-ui-react'
 import Configuration from './config'
 import SnapshotList from './snapshots/snapshotList'
 const awsRegions = require('../awsRegions.json')
@@ -67,9 +67,17 @@ export default class MenuBar extends React.Component {
                     onChange={(event, data)=>{this.handleDropdownChange(event, data, "sortBy")}} 
                     value={this.props.config.sortBy || "nonOptimizedCost"}
                 />
-                <Menu.Item>Optimize By:</Menu.Item>
+                <Popup
+                    trigger={<Menu.Item>Optimize By:</Menu.Item>}
+                    content={"Optimize Instances below " + this.props.config.optimizeBy + "% Cpu OR Memory Utilization"}
+                    basic
+                />
                 <Menu.Item><input type='range' max='75' step='1' value={this.props.config.optimizeBy} onChange={this.handleOptimize} style={{width:"100%"}}/></Menu.Item>
-                <Menu.Item>{this.props.config.optimizeBy}</Menu.Item>
+                <Popup
+                    trigger={<Menu.Item>{this.props.config.optimizeBy}</Menu.Item>}
+                    content={"Optimize Instances below " + this.props.config.optimizeBy + "% Cpu OR Memory Utilization"}
+                    basic
+                />
 
                 <Menu.Menu position='right'>
                     <SnapshotList snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots} fetchSnapshots={this.props.fetchSnapshots}/>

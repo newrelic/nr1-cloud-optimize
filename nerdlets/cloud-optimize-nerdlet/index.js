@@ -24,7 +24,7 @@ export default class CloudOptimize extends React.Component {
             instanceData: [],
             snapshots: [],
             awsPricing: null,
-            awsPricingRegionDefault: "ap-southeast-2",
+            awsPricingRegionDefault: "us-east-1",
             groupByDefault: "accountName",
             sortByDefault: "nonOptimizedCost",
             sorted: [], sort: "desc",
