@@ -76,9 +76,9 @@ export default class CloudOptimize extends React.Component {
     }
 
     async componentDidMount(){
-        this.setState({loading:true})
+        await this.setState({loading:true})
         this.fetchNewRelicData()
-        this.setState({loading:false})
+        await this.setState({loading:false})
     }
 
     async fetchSnapshots(){

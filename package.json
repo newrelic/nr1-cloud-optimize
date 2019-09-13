@@ -1,30 +1,30 @@
 {
-    "private": true,
-    "name": "cloud-optimize",
-    "description": "Nerdpack cloud-optimize",
-    "version": "0.1.0",
-    "scripts": {
-        "start": "nr1 nerdpack:serve",
-        "test": "exit 0"
-    },
-    "nr1": {
-        "uuid": "07764337-da60-4155-976e-36da70372591",
-        "sdkVersion": 2
-    },
-    "dependencies": {
-        "graphql": "^14.5.3",
-        "graphql-tag": "^2.10.1",
-        "js-base64": "^2.5.1",
-        "lodash": "^4.17.15",
-        "prop-types": "^15.6.2",
-        "react": "^16.6.3",
-        "react-dom": "^16.6.3",
-        "react-json-to-csv": "^1.0.4",
-        "semantic-ui-react": "^0.88.0"
-    },
-    "browserslist": [
-        "last 2 versions",
-        "not ie < 11",
-        "not dead"
-    ]
+  "private": true,
+  "name": "cloud-optimize",
+  "description": "Nerdpack cloud-optimize",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "nr1 nerdpack:serve",
+    "test": "exit 0"
+  },
+  "nr1": {
+    "uuid": "9f9cf6ce-fa82-4544-b24e-406d5e8b2449",
+    "sdkVersion": 2
+  },
+  "dependencies": {
+    "graphql": "^14.5.3",
+    "graphql-tag": "^2.10.1",
+    "js-base64": "^2.5.1",
+    "lodash": "^4.17.15",
+    "prop-types": "^15.6.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-json-to-csv": "^1.0.4",
+    "semantic-ui-react": "^0.88.0"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not ie < 11",
+    "not dead"
+  ]
 }

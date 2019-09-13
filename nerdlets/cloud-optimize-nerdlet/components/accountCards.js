@@ -1,21 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Card, Table, Icon } from 'semantic-ui-react'
 import OptimizationCandidates from './optimizationCandidates'
 import SnapshotCard from './snapshots/snapshotCard'
 
 export default class AccountCards extends React.Component {
-
-    // static propTypes = {
-    //     nr1: PropTypes.object.isRequired,
-    //     config: PropTypes.object.isRequired,
-    //     sorted: PropTypes.object.isRequired,
-    //     groupByDefault: PropTypes.object.isRequired,
-    //     handleParentState: PropTypes.object.isRequired,
-    //     cloudOptimizeSnapshots: PropTypes.object.isRequired,
-    //     fetchSnapshots: PropTypes.object.isRequired,
-    //     snapshots: PropTypes.object.isRequired
-    // }
 
     render() {
         return (
@@ -35,7 +23,7 @@ export default class AccountCards extends React.Component {
                         }
 
                         return (
-                            <Card key={i} className="card card-light" color="green">
+                            <Card key={i} className="card card-light" color="green" style={{minWidth:"330px"}}>
                             <Card.Content className="card-content-light">
                                 <span style={{fontSize:"13px"}}>{header}</span>
                                 <span style={{float:"right"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>

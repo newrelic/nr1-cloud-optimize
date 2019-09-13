@@ -1,15 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Divider, Form, Icon, Input, Modal, Menu, Dropdown } from 'semantic-ui-react'
 
 
 export default class Config extends React.Component {
-
-    // static propTypes = {
-    //     nr1: PropTypes.object.isRequired,
-    //     config: PropTypes.object.isRequired,
-    //     handleParentState: PropTypes.object.isRequired,
-    // }
 
     constructor(props){
         super(props)

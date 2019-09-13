@@ -40,7 +40,7 @@ export default class OptimizationCandidates extends React.Component {
             }>
                 <Modal.Header>Alternate Suggestions</Modal.Header>
                 <Modal.Content>
-                    <Table inverted={false} striped>
+                    <Table inverted={false} striped compact>
                         <Table.Header>
                             <Table.HeaderCell>instanceType</Table.HeaderCell>
                             <Table.HeaderCell>instanceFamily</Table.HeaderCell>
