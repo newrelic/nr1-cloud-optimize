@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "cloud-optimize",
+  "name": "nr1-cloud-optimize",
   "description": "Nerdpack cloud-optimize",
   "version": "0.1.0",
   "scripts": {
@@ -10,6 +10,9 @@
   "nr1": {
     "uuid": "9f9cf6ce-fa82-4544-b24e-406d5e8b2449",
     "sdkVersion": 2
+  },
+  "bugs": {
+    "email": "opensource@newrelic.com"
   },
   "dependencies": {
     "graphql": "^14.5.3",
@@ -26,5 +29,13 @@
     "last 2 versions",
     "not ie < 11",
     "not dead"
-  ]
+  ],
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.3.0",
+    "eslint-config-prettier": "^6.2.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.3",
+    "prettier": "^1.18.2"
+  }
 }
