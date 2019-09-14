@@ -1,13 +1,21 @@
 import React from 'react'
-import { Card, Table, Icon } from 'semantic-ui-react'
+import { Card, Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react'
 import OptimizationCandidates from './optimizationCandidates'
 import SnapshotCard from './snapshots/snapshotCard'
 
 export default class AccountCards extends React.Component {
 
     render() {
+        let isLoading = this.props.loading || this.props.completedAccounts != this.props.accounts
         return (
-            <div style={{textAlign:"center"}}>
+            <Segment className="segment-clear" style={{textAlign:"center", marginTop:"0px", minHeight:this.props.height}}>
+                <Dimmer active={isLoading}>
+                    <Loader style={{top:"150px"}} size="big">
+                        Please be patient while we analyze your Accounts and Instances... <br/><br/>
+                        {this.props.completedAccounts} of {this.props.accounts} Accounts Inspected <br/><br/>
+                        {this.props.instances} Instances Inspected
+                    </Loader>
+                </Dimmer>
                 <Card.Group style={{margin:"auto","width":"100%"}} centered>
                     {this.props.sorted.map((item, i)=>{
                         let header = item.group
@@ -67,7 +75,7 @@ export default class AccountCards extends React.Component {
                         </Card>)
                     })}
                 </Card.Group>
-            </div>
+            </Segment>
         )
     }
 }

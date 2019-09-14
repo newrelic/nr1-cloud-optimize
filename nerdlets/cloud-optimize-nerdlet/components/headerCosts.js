@@ -12,7 +12,7 @@ export default class HeaderCost extends React.Component {
 
     render() {
         return (
-            <Segment inverted={false} className="header-bar header-bar-light"> 
+            <Segment inverted={false} className="header-bar header-bar-light" style={{position:"relative"}}> 
                 <Statistic inverted={false} horizontal style={{marginBottom:"0px"}}>
                     <Popup basic content='Estimated cost associated to EC2 Optimization Candidates before Right Sizing' trigger={<Statistic.Label>{this.props.title} &nbsp;&nbsp;&nbsp;&nbsp; Non-Optimized &nbsp;&nbsp;</Statistic.Label>} />
                     <Statistic.Value>${(this.props.totals.nonOptimizedCost * this.props.multiplier).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Statistic.Value>
@@ -43,6 +43,22 @@ export default class HeaderCost extends React.Component {
                     </Modal.Description>
                     </Modal.Content>
                 </Modal>
+                <div style={{float:"left", position: "absolute", top:"16px"}}>
+                    <List style={{textAlign:"left"}}>
+                        <Popup basic content='Number of New Relic Accounts Inspected' trigger={
+                            <List.Item>
+                                <List.Icon name='sitemap' style={{width:"18px", paddingRight:"3px"}} />
+                                <List.Content>{this.props.completedAccounts} Accounts</List.Content>
+                            </List.Item>
+                        } />  
+                        <Popup basic content='Number of Instances Inspected' trigger={
+                            <List.Item>
+                                <List.Icon name='server' style={{width:"18px", paddingRight:"7px"}}/>
+                                <List.Content>{this.props.instances} Instances</List.Content>
+                            </List.Item>
+                        } />
+                    </List>
+                </div>
             </Segment>
         )
     }
