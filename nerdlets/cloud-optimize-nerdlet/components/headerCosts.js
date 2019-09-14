@@ -22,15 +22,14 @@ export default class HeaderCost extends React.Component {
                     <Statistic.Value>${(this.props.totals.saving * this.props.multiplier).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Statistic.Value>
                 </Statistic> &nbsp;&nbsp;&nbsp;
                 <Modal trigger={<Icon style={{cursor:"pointer", float:"right"}} name='question' color='blue' size='large' circular />}>
-                    <Modal.Header>Help</Modal.Header>
+                    <Modal.Header>Optimization Logic & Features</Modal.Header>
                     <Modal.Content>
                     <Modal.Description>
-                        <Header>Optimization Logic</Header>
                         <List bulleted relaxed>
                             <List.Item>A one week period is inspected observing your System and Network Sample events, if an instance has reported in at least the past N hours it will be considered for optimization.</List.Item>
                             <List.Item>Optimize By slider: this selects instances for optimization that are below N% CPU or Memory Utilization.</List.Item>
                             <List.Item>Pricing Region: will use the selected AWS public list pricing.</List.Item>
-                            <List.Item>Configuration options this provides many additional options to tune the suggestions and instance types returned.
+                            <List.Item>Configuration: this provides many additional options to tune the suggestions and instance types returned.
                                 <List.List>
                                     <List.Item>Inclusion Period: as described above will adjust the period the instance must have last reported in.</List.Item>
                                     <List.Item>Discount Multiplier: useful for applying EDP discounts.</List.Item>
