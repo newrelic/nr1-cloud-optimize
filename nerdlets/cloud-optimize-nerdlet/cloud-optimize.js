@@ -11,14 +11,12 @@ export default class CloudOptimize extends React.Component {
     constructor(props){
         super(props)
         this.state = { 
-            enableNerdLog:false, 
             loading: null,
             completedAccounts: 0,
             accounts: [],
             instanceData: [],
             snapshots: [],
             awsPricing: null,
-            awsPricingRegionDefault: "us-east-1",
             groupByDefault: "accountName",
             sortByDefault: "nonOptimizedCost",
             sorted: [], sort: "desc",
@@ -31,7 +29,7 @@ export default class CloudOptimize extends React.Component {
             },
             config: {
                 optimizeBy: 50,
-                groupBy: "", sortBy: "", awsPricingRegion: "", sort: "desc",
+                groupBy: "", sortBy: "", awsPricingRegion: "us-east-1", sort: "desc",
                 discountMultiplier: 1, lastReportPeriod: 24, // 1 day in hours
                 staleInstanceCpu: 5, staleInstanceMem: 5,
                 staleReceiveBytesPerSecond: 0, staleTransmitBytesPerSecond: 0,
@@ -44,18 +42,10 @@ export default class CloudOptimize extends React.Component {
         this.fetchAwsPricing = this.fetchAwsPricing.bind(this)
     }
 
-    nerdLog(msg){
-        if(this.state.enableNerdLog){ 
-            /*eslint no-console: ["error", { allow: ["warn", "error"] }] */
-            console.warn(msg); 
-        }
-    }
-
     handleParentState(key,val,trigger){
         // store config updates back into nerdStore
-        if(key == "config"){
-            writeDocument("cloudOptimizeCfg", "main", val)
-        }
+        if(key == "config") writeDocument("cloudOptimizeCfg", "main", val)
+        
         this.setState({[key]:val})
         switch(trigger) {
             case "groupAndSort":
@@ -75,33 +65,34 @@ export default class CloudOptimize extends React.Component {
 
     async fetchNewRelicData(){
         this.setState({loading:true})
-        this.handleUserConfig()
+        await this.handleUserConfig()
         let accounts = await this.fetchAccounts()
-        if(accounts.length > 0){
-            await this.fetchAwsPricing(this.state.awsPricingRegionDefault)
-            this.fetchSamples(accounts)
-        }
+        if(accounts.length > 0) await this.fetchAwsPricing(this.state.config.awsPricingRegion)
+        this.fetchSamples(accounts)
         this.fetchSnapshots()
-        this.setState({loading:false})
+        this.setState({loading: false})
     }
 
-    async handleUserConfig(){
-        this.nerdLog("fetching newrelic user config from nerdstore")
-        let configs = await getCollection("cloudOptimizeCfg")
-        if(configs.length === 1 && configs[0].id == "main"){ // set existing config
-            this.nerdLog("loading existing config")
-            this.setState({config: configs[0].document}) 
-        }else{ // write in default config
-            this.nerdLog("writing default config")
-            await writeDocument("cloudOptimizeCfg", "main", this.state.config)
-        }
+    handleUserConfig(){
+        return new Promise(async (resolve) => {
+            console.log("fetching newrelic user config from nerdstore")
+            let configs = await getCollection("cloudOptimizeCfg")
+            if(configs.length === 1 && configs[0].id == "main"){ // set existing config
+                console.log("loading existing config")
+                await this.setState({config: configs[0].document}) 
+            }else{ // write in default config
+                console.log("writing default config")
+                await writeDocument("cloudOptimizeCfg", "main", this.state.config)
+            }
+            resolve()
+        });
     }
 
     async fetchAccounts(){
-        this.nerdLog("fetching newrelic accounts")
+        console.log("fetching newrelic accounts")
         let results = await NerdGraphQuery.query({query: accountsQuery})
         let accounts = (((results || {}).data || {}).actor || {}).accounts || []
-        this.setState({accounts: accounts})
+        this.setState({accounts})
         return accounts
     }
 
@@ -116,7 +107,7 @@ export default class CloudOptimize extends React.Component {
         accounts.forEach(async (account)=>{
             let results = await NerdGraphQuery.query({query: getInstanceData(account.id)})
             if(results.errors){
-                this.nerdLog(results.errors)
+                console.log(results.errors)
             }else{
                 let systemSamples = (((((results || {}).data || {}).actor || {}).account || {}).system || {}).results || []
                 let networkSamples = (((((results || {}).data || {}).actor || {}).account || {}).network || {}).results || []
@@ -144,7 +135,7 @@ export default class CloudOptimize extends React.Component {
 
     fetchAwsPricing(region){
         return new Promise((resolve)=>{
-            this.nerdLog(`fetching aws ec2 pricing: ${region}`)
+            console.log(`fetching aws ec2 pricing: ${region}`)
             // https://cors.io/?https://a0.p.awsstatic.com/pricing/1.0/ec2/region/${project.awsRegion}/ondemand/linux/index.json
             // cors hack
             fetch(`https://yzl85kz129.execute-api.us-east-1.amazonaws.com/dev?url=https://a0.p.awsstatic.com/pricing/1.0/ec2/region/${region}/ondemand/linux/index.json`).then((response)=> {

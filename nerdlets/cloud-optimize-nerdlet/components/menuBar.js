@@ -89,7 +89,7 @@ export default class MenuBar extends React.Component {
                                 await this.props.fetchAwsPricing(data.value)
                                 this.handleDropdownChange(event, data, "awsPricingRegion")
                             }} 
-                            value={this.props.config.awsPricingRegion || "ap-southeast-2"}
+                            value={this.props.config.awsPricingRegion || "us-east-1"}
                         />}
                         content={"Public pricing list for your selected region"}
                         basic

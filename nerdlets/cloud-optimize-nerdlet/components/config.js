@@ -1,6 +1,6 @@
-import React from 'react'
-import { Divider, Form, Icon, Input, Modal, Menu, Dropdown } from 'semantic-ui-react'
-
+import React from 'react';
+import { Divider, Form, Icon, Input, Modal, Menu, Dropdown, Button } from 'semantic-ui-react';
+import { deleteDocument } from '../utils';
 
 export default class Config extends React.Component {
 
@@ -103,6 +103,13 @@ export default class Config extends React.Component {
 
                     </Form>
                 </Modal.Content>
+
+                <Modal.Actions>
+                    <Button onClick={async ()=>{ await deleteDocument("cloudOptimizeCfg", "main"); location.reload() }} negative>
+                        Reset to defaults
+                    </Button>
+                </Modal.Actions>
+
             </Modal>
         )
     }
