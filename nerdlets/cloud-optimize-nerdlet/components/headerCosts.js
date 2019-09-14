@@ -43,7 +43,7 @@ export default class HeaderCost extends React.Component {
                     </Modal.Description>
                     </Modal.Content>
                 </Modal>
-                <div style={{float:"left", position: "absolute", top:"16px"}}>
+                <div style={{float:"left", position: "absolute", top:"16px", width:"130px"}}>
                     <List style={{textAlign:"left"}}>
                         <Popup basic content='Number of New Relic Accounts Inspected' trigger={
                             <List.Item>
