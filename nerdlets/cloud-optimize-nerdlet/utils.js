@@ -49,3 +49,16 @@ export const getInstanceData = (accountId) => {
     }
   }`
 }
+
+export const pluckAwsPrice = (instanceType, operatingSystem, awsPricing) => {
+  for(var i=0;i<awsPricing.prices.length;i++){
+      if( awsPricing.prices[i].attributes["aws:ec2:preInstalledSw"] == "NA" &&
+          awsPricing.prices[i].attributes["aws:ec2:instanceType"] == instanceType &&
+          awsPricing.prices[i].attributes["aws:ec2:operatingSystem"].toLowerCase() == operatingSystem.toLowerCase()
+      ){
+          return parseFloat(awsPricing.prices[i].price.USD)
+      }
+  }
+  console.log(`unable to get aws price for ${instanceType} : ${operatingSystem}`)
+  return 0
+}

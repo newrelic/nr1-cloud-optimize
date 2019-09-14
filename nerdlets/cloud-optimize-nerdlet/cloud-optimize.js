@@ -1,6 +1,6 @@
 import React from 'react';
 import { NerdGraphQuery } from 'nr1';
-import { getCollection, writeDocument, accountsQuery, getInstanceData } from './utils';
+import { getCollection, writeDocument, accountsQuery, getInstanceData, pluckAwsPrice } from './utils';
 import MenuBar from './components/menuBar'
 import HeaderCosts from './components/headerCosts'
 import AccountCards from './components/accountCards'
@@ -121,47 +121,46 @@ export default class CloudOptimize extends React.Component {
                 let systemSamples = (((((results || {}).data || {}).actor || {}).account || {}).system || {}).results || []
                 let networkSamples = (((((results || {}).data || {}).actor || {}).account || {}).network || {}).results || []
 
-                systemSamples.forEach((sample,i)=>{
-                    systemSamples[i].timeSinceLastReported = new Date().getTime() - systemSamples[i].timestamp
-                    // console.log(systemSamples[i].timeSinceLastReported)
-                    // console.log(sample.timeSinceLastReported)
-                    systemSamples[i].hostname = sample.facet[0]
-                    systemSamples[i].apmApplicationNames = sample.facet[1]
-                    systemSamples[i].entityGuid = sample.facet[2]
-                    systemSamples[i].awsRegion = sample.facet[3]
-                    systemSamples[i].apps = sample.facet[1] ? sample.facet[1].split("|").filter(Boolean) : []
-                    systemSamples[i].memGB = Math.round(sample.memTotalBytes/1024/1024/1024)
-                    systemSamples[i].numCpu = parseFloat(sample.numCpu)
-                    systemSamples[i].awsInstanceType = sample.ec2InstanceType
-                    systemSamples[i].receiveBytesPerSecond = 0
-                    systemSamples[i].transmitBytesPerSecond = 0
+                systemSamples.forEach((sample)=>{
+                    sample.timeSinceLastReported = new Date().getTime() - sample.sample
+                    sample.hostname = sample.facet[0]
+                    sample.apmApplicationNames = sample.facet[1]
+                    sample.entityGuid = sample.facet[2]
+                    sample.awsRegion = sample.facet[3]
+                    sample.apps = sample.facet[1] ? sample.facet[1].split("|").filter(Boolean) : []
+                    sample.memGB = Math.round(sample.memTotalBytes/1024/1024/1024)
+                    sample.numCpu = parseFloat(sample.numCpu)
+                    sample.awsInstanceType = sample.ec2InstanceType
+                    sample.receiveBytesPerSecond = 0
+                    sample.transmitBytesPerSecond = 0
 
                     for(let z=0;z<networkSamples.length;z++){
-                        if(systemSamples[i].entityGuid == networkSamples[z].facet[1]){
-                            systemSamples[i].receiveBytesPerSecond = networkSamples[z].receiveBytesPerSecond
-                            systemSamples[i].transmitBytesPerSecond = networkSamples[z].transmitBytesPerSecond
+                        if(sample.entityGuid == networkSamples[z].facet[1]){
+                            sample.receiveBytesPerSecond = networkSamples[z].receiveBytesPerSecond
+                            sample.transmitBytesPerSecond = networkSamples[z].transmitBytesPerSecond
                             break
                         }
                     }
 
-                    systemSamples[i].awsPrice1 = this.pluckAwsPrice(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem) * config.discountMultiplier
-                    systemSamples[i].suggestions = helper.determineAwsInstance(config, awsPricing, systemSamples[i])
+                    sample.awsPrice1 = pluckAwsPrice(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem, awsPricing) * config.discountMultiplier
+                    sample.suggestions = helper.determineAwsInstance(config, awsPricing, sample)
 
-                    if(systemSamples[i].suggestions){
-                        let optimizedSuggestion = systemSamples[i].suggestions.suggested
-                        systemSamples[i].suggestedInstanceType = optimizedSuggestion.instanceType
-                        systemSamples[i].awsPrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
-                        systemSamples[i].saving = systemSamples[i].awsPrice1 - systemSamples[i].awsPrice2
+                    if(sample.suggestions){
+                        let optimizedSuggestion = sample.suggestions.suggested
+                        sample.suggestedInstanceType = optimizedSuggestion.instanceType
+                        sample.awsPrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
+                        sample.saving = sample.awsPrice1 - sample.awsPrice2
                     }
 
-                    systemSamples[i].accountId = account.id
-                    systemSamples[i].accountName = account.name
-                    tempInstanceData.push(systemSamples[i])
+                    sample.accountId = account.id
+                    sample.accountName = account.name
+                    tempInstanceData.push(sample)
                 })
 
                 await this.setState({"instanceData": tempInstanceData})
                 this.groupAndSort(tempInstanceData, "", "")
             }
+
             completedAccounts = completedAccounts + 1
             await this.setState({completedAccounts})
         }) 
@@ -169,13 +168,14 @@ export default class CloudOptimize extends React.Component {
 
     groupAndSort(data, type, val){
         let tempData = data || this.state.instanceData
+        let { awsPricing } = this.state
         let cfg = this.state.config
         let groupBy = (type == "groupBy" ? val : null) || cfg.groupBy || this.state.groupByDefault
         let sortBy = (type == "sortBy" ? val : null) || cfg.sortBy || this.state.sortByDefault
 
         if(type == "awsPricingRegion" || type == "recalc"){
             tempData.forEach((sample,i)=>{
-                tempData[i].awsPrice1 = this.pluckAwsPrice(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem) * cfg.discountMultiplier
+                tempData[i].awsPrice1 = pluckAwsPrice(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem, awsPricing) * cfg.discountMultiplier
                 tempData[i].suggestions = helper.determineAwsInstance(this.state.config, this.state.awsPricing, tempData[i])
                 if(tempData[i].suggestions){
                     let optimizedSuggestion = tempData[i].suggestions.suggested
@@ -255,19 +255,6 @@ export default class CloudOptimize extends React.Component {
             totals: totals,
             data: tempData
         })
-    }
-
-    pluckAwsPrice(instanceType, operatingSystem){
-        for(var i=0;i<this.state.awsPricing.prices.length;i++){
-            if( this.state.awsPricing.prices[i].attributes["aws:ec2:preInstalledSw"] == "NA" &&
-                this.state.awsPricing.prices[i].attributes["aws:ec2:instanceType"] == instanceType &&
-                this.state.awsPricing.prices[i].attributes["aws:ec2:operatingSystem"].toLowerCase() == operatingSystem.toLowerCase()
-            ){
-                return parseFloat(this.state.awsPricing.prices[i].price.USD)
-            }
-        }
-        this.nerdLog(`unable to get aws price for ${instanceType} : ${operatingSystem}`)
-        return 0
     }
 
     fetchAwsPricing(region){
