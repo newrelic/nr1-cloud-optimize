@@ -1,6 +1,6 @@
 import React from 'react';
 import { NerdGraphQuery } from 'nr1';
-import { getCollection, writeDocument, accountsQuery, getInstanceData } from './utils';
+import { getCollection, writeDocument, accountsQuery, getInstanceData, accountsWithData } from './utils';
 import { processSample, groupInstances } from './processor';
 import MenuBar from './components/menuBar'
 import HeaderCosts from './components/headerCosts'
@@ -64,11 +64,11 @@ export default class CloudOptimize extends React.Component {
     }
 
     async fetchNewRelicData(){
-        this.setState({loading:true})
+        this.setState({loading: true})
         await this.handleUserConfig()
-        let accounts = await this.fetchAccounts()
-        if(accounts.length > 0) await this.fetchAwsPricing(this.state.config.awsPricingRegion)
-        this.fetchSamples(accounts)
+        await this.fetchAccounts()
+        if(this.state.accounts.length > 0) await this.fetchAwsPricing(this.state.config.awsPricingRegion)
+        this.fetchSamples(this.state.accounts)
         this.fetchSnapshots()
         this.setState({loading: false})
     }
@@ -90,10 +90,7 @@ export default class CloudOptimize extends React.Component {
 
     async fetchAccounts(){
         console.log("fetching newrelic accounts")
-        let results = await NerdGraphQuery.query({query: accountsQuery})
-        let accounts = (((results || {}).data || {}).actor || {}).accounts || []
-        this.setState({accounts})
-        return accounts
+        await this.setState({accounts: await accountsWithData("SystemSample")})
     }
 
     async fetchSnapshots(){
