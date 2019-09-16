@@ -4,9 +4,9 @@
 
 ## Usage
 
-Cloud Optimization Nerdpack, determine potential savings across your environment.
+This application analyzes your cloud environment, and figures out where you're wasting money on excess cloud capacity. The application compares the size of your instances to their utilization, and estimates how much you could save by optimizing the size.
 
-Currently Supports:
+Currently supports:
 
 - AWS
 
@@ -21,12 +21,12 @@ This project is distributed under the [Apache 2 license](blob/master/LICENSE).
 
 Required:
 
-- [New Relic Infrastructure Agent(s) installed](https://newrelic.com/products/infrastructure) on your cloud computing devices and the related access to [New Relic One](https://newrelic.com/platform).
+- [New Relic Infrastructure agent(s) installed](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#infra-install) on your cloud computing devices and the related access to [New Relic One](https://newrelic.com/platform).
 
-To maximise the use of this Nerdpack it is suggested to:
+You'll get the best possible data out of this application if you also:
 
-- Install the EC2 integration for additional metadata to allow for grouping by your Cloud Provider Account.
-- Install APM on your applications for grouping by application.
+- [Activate the EC2 integration](https://docs.newrelic.com/docs/integrations/amazon-integrations/get-started/connect-aws-infrastructure) to group by your cloud provider account.
+- [Install APM on your applications](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#apm-install) to group by application.
 
 ## Getting started
 
