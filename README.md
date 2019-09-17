@@ -67,7 +67,7 @@ _Please do not report issues with this software to New Relic Global Technical Su
 
 New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorer's Hub. You can find this project's topic/threads here:
 
-[https://discuss.newrelic.com/c/build-on-new-relic/nerdpack/nr1-cloud-optimize](https://discuss.newrelic.com/c/build-on-new-relic/nerdpack/nr1-cloud-optimize)
+https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936
 *(Note: URL subject to change before GA)*
 
 ### Issues / Enhancement Requests
