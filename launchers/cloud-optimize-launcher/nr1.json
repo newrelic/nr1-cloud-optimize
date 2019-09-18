@@ -3,6 +3,5 @@
     "id": "cloud-optimize-launcher",
     "description": "Cloud Optimizer",
     "displayName": "Cloud Optimize",
-    "icon": "hardware-&-software_software_cloud",
     "rootNerdletId": "cloud-optimize-nerdlet"
 }
