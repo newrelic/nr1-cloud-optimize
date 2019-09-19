@@ -33,7 +33,7 @@ You'll get the best possible data out of this application if you also:
 Clone this repository and run the following scripts:
 
 ```bash
-git clone https://github.com/newrelic/nr1-cloud-optimize.git
+nr1 nerdpack:clone -r https://github.com/newrelic/nr1-cloud-optimize.git
 cd nr1-cloud-optimize
 nr1 nerdpack:uuid -gf
 npm install
