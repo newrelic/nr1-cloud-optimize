@@ -2,13 +2,13 @@
   "private": true,
   "name": "nr1-cloud-optimize",
   "description": "Nerdpack cloud-optimize",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "scripts": {
     "start": "nr1 nerdpack:serve",
     "test": "exit 0"
   },
   "nr1": {
-    "uuid": "c44fc621-8fca-41df-a428-d905486b557b",
+    "uuid": "3ec6eb73-10af-4bd7-ada5-11b388c236be",
     "sdkVersion": 2
   },
   "bugs": {
