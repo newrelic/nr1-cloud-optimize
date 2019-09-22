@@ -5,56 +5,68 @@
     background-color: #f4f5f5;
   }
 
-  .main {
-    height: 100%;
-    // padding-top: 5px;
-    // padding-left: 5px;
-  }
+.main {
+  height: 100%;
+  // padding-top: 5px;
+  // padding-left: 5px;
+}
 
-  .main-dark {
+.main-dark {
+  background-color: black;
+}
+
+.main-light {
+  background-color: #f4f5f5;
+}
+
+.header-bar {
+  text-align: center;
+  margin-bottom: 0px
+}
+
+.header-bar-light {
+  // background-color: #EDEEEE;
+}
+
+.menu-bar {
+  margin-bottom: 0px;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.card {
+    margin-bottom: 1px;
+    width: 400px;
+}
+
+.card-dark {
+    background-color: rgb(51, 51, 51)
+}
+
+.card-content-dark {
+  color: white
+}
+
+.card-content-light {
+    color: black
+}
+
+.config-dark {
     background-color: black;
-  }
+}
 
-  .main-light {
-    background-color: #f4f5f5;
-  }
+.ui.compact.table td {
+    padding: .2em .5em !important;
+}
 
-  .header-bar {
-    text-align: center;
-    margin-bottom: 0px
-  }
+.ui.table td {
+  padding: .2em .5em !important;
+}
 
-  .header-bar-light {
-    // background-color: #EDEEEE;
-  }
+.ui.mini.button, .ui.mini.buttons .button, .ui.mini.buttons .or {
+  font-size: .78571429rem !important;
+}
 
-  .menu-bar {
-    margin-bottom: 0px;
-    margin-top: 5px;
-    text-align: center;
-  }
-
-  .card {
-      margin-bottom: 1px;
-      width: 400px;
-  }
-
-  .card-dark {
-      background-color: rgb(51, 51, 51)
-  }
-
-  .card-content-dark {
-    color: white
-  }
-
-  .card-content-light {
-      color: black
-  }
-
-  .config {
-
-  }
-
-  .config-dark {
-      background-color: black;
-  }
+.segment-clear {
+  background: "" !important;
+}

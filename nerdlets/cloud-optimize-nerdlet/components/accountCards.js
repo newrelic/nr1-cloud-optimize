@@ -1,25 +1,21 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { Card, Table, Icon } from 'semantic-ui-react'
+import { Card, Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react'
 import OptimizationCandidates from './optimizationCandidates'
 import SnapshotCard from './snapshots/snapshotCard'
 
 export default class AccountCards extends React.Component {
 
-    // static propTypes = {
-    //     nr1: PropTypes.object.isRequired,
-    //     config: PropTypes.object.isRequired,
-    //     sorted: PropTypes.object.isRequired,
-    //     groupByDefault: PropTypes.object.isRequired,
-    //     handleParentState: PropTypes.object.isRequired,
-    //     cloudOptimizeSnapshots: PropTypes.object.isRequired,
-    //     fetchSnapshots: PropTypes.object.isRequired,
-    //     snapshots: PropTypes.object.isRequired
-    // }
-
     render() {
+        let isLoading = this.props.loading || this.props.completedAccounts != this.props.accounts
         return (
-            <div style={{textAlign:"center"}}>
+            <Segment className="segment-clear" style={{textAlign:"center", marginTop:"0px", minHeight:this.props.height}}>
+                <Dimmer active={isLoading}>
+                    <Loader style={{top:"150px"}} size="big">
+                        Please be patient while we analyze your Accounts and Instances... <br/><br/>
+                        {this.props.completedAccounts} of {this.props.accounts} Accounts Inspected <br/><br/>
+                        {this.props.instances} Instances Inspected
+                    </Loader>
+                </Dimmer>
                 <Card.Group style={{margin:"auto","width":"100%"}} centered>
                     {this.props.sorted.map((item, i)=>{
                         let header = item.group
@@ -35,10 +31,10 @@ export default class AccountCards extends React.Component {
                         }
 
                         return (
-                            <Card key={i} className="card card-light" color="green">
+                            <Card key={i} className="card card-light" color="green" style={{minWidth:"350px"}}>
                             <Card.Content className="card-content-light">
                                 <span style={{fontSize:"13px"}}>{header}</span>
-                                <span style={{float:"right"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>
+                                <span style={{float:"right", cursor:"pointer"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>
                             </Card.Content>
                             <Card.Content>
                             <Table celled inverted={false}>
@@ -79,7 +75,7 @@ export default class AccountCards extends React.Component {
                         </Card>)
                     })}
                 </Card.Group>
-            </div>
+            </Segment>
         )
     }
 }

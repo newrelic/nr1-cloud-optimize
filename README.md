@@ -4,9 +4,9 @@
 
 ## Usage
 
-Cloud Optimization Nerdpack, determine potential savings across your environment.
+This application analyzes your cloud environment, and figures out where you're wasting money on excess cloud capacity. The application compares the size of your instances to their utilization, and estimates how much you could save by optimizing the size.
 
-Currently Supports:
+Currently supports:
 
 - AWS
 
@@ -21,19 +21,19 @@ This project is distributed under the [Apache 2 license](blob/master/LICENSE).
 
 Required:
 
-- [New Relic Infrastructure Agent(s) installed](https://newrelic.com/products/infrastructure) on your cloud computing devices and the related access to [New Relic One](https://newrelic.com/platform).
+- [New Relic Infrastructure agent(s) installed](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#infra-install) on your cloud computing devices and the related access to [New Relic One](https://newrelic.com/platform).
 
-To maximise the use of this Nerdpack it is suggested to:
+You'll get the best possible data out of this application if you also:
 
-- Install the EC2 integration for additional metadata to allow for grouping by your Cloud Provider Account.
-- Install APM on your applications for grouping by application.
+- [Activate the EC2 integration](https://docs.newrelic.com/docs/integrations/amazon-integrations/get-started/connect-aws-infrastructure) to group by your cloud provider account.
+- [Install APM on your applications](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#apm-install) to group by application.
 
 ## Getting started
 
 Clone this repository and run the following scripts:
 
 ```bash
-git clone https://github.com/newrelic/nr1-cloud-optimize.git
+nr1 nerdpack:clone -r https://github.com/newrelic/nr1-cloud-optimize.git
 cd nr1-cloud-optimize
 nr1 nerdpack:uuid -gf
 npm install
@@ -65,9 +65,9 @@ _Please do not report issues with this software to New Relic Global Technical Su
 
 ### Community
 
-New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorer's Hub. You can find this project's topic/threads here:
+New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
 
-[https://discuss.newrelic.com/c/build-on-new-relic/nerdpack/nr1-cloud-optimize](https://discuss.newrelic.com/c/build-on-new-relic/nerdpack/nr1-cloud-optimize)
+https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936
 *(Note: URL subject to change before GA)*
 
 ### Issues / Enhancement Requests
