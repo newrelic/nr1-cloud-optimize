@@ -33,7 +33,7 @@ export default class HeaderCost extends React.Component {
                                 <List.List>
                                     <List.Item>Inclusion Period: as described above will adjust the period the instance must have last reported in.</List.Item>
                                     <List.Item>Discount Multiplier: useful for applying EDP discounts.</List.Item>
-                                    <List.Item>Stale Instance Detection: various options to consider an instance stale, when an instance is detected as stale no optimization suggestion will be returned but instead be seen as an instance you should consider decommisioning with a direct saving.</List.Item>
+                                    <List.Item>Stale Instance Detection: various options to consider an instance stale, when an instance is detected as stale no optimization suggestion will be returned but instead be seen as an instance you should consider decommissioning with a direct saving.</List.Item>
                                     <List.Item>Instance Type Filter: perhaps you do not want t2 or t3 type instances, then simply apply those filters.</List.Item>
                                     <List.Item>Right Sizing: when an instance is considered a candidate for optimization, the CPU and Memory values are multiplied by these configured values to find an appropriate candidate. eg. if you are looking at candidates that are below 40% cpu you can assume halfing the instances size could be appropriate. Note that multiple suggestions are returned to cater if you would like a bit more or bit less resources.</List.Item>
                                 </List.List>
