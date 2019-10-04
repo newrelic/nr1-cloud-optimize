@@ -1,6 +1,6 @@
 # Cloud Optimize (nr1-cloud-optimize)
 
-![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) ![AppVeyor](https://img.shields.io/appveyor/ci/newrelic/nr1-cloud-optimize) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
 
 ## Usage
 
@@ -30,14 +30,14 @@ You'll get the best possible data out of this application if you also:
 
 ## Getting started
 
-Clone this repository and run the following scripts:
+First, install the [NR1 CLI](https://one.newrelic.com/launcher/developer-center.launcher) by going to [this link](https://one.newrelic.com/launcher/developer-center.launcher) and following the instructions (5 minutes or less) to install and setup your New Relic development environment.
+
+Next, to clone this repository and run the code locally against your New Relic data, execute the following commands:
 
 ```bash
 nr1 nerdpack:clone -r https://github.com/newrelic/nr1-cloud-optimize.git
 cd nr1-cloud-optimize
-nr1 nerdpack:uuid -gf
-npm install
-npm start
+nr1 nerdpack:serve
 ```
 
 Visit [https://one.newrelic.com/?nerdpacks=local](https://one.newrelic.com/?nerdpacks=local), navigate to the Nerdpack, and :sparkles:
@@ -47,8 +47,8 @@ Visit [https://one.newrelic.com/?nerdpacks=local](https://one.newrelic.com/?nerd
 Open a command prompt in the nerdpack's directory and run the following commands.
 
 ```bash
-# this is to create a new uuid for the nerdpack so that you can deploy it to your account
-nr1 nerdpack:uuid -g [--profile=your_profile_name]
+# If you need to create a new uuid for the account to which you're deploying this Nerdpack, use the following
+# nr1 nerdpack:uuid -g [--profile=your_profile_name]
 # to see a list of APIkeys / profiles available in your development environment, run nr1 credentials:list
 nr1 nerdpack:publish [--profile=your_profile_name]
 nr1 nerdpack:deploy [-c [DEV|BETA|STABLE]] [--profile=your_profile_name]
