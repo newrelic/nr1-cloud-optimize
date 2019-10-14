@@ -79,7 +79,7 @@ https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936
 
 ### Issues / Enhancement Requests
 
-Issues and enhancement requests can be submitted in the [Issues tab of this repository](issues). Please search for and review the existing open issues before submitting a new issue.
+Issues and enhancement requests can be submitted in the [Issues tab of this repository](https://github.com/newrelic/nr1-cloud-optimize/issues). Please search for and review the existing open issues before submitting a new issue.
 
 ## Contributing
 
