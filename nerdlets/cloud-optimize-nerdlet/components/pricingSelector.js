@@ -1,8 +1,7 @@
 import React from 'react'
-import { Button, Table, Icon, Dropdown, Modal, Menu, Form } from 'semantic-ui-react'
+import { Dropdown, Modal, Menu, Form } from 'semantic-ui-react'
 
 export default class PricingSelector extends React.Component {
-
 
     constructor(props){
         super(props)
@@ -31,7 +30,6 @@ export default class PricingSelector extends React.Component {
             return {  "key": region.name, "text": region.name, "value": region.id }
         })
 
-        //        return <Modal size="fullscreen" trigger={<Menu.Item>Set Cloud Regions &nbsp;<Icon name='dollar sign' /></Menu.Item>}>
         return <Modal trigger={<Menu.Item>Set Cloud Regions</Menu.Item>}>
                     <Modal.Header>Configure Regions</Modal.Header>
                     <Modal.Content>
