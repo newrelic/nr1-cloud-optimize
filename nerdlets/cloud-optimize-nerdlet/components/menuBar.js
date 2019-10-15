@@ -2,6 +2,7 @@ import React from 'react'
 import { Menu, Dropdown, Popup } from 'semantic-ui-react'
 import Configuration from './config'
 import SnapshotList from './snapshots/snapshotList'
+import PricingSelector from './pricingSelector'
 const awsRegions = require('../awsRegions.json')
 
 export default class MenuBar extends React.Component {
@@ -81,7 +82,8 @@ export default class MenuBar extends React.Component {
 
                 <Menu.Menu position='right'>
                     <SnapshotList snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots} fetchSnapshots={this.props.fetchSnapshots}/>
-                    <Menu.Item>AWS Pricing Region:</Menu.Item>
+                    <PricingSelector config={this.props.config} cloudRegions={this.props.cloudRegions} handleParentState={this.props.handleParentState} fetchCloudPricing={this.props.fetchCloudPricing} />
+                    {/* <Menu.Item>AWS Pricing Region:</Menu.Item>
                     <Popup
                         trigger={<Dropdown 
                             options={stateOptions} simple item 
@@ -93,7 +95,7 @@ export default class MenuBar extends React.Component {
                         />}
                         content={"Public pricing list for your selected region"}
                         basic
-                    />
+                    /> */}
                         
                     <Configuration config={this.props.config} handleParentState={this.props.handleParentState} />
                 </Menu.Menu>     

@@ -1,19 +1,21 @@
 const _ = require('lodash')
 
-export const pluckAwsPrice = (instanceType, operatingSystem, awsPricing) => {
-  for(var i=0;i<awsPricing.prices.length;i++){
-      if( awsPricing.prices[i].attributes["aws:ec2:preInstalledSw"] == "NA" &&
-          awsPricing.prices[i].attributes["aws:ec2:instanceType"] == instanceType &&
-          awsPricing.prices[i].attributes["aws:ec2:operatingSystem"].toLowerCase() == operatingSystem.toLowerCase()
-      ){
-          return parseFloat(awsPricing.prices[i].price.USD)
-      }
-  }
-  console.log(`unable to get aws price for ${instanceType} : ${operatingSystem}`)
-  return 0
+export const pluckCloudInstance = (instanceType, operatingSystem, cloudData) => {
+    let clouds = Object.keys(cloudData)
+    for(var i=0;i<clouds.length;i++){
+        for(var z=0;z<cloudData[clouds[i]].length;z++){
+            if(cloudData[clouds[i]][z].type == instanceType){
+                let instance = cloudData[clouds[i]][z]
+                instance.cloud = clouds[i]
+                return instance
+            }
+        }
+    }
+    console.log(`unable to get cloud instance price for ${instanceType} : ${operatingSystem}`)
+    return false
 }
 
-export const processSample = (account, sample, config, networkSamples, awsPricing) => {
+export const processSample = (account, sample, config, networkSamples, cloudData) => {
   sample.timeSinceLastReported = new Date().getTime() - sample.timestamp
   sample.hostname = sample.facet[0]
   sample.apmApplicationNames = sample.facet[1]
@@ -34,14 +36,16 @@ export const processSample = (account, sample, config, networkSamples, awsPricin
       }
   }
 
-  sample.awsPrice1 = pluckAwsPrice(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem, awsPricing) * config.discountMultiplier
-  sample.suggestions = determineAwsInstance(config, awsPricing, sample)
+  sample.matchedInstance = pluckCloudInstance(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem, cloudData)
+  sample.instancePrice1 = sample.matchedInstance.onDemandPrice * config.discountMultiplier
+  sample.suggestions = determineCloudInstance(config, sample, cloudData)
+
 
   if(sample.suggestions){
-      let optimizedSuggestion = sample.suggestions.suggested
-      sample.suggestedInstanceType = optimizedSuggestion.instanceType
-      sample.awsPrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
-      sample.saving = sample.awsPrice1 - sample.awsPrice2
+    let optimizedSuggestion = sample.suggestions.suggested
+    sample.suggestedInstanceType = optimizedSuggestion.instanceType
+    sample.instancePrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
+    sample.saving = sample.instancePrice1 - sample.instancePrice2
   }
 
   sample.accountId = account.id
@@ -52,20 +56,22 @@ export const processSample = (account, sample, config, networkSamples, awsPricin
 
 export const groupInstances = (data, type, val, state) => {
         let tempData = data || state.instanceData
-        let { awsPricing, config, groupByDefault } = state
+        let { config, groupByDefault, cloudData } = state
         let groupBy = (type == "groupBy" ? val : null) || config.groupBy || groupByDefault
 
         if(type == "awsPricingRegion" || type == "recalc"){
             tempData.forEach((sample,i)=>{
-                tempData[i].awsPrice1 = pluckAwsPrice(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem, awsPricing) * config.discountMultiplier
-                tempData[i].suggestions = determineAwsInstance(config, awsPricing, tempData[i])
-                if(tempData[i].suggestions){
+                tempData[i].matchedInstance = pluckCloudInstance(tempData[i].ec2InstanceType || tempData[i].instanceType, tempData[i].operatingSystem, cloudData)
+                tempData[i].instancePrice1 = tempData[i].matchedInstance.onDemandPrice * config.discountMultiplier
+                sample.suggestions = determineCloudInstance(config, tempData[i], cloudData)
+
+                if(tempData[i].suggestions){    
                     let optimizedSuggestion = tempData[i].suggestions.suggested
                     tempData[i].suggestedInstanceType = optimizedSuggestion.instanceType
-                    tempData[i].awsPrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
-                    tempData[i].saving = tempData[i].awsPrice1 - tempData[i].awsPrice2
+                    tempData[i].instancePrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
+                    tempData[i].saving = tempData[i].instancePrice1 - tempData[i].instancePrice2
                 }else{
-                    tempData[i].awsPrice2 = 0
+                    tempData[i].instancePrice2 = 0
                     tempData[i].saving = 0
                 }
             })
@@ -93,23 +99,23 @@ export const groupInstances = (data, type, val, state) => {
 
                 value.forEach((instance)=>{
                     if(instance.saving > 0 && instance.instanceType == "stale"){
-                        summary.optimizedCost += instance.awsPrice2
-                        summary.nonOptimizedCost += instance.awsPrice1
+                        summary.optimizedCost += instance.instancePrice2
+                        summary.nonOptimizedCost += instance.instancePrice1
                         summary.saving += instance.saving
                         summary.nonOptimizedCount++
 
-                        totals.optimizedCost += instance.awsPrice2
-                        totals.nonOptimizedCost += instance.awsPrice1
+                        totals.optimizedCost += instance.instancePrice2
+                        totals.nonOptimizedCost += instance.instancePrice1
                         totals.saving += instance.saving
                         totals.nonOptimizedCount++
                     }else if(instance.saving > 0 && (instance.maxCpuPercent <  config.optimizeBy || instance.maxMemoryPercent <  config.optimizeBy)){
-                        summary.optimizedCost += instance.awsPrice2
-                        summary.nonOptimizedCost += instance.awsPrice1
+                        summary.optimizedCost += instance.instancePrice2
+                        summary.nonOptimizedCost += instance.instancePrice1
                         summary.saving += instance.saving
                         summary.nonOptimizedCount++
 
-                        totals.optimizedCost += instance.awsPrice2
-                        totals.nonOptimizedCost += instance.awsPrice1
+                        totals.optimizedCost += instance.instancePrice2
+                        totals.nonOptimizedCost += instance.instancePrice1
                         totals.saving += instance.saving
                         totals.nonOptimizedCount++
 
@@ -133,11 +139,12 @@ export const groupInstances = (data, type, val, state) => {
     return { totals, grouped, tempData }
 }
 
-export const determineAwsInstance = (cfg, awsPricing, instanceData) => {
+export const determineCloudInstance = (cfg, instanceData, cloudData) => {
   let numCpu = instanceData.numCpu * cfg.rightSizeCpu
   let memoryGb = instanceData.memGB * cfg.rightSizeMem
   let discoveredPrices = []
   let strategy = "cost"
+  let cloud = instanceData.matchedInstance.cloud
 
   // Instance Inclusion 
   if(instanceData.timeSinceLastReported > (parseFloat(cfg.lastReportPeriod) * 3600000)){
@@ -208,8 +215,8 @@ export const determineAwsInstance = (cfg, awsPricing, instanceData) => {
       return false
   }
   
-  if(awsPricing && awsPricing.prices){
-      let prices = awsPricing.prices
+  if(cloud && cloudData[cloud]){
+      let prices = cloudData[cloud]
 
       // store combinations per family, eg. combinations for direct match, cpu+, mem+, cpu and mem+
       let instanceFamiliesDirect = {}
@@ -218,93 +225,85 @@ export const determineAwsInstance = (cfg, awsPricing, instanceData) => {
       let instanceFamiliesCpuMem = {}
 
       // order price list by cost
-      prices = _.orderBy(prices, [ function(e) { return e["price"]["USD"] } ], [ "asc", "desc"])            
+      prices = _.orderBy(prices, [ function(e) { return e["onDemandPrice"] } ], [ "asc", "desc"])            
 
       for(var i=0;i<prices.length;i++){
 
-          if(instanceData.operatingSystem != prices[i]["attributes"]["aws:ec2:operatingSystem"].toLowerCase() || checkExclusion(cfg.instanceOptionsCurrent, prices[i]["attributes"]["aws:ec2:instanceType"])){
+          if(checkExclusion(cfg.instanceOptionsCurrent, prices[i]["type"])){
               continue
           }
 
           // directly matching 
-          if(prices[i]["attributes"]["aws:ec2:vcpu"] == numCpu && 
-              parseFloat(prices[i]["attributes"]["aws:ec2:memory"]) == memoryGb &&
-              prices[i]["attributes"]["aws:ec2:term"] == "on-demand"){
+          if(prices[i]["cpusPerVm"] == numCpu && 
+              parseFloat(prices[i]["memPerVm"]) == memoryGb){
 
-              if(!instanceFamiliesDirect[prices[i]["attributes"]["aws:ec2:instanceFamily"]]){
+              if(!instanceFamiliesDirect[prices[i]["category"]]){
                   let payload = {
-                      price: (parseFloat(prices[i].price.USD)).toFixed(2), 
-                      instanceType: prices[i]["attributes"]["aws:ec2:instanceType"],
-                      instanceFamily: prices[i]["attributes"]["aws:ec2:instanceFamily"],
-                      vcpu: prices[i]["attributes"]["aws:ec2:vcpu"],
-                      ecu: prices[i]["attributes"]["aws:ec2:ecu"],
-                      memory: prices[i]["attributes"]["aws:ec2:memory"],
+                      price: (parseFloat(prices[i].onDemandPrice)).toFixed(2), 
+                      instanceType: prices[i]["type"],
+                      instanceFamily: prices[i]["category"],
+                      vcpu: prices[i]["cpusPerVm"],
+                      memory: prices[i]["memPerVm"],
                       strategy: strategy
                   }
-                  instanceFamiliesDirect[prices[i]["attributes"]["aws:ec2:instanceFamily"]] = payload
+                  instanceFamiliesDirect[prices[i]["category"]] = payload
                   discoveredPrices.push(payload)
                   continue
               }
           }
 
           // a bit more cpu
-          if(prices[i]["attributes"]["aws:ec2:vcpu"] > numCpu && 
-              parseFloat(prices[i]["attributes"]["aws:ec2:memory"]) == memoryGb &&
-              prices[i]["attributes"]["aws:ec2:term"] == "on-demand"){
+          if(prices[i]["cpusPerVm"] > numCpu && 
+              parseFloat(prices[i]["memPerVm"]) == memoryGb){
 
-              if(!instanceFamiliesCpu[prices[i]["attributes"]["aws:ec2:instanceFamily"]]){
+              if(!instanceFamiliesCpu[prices[i]["category"]]){
                   let payload = {
-                      price: (parseFloat(prices[i].price.USD)).toFixed(2), 
-                      instanceType: prices[i]["attributes"]["aws:ec2:instanceType"],
-                      instanceFamily: prices[i]["attributes"]["aws:ec2:instanceFamily"],
-                      vcpu: prices[i]["attributes"]["aws:ec2:vcpu"],
-                      ecu: prices[i]["attributes"]["aws:ec2:ecu"],
-                      memory: prices[i]["attributes"]["aws:ec2:memory"],
+                      price: (parseFloat(prices[i].onDemandPrice)).toFixed(2), 
+                      instanceType: prices[i]["type"],
+                      instanceFamily: prices[i]["category"],
+                      vcpu: prices[i]["cpusPerVm"],
+                      memory: prices[i]["memPerVm"],
                       strategy: strategy
                   }
-                  instanceFamiliesCpu[prices[i]["attributes"]["aws:ec2:instanceFamily"]] = payload
+                  instanceFamiliesCpu[prices[i]["category"]] = payload
                   discoveredPrices.push(payload)
                   continue
               }
           }
 
           // a bit more mem
-          if(prices[i]["attributes"]["aws:ec2:vcpu"] == numCpu && 
-              parseFloat(prices[i]["attributes"]["aws:ec2:memory"]) > memoryGb &&
-              prices[i]["attributes"]["aws:ec2:term"] == "on-demand"){
+          if(prices[i]["cpusPerVm"] == numCpu && 
+              parseFloat(prices[i]["memPerVm"]) > memoryGb){
 
-              if(!instanceFamiliesMem[prices[i]["attributes"]["aws:ec2:instanceFamily"]]){
+              if(!instanceFamiliesMem[prices[i]["category"]]){
                   let payload = {
-                      price: (parseFloat(prices[i].price.USD)).toFixed(2), 
-                      instanceType: prices[i]["attributes"]["aws:ec2:instanceType"],
-                      instanceFamily: prices[i]["attributes"]["aws:ec2:instanceFamily"],
-                      vcpu: prices[i]["attributes"]["aws:ec2:vcpu"],
-                      ecu: prices[i]["attributes"]["aws:ec2:ecu"],
-                      memory: prices[i]["attributes"]["aws:ec2:memory"],
+                      price: (parseFloat(prices[i].onDemandPrice)).toFixed(2), 
+                      instanceType: prices[i]["type"],
+                      instanceFamily: prices[i]["category"],
+                      vcpu: prices[i]["cpusPerVm"],
+                      memory: prices[i]["memPerVm"],
                       strategy: strategy
                   }
-                  instanceFamiliesMem[prices[i]["attributes"]["aws:ec2:instanceFamily"]] = payload
+                  instanceFamiliesMem[prices[i]["category"]] = payload
                   discoveredPrices.push(payload)
                   continue
               }
           }
 
           // a bit more cpu & mem
-          if(prices[i]["attributes"]["aws:ec2:vcpu"] > numCpu && 
-              parseFloat(prices[i]["attributes"]["aws:ec2:memory"]) > memoryGb &&
-              prices[i]["attributes"]["aws:ec2:term"] == "on-demand"){
+          if(prices[i]["cpusPerVm"] > numCpu && 
+              parseFloat(prices[i]["memPerVm"]) > memoryGb){
 
-              if(!instanceFamiliesCpuMem[prices[i]["attributes"]["aws:ec2:instanceFamily"]]){
+              if(!instanceFamiliesCpuMem[prices[i]["category"]]){
                   let payload = {
-                      price: (parseFloat(prices[i].price.USD)).toFixed(2), 
-                      instanceType: prices[i]["attributes"]["aws:ec2:instanceType"],
-                      instanceFamily: prices[i]["attributes"]["aws:ec2:instanceFamily"],
-                      vcpu: prices[i]["attributes"]["aws:ec2:vcpu"],
-                      ecu: prices[i]["attributes"]["aws:ec2:ecu"],
-                      memory: prices[i]["attributes"]["aws:ec2:memory"],
+                      price: (parseFloat(prices[i].onDemandPrice)).toFixed(2), 
+                      instanceType: prices[i]["type"],
+                      instanceFamily: prices[i]["category"],
+                      vcpu: prices[i]["cpusPerVm"],
+                      memory: prices[i]["memPerVm"],
                       strategy: strategy
                   }
-                  instanceFamiliesCpuMem[prices[i]["attributes"]["aws:ec2:instanceFamily"]] = payload
+                  instanceFamiliesCpuMem[prices[i]["category"]] = payload
                   discoveredPrices.push(payload)
                   continue
               }
