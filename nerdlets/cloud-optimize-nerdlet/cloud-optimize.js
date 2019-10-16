@@ -55,7 +55,6 @@ export default class CloudOptimize extends React.Component {
         }
         this.handleParentState = this.handleParentState.bind(this)
         this.fetchSnapshots = this.fetchSnapshots.bind(this)
-        this.fetchAwsPricing = this.fetchAwsPricing.bind(this)
         this.fetchCloudPricing = this.fetchCloudPricing.bind(this)
     }
 
@@ -84,7 +83,6 @@ export default class CloudOptimize extends React.Component {
         this.setState({loading: true})
         await this.handleUserConfig()
         await this.fetchAccounts()
-        if(this.state.accounts.length > 0) await this.fetchAwsPricing(this.state.config.awsPricingRegion)
         await this.fetchCloudPricing()
         this.fetchSamples(this.state.accounts)
         this.fetchSnapshots()
@@ -177,18 +175,6 @@ export default class CloudOptimize extends React.Component {
         })
     }
 
-    fetchAwsPricing(region){
-        return new Promise((resolve)=>{
-            console.log(`fetching aws ec2 pricing: ${region}`)
-            fetch(`https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/compute/pricing/${region}.json`).then((response)=> {
-                return response.json()
-            }).then((myJson)=>{
-                this.setState({awsPricing: myJson})
-                resolve()
-            });
-        });
-    }
-
     render() {
         return (
             <div>
@@ -206,7 +192,6 @@ export default class CloudOptimize extends React.Component {
                         cloudRegions={this.state.cloudRegions} 
                         fetchCloudPricing={this.fetchCloudPricing}
                         instanceLength={this.state.sorted.length} 
-                        fetchAwsPricing={this.fetchAwsPricing} 
                         fetchSnapshots={this.fetchSnapshots}
                         snapshots={this.state.snapshots}
                     />
