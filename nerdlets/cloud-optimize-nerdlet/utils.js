@@ -52,8 +52,7 @@ export const getInstanceData = (accountId) => {
 
 // Taken from Lew's nr1-container-explorer https://github.com/newrelic/nr1-container-explorer/
 export const accountsWithData = async (eventType) => {
-  const gql = `{actor {accounts {name id reportingEventTypes(filter:["${eventType}"])}}}`
-  let result = await NerdGraphQuery.query({query: gql}) 
+  let result = await NerdGraphQuery.query({query: accountsQuery}) 
   if(result.errors) {
     console.log("Can't get reporting event types because NRDB is grumpy at NerdGraph.", result.errors)
     console.log(JSON.stringify(result.errors.slice(0, 5), 0, 2))
