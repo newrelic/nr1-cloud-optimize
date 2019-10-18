@@ -3,6 +3,8 @@ import { Button, Table, Icon, Modal } from 'semantic-ui-react'
 import CsvDownload from 'react-json-to-csv'
 import _ from 'lodash'
 
+const monthlyHours = 720
+
 export default class OptimizationCandidates extends React.Component {
 
     constructor(props){
@@ -180,12 +182,12 @@ export default class OptimizationCandidates extends React.Component {
                                             <Table.Cell>{instance.numCpu}</Table.Cell>
                                             <Table.Cell>{instance.memGB}</Table.Cell>
                                             <Table.Cell>{instance.instanceType}</Table.Cell>
-                                            <Table.Cell>{(instance.instancePrice1 * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                            <Table.Cell>{(instance.instancePrice1 * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                             <Table.Cell style={{textAlign:"center"}}>
                                              {tempSuggestions.length > 0 ?  this.renderSuggestionsModal(instance.suggestedInstanceType, tempSuggestions) : instance.suggestedInstanceType}
                                             </Table.Cell>
-                                            <Table.Cell>{(instance.instancePrice2 * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
-                                            <Table.Cell>{(instance.saving * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                            <Table.Cell>{(instance.instancePrice2 * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                            <Table.Cell>{(instance.saving * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                         </Table.Row>
                                     )
                                 }
