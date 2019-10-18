@@ -58,7 +58,7 @@ export default class OptimizationCandidates extends React.Component {
                                         <Table.Cell>{suggestion.instanceFamily}</Table.Cell>
                                         <Table.Cell>{suggestion.vcpu}</Table.Cell>
                                         <Table.Cell>{suggestion.memory}</Table.Cell>
-                                        <Table.Cell>{(suggestion.price * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                        <Table.Cell>{(suggestion.price * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                     </Table.Row>
                                 )
                             })}
