@@ -6,9 +6,15 @@
 
 This application analyzes your cloud environment, and figures out where you're wasting money on excess cloud capacity. The application compares the size of your instances to their utilization, and estimates how much you could save by optimizing the size.
 
-Currently supports:
-
+### Support
 - AWS
+- Azure
+- GCP
+<br><br>
+Note:
+When the `instanceType` attribute is available on the `SystemSample` event, the appropriate `instanceType` will be detected against the relevant cloud provider, if this attribute returns `unknown` or is not available the automatic `instanceType` detection will not work. To ensure the best level of support it is recommended to configure the appropriate Infrastructure Cloud Integrations to have the additional metadata decorated and available eg. [EC2 Integration](https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-ec2-monitoring-integration), [Azure VMs](https://docs.newrelic.com/docs/integrations/microsoft-azure-integrations/azure-integrations-list/azure-vms-monitoring-integration), [Google Compute Engine](https://docs.newrelic.com/docs/integrations/google-cloud-platform-integrations/gcp-integrations-list/google-compute-engine-monitoring-integration).
+
+
 
 ![Screenshot #1](screenshots/screenshot_01.png)
 ![Screenshot #2](screenshots/screenshot_02.png)

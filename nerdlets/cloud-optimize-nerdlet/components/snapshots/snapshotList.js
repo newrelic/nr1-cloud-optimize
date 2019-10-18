@@ -1,17 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Modal, Icon, Menu } from 'semantic-ui-react'
 import SnapshotTable from './snapshotTable'
 import _ from 'lodash'
 
 export default class SnapshotList extends React.Component {
-
-    // static propTypes = {
-    //     nr1: PropTypes.object.isRequired,
-    //     snapshots: PropTypes.object.isRequired,
-    //     fetchSnapshots: PropTypes.object.isRequired,
-    //     cloudOptimizeSnapshots: PropTypes.object.isRequired
-    // }
 
     renderSnapshotList(groups){
         let grouped = _(groups)

@@ -2,7 +2,7 @@ import React from 'react'
 import { Menu, Dropdown, Popup } from 'semantic-ui-react'
 import Configuration from './config'
 import SnapshotList from './snapshots/snapshotList'
-const awsRegions = require('../awsRegions.json')
+import PricingSelector from './pricingSelector'
 
 export default class MenuBar extends React.Component {
 
@@ -12,20 +12,16 @@ export default class MenuBar extends React.Component {
         this.handleDropdownChange = this.handleDropdownChange.bind(this)
     }
 
-    handleDropdownChange(event, data, type){
+    async handleDropdownChange(event, data, type){
         let tempConfig = this.props.config
         tempConfig[type] = data.value
-        if(type == "awsPricingRegion"){
-            this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
-        }else{
-            this.props.handleParentState("config",tempConfig,"groupAndSort")
-        }
+        await this.props.handleParentState("config", tempConfig, "groupAndSort")
     }
 
-    handleOptimize(e){
+    async handleOptimize(e){
         let tempConfig = this.props.config
         tempConfig["optimizeBy"] = e.target.value
-        this.props.handleParentState("config",tempConfig,"groupAndSort")
+        await this.props.handleParentState("config", tempConfig, "groupAndSort")
     }
 
     render() {
@@ -33,9 +29,10 @@ export default class MenuBar extends React.Component {
             { key: 1, text: 'NR Account', value: 'accountName' },
             { key: 2, text: 'Cloud Account', value: 'providerAccountName' },
             { key: 3, text: 'Applications', value: 'apmApplicationNames' },
-            { key: 4, text: 'AWS Instance Type', value: 'awsInstanceType' },
-            { key: 5, text: 'Suggested Instance Type', value: 'suggestedInstanceType' },
-            { key: 6, text: 'AWS Region', value: 'awsRegion' },
+            { key: 4, text: 'Instance Type', value: 'instanceType' },
+            { key: 5, text: 'AWS Instance Type', value: 'awsInstanceType' },
+            { key: 6, text: 'Suggested Instance Type', value: 'suggestedInstanceType' },
+            { key: 7, text: 'AWS Region', value: 'awsRegion' },
         ]
 
         const sortOptions = [
@@ -46,10 +43,6 @@ export default class MenuBar extends React.Component {
             { key: 5, text: 'Optimized Count', value: 'optimizedCount' },
             { key: 6, text: 'Instance Count', value: 'totalInstances' }
         ]
-
-        const stateOptions = Object.keys(awsRegions).map((account) => ({
-            key: account, text: account, value: awsRegions[account],
-        }))
 
         return(
             <Menu inverted={false} className="menu-bar">
@@ -81,20 +74,7 @@ export default class MenuBar extends React.Component {
 
                 <Menu.Menu position='right'>
                     <SnapshotList snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots} fetchSnapshots={this.props.fetchSnapshots}/>
-                    <Menu.Item>AWS Pricing Region:</Menu.Item>
-                    <Popup
-                        trigger={<Dropdown 
-                            options={stateOptions} simple item 
-                            onChange={async (event, data)=>{
-                                await this.props.fetchAwsPricing(data.value)
-                                this.handleDropdownChange(event, data, "awsPricingRegion")
-                            }} 
-                            value={this.props.config.awsPricingRegion || "us-east-1"}
-                        />}
-                        content={"Public pricing list for your selected region"}
-                        basic
-                    />
-                        
+                    <PricingSelector config={this.props.config} cloudRegions={this.props.cloudRegions} handleParentState={this.props.handleParentState} fetchCloudPricing={this.props.fetchCloudPricing} />
                     <Configuration config={this.props.config} handleParentState={this.props.handleParentState} />
                 </Menu.Menu>     
             </Menu>

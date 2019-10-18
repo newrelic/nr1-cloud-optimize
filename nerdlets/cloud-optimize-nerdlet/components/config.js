@@ -9,27 +9,27 @@ export default class Config extends React.Component {
         this.handleConfigurator = this.handleConfigurator.bind(this)
     }
 
-    handleConfigurator(e,data,type){
+    async handleConfigurator(e,data,type){
         let tempConfig = this.props.config
         if(!isNaN(data.value)){
             tempConfig[type] = data.value
-            this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
+            await this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
         }else{
             tempConfig[type] = type.includes("stale") ? 0 : 1
-            this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
+            await this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
         }
     }
 
-    handleAddition = (e, { value }) => {
+    handleAddition = async (e, { value }) => {
         let tempConfig = this.props.config
         tempConfig["instanceOptions"] = [{ text: value, value }, ...this.props.config.instanceOptions]
-        this.props.handleParentState("config",tempConfig)
+        await this.props.handleParentState("config",tempConfig)
     }
     
-    handleChange = (e, { value }) => {
+    handleChange = async (e, { value }) => {
         let tempConfig = this.props.config
         tempConfig["instanceOptionsCurrent"] = value
-        this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
+        await this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
     }
 
     render() {

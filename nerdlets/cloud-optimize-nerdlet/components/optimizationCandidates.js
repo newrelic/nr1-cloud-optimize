@@ -3,6 +3,8 @@ import { Button, Table, Icon, Modal } from 'semantic-ui-react'
 import CsvDownload from 'react-json-to-csv'
 import _ from 'lodash'
 
+const monthlyHours = 720
+
 export default class OptimizationCandidates extends React.Component {
 
     constructor(props){
@@ -56,7 +58,7 @@ export default class OptimizationCandidates extends React.Component {
                                         <Table.Cell>{suggestion.instanceFamily}</Table.Cell>
                                         <Table.Cell>{suggestion.vcpu}</Table.Cell>
                                         <Table.Cell>{suggestion.memory}</Table.Cell>
-                                        <Table.Cell>{(suggestion.price * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                        <Table.Cell>{(suggestion.price * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                     </Table.Row>
                                 )
                             })}
@@ -141,8 +143,8 @@ export default class OptimizationCandidates extends React.Component {
                                 instanceType
                                 </Table.HeaderCell>                                
                                 <Table.HeaderCell
-                                    sorted={this.state.column === 'awsPrice1' ? this.state.direction : null}
-                                    onClick={()=>this.handleTableSort('awsPrice1')}>
+                                    sorted={this.state.column === 'instancePrice1' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('instancePrice1')}>
                                 price /m
                                 </Table.HeaderCell>
                                 <Table.HeaderCell
@@ -151,8 +153,8 @@ export default class OptimizationCandidates extends React.Component {
                                 suggestedInstanceType
                                 </Table.HeaderCell>
                                 <Table.HeaderCell
-                                    sorted={this.state.column === 'awsPrice2' ? this.state.direction : null}
-                                    onClick={()=>this.handleTableSort('awsPrice2')}>
+                                    sorted={this.state.column === 'instancePrice2' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('instancePrice2')}>
                                     suggested price /m
                                 </Table.HeaderCell>
                                 <Table.HeaderCell 
@@ -180,12 +182,12 @@ export default class OptimizationCandidates extends React.Component {
                                             <Table.Cell>{instance.numCpu}</Table.Cell>
                                             <Table.Cell>{instance.memGB}</Table.Cell>
                                             <Table.Cell>{instance.instanceType}</Table.Cell>
-                                            <Table.Cell>{(instance.awsPrice1 * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                            <Table.Cell>{(instance.instancePrice1 * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                             <Table.Cell style={{textAlign:"center"}}>
                                              {tempSuggestions.length > 0 ?  this.renderSuggestionsModal(instance.suggestedInstanceType, tempSuggestions) : instance.suggestedInstanceType}
                                             </Table.Cell>
-                                            <Table.Cell>{(instance.awsPrice2 * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
-                                            <Table.Cell>{(instance.saving * 720).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                            <Table.Cell>{(instance.instancePrice2 * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
+                                            <Table.Cell>{(instance.saving * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                         </Table.Row>
                                     )
                                 }

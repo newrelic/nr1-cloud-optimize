@@ -1,6 +1,6 @@
 import React from 'react';
 import { NerdGraphQuery } from 'nr1';
-import { getCollection, writeDocument, accountsQuery, getInstanceData, accountsWithData } from './utils';
+import { getDocument, getCollection, writeDocument, getInstanceData, accountsWithData } from './utils';
 import { processSample, groupInstances } from './processor';
 import MenuBar from './components/menuBar'
 import HeaderCosts from './components/headerCosts'
@@ -11,12 +11,21 @@ export default class CloudOptimize extends React.Component {
     constructor(props){
         super(props)
         this.state = { 
-            loading: null,
+            loading: true,
             completedAccounts: 0,
             accounts: [],
             instanceData: [],
             snapshots: [],
-            awsPricing: null,
+            cloudData: {
+                amazon: null,
+                azure: null,
+                google: null
+            },
+            cloudRegions: {
+                amazon: [],
+                azure: [],
+                google: []
+            },
             groupByDefault: "accountName",
             sortByDefault: "nonOptimizedCost",
             sorted: [], sort: "desc",
@@ -29,34 +38,43 @@ export default class CloudOptimize extends React.Component {
             },
             config: {
                 optimizeBy: 50,
-                groupBy: "", sortBy: "", awsPricingRegion: "us-east-1", sort: "desc",
+                groupBy: "", sortBy: "", sort: "desc",
                 discountMultiplier: 1, lastReportPeriod: 24, // 1 day in hours
                 staleInstanceCpu: 5, staleInstanceMem: 5,
                 staleReceiveBytesPerSecond: 0, staleTransmitBytesPerSecond: 0,
                 rightSizeCpu: 0.5, rightSizeMem: 0.5,
-                instanceOptionsCurrent: [], instanceOptions: []
+                instanceOptionsCurrent: [], instanceOptions: [],
+                cloudData: {
+                    amazon: "us-east-1",
+                    azure: "eastus",
+                    google: "us-east1"
+                }
             }
         }
         this.handleParentState = this.handleParentState.bind(this)
         this.fetchSnapshots = this.fetchSnapshots.bind(this)
-        this.fetchAwsPricing = this.fetchAwsPricing.bind(this)
+        this.fetchCloudPricing = this.fetchCloudPricing.bind(this)
+        this.handleUserConfig = this.handleUserConfig.bind(this)
     }
 
     handleParentState(key,val,trigger){
-        // store config updates back into nerdStore
-        if(key == "config") writeDocument("cloudOptimizeCfg", "main", val)
-        
-        this.setState({[key]:val})
-        switch(trigger) {
-            case "groupAndSort":
-                this.groupAndSort(null,"",null)
-                break;
-            case "groupAndSortRecalc":
-                this.groupAndSort(null,"recalc",null)
-                break
-            default:
-              // 
-          }
+        return new Promise(async (resolve) => {
+            // store config updates back into nerdStore
+            if(key == "config") writeDocument("cloudOptimizeCfg", "main", val)
+            
+            await this.setState({[key]:val})
+            switch(trigger) {
+                case "groupAndSort":
+                    this.groupAndSort(null,"",null)
+                    break;
+                case "groupAndSortRecalc":
+                    this.groupAndSort(null,"recalc",null)
+                    break
+                default:
+                // 
+            }
+          resolve()
+        });
     }
 
     async componentDidMount(){
@@ -67,29 +85,37 @@ export default class CloudOptimize extends React.Component {
         this.setState({loading: true})
         await this.handleUserConfig()
         await this.fetchAccounts()
-        if(this.state.accounts.length > 0) await this.fetchAwsPricing(this.state.config.awsPricingRegion)
+        await this.fetchCloudPricing()
         this.fetchSamples(this.state.accounts)
         this.fetchSnapshots()
         this.setState({loading: false})
     }
 
     handleUserConfig(){
-        return new Promise(async (resolve) => {
-            console.log("fetching newrelic user config from nerdstore")
-            let configs = await getCollection("cloudOptimizeCfg")
-            if(configs.length === 1 && configs[0].id == "main"){ // set existing config
-                console.log("loading existing config")
-                await this.setState({config: configs[0].document}) 
-            }else{ // write in default config
-                console.log("writing default config")
-                await writeDocument("cloudOptimizeCfg", "main", this.state.config)
-            }
-            resolve()
+        return new Promise((resolve) => {
+            //console.log("fetching user config from nerdstorage")
+            getDocument("cloudOptimizeCfg", "main").then(async (data)=>{
+                let currentConfig = data
+                let { config } = this.state // defaultConfig
+                if(currentConfig){
+                    // needed for backwards compatibility before multicloud support
+                    if(!currentConfig.cloudData){
+                        //console.log("cloudData was not available in config, injecting defaults")
+                        currentConfig.cloudData = Object.assign({}, config.cloudData)
+                    }
+                    await this.setState({config: currentConfig}) 
+                    await writeDocument("cloudOptimizeCfg", "main", currentConfig)
+                }else{
+                    //console.log("writing default config")
+                    await writeDocument("cloudOptimizeCfg", "main", config)
+                }
+                resolve()
+            })
         });
     }
 
     async fetchAccounts(){
-        console.log("fetching newrelic accounts")
+        //console.log("fetching newrelic accounts")
         await this.setState({accounts: await accountsWithData("SystemSample")})
     }
 
@@ -100,16 +126,17 @@ export default class CloudOptimize extends React.Component {
 
     fetchSamples(accounts){
         let tempInstanceData = []
-        let { config, awsPricing, completedAccounts } = this.state
+        let { config, completedAccounts, cloudData } = this.state
         accounts.forEach(async (account)=>{
             let results = await NerdGraphQuery.query({query: getInstanceData(account.id)})
             if(results.errors){
-                console.log(results.errors)
+                console.log("get instance data error", results.errors)
             }else{
                 let systemSamples = (((((results || {}).data || {}).actor || {}).account || {}).system || {}).results || []
                 let networkSamples = (((((results || {}).data || {}).actor || {}).account || {}).network || {}).results || []
                 systemSamples.forEach((sample)=>{
-                    tempInstanceData.push(processSample(account, sample, config, networkSamples, awsPricing))
+                    let instance = processSample(account, sample, config, networkSamples, cloudData)
+                    if(instance) tempInstanceData.push(instance)
                 })
                 await this.setState({"instanceData": tempInstanceData})
                 this.groupAndSort(tempInstanceData, "", "")
@@ -130,18 +157,36 @@ export default class CloudOptimize extends React.Component {
         })
     }
 
-    fetchAwsPricing(region){
+    fetchCloudPricing(cfg){
+        let { config, cloudData, cloudRegions } = this.state
+        if(cfg){
+            config = Object.assign({},cfg)
+        }
+
         return new Promise((resolve)=>{
-            console.log(`fetching aws ec2 pricing: ${region}`)
-            // https://cors.io/?https://a0.p.awsstatic.com/pricing/1.0/ec2/region/${project.awsRegion}/ondemand/linux/index.json
-            // cors hack
-            fetch(`https://yzl85kz129.execute-api.us-east-1.amazonaws.com/dev?url=https://a0.p.awsstatic.com/pricing/1.0/ec2/region/${region}/ondemand/linux/index.json`).then((response)=> {
-                return response.json()
-            }).then((myJson)=>{
-                this.setState({awsPricing: myJson})
+            let cloudPromises = Object.keys(config.cloudData).map((cloud)=>{
+                return new Promise((resolve)=>{
+                    fetch(`https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/${cloud}/regions.json`).then((response) => {
+                        return response.json()
+                    }).then((myJson)=>{
+                        cloudRegions[cloud] = myJson
+                    });
+
+                    fetch(`https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/${cloud}/compute/pricing/${config.cloudData[cloud]}.json`).then((response) => {
+                        return response.json()
+                    }).then((myJson)=>{
+                        myJson.cloud = cloud
+                        resolve(myJson)
+                    });
+                });
+            })
+
+            Promise.all(cloudPromises).then(async (results)=>{
+                results.forEach((result) => { cloudData[result.cloud] = result.products })
+                await this.setState({cloudData, cloudRegions})
                 resolve()
             });
-        });
+        })
     }
 
     render() {
@@ -158,12 +203,14 @@ export default class CloudOptimize extends React.Component {
                     <MenuBar 
                         handleParentState={this.handleParentState} 
                         config={this.state.config} 
+                        cloudRegions={this.state.cloudRegions} 
+                        fetchCloudPricing={this.fetchCloudPricing}
                         instanceLength={this.state.sorted.length} 
-                        fetchAwsPricing={this.fetchAwsPricing} 
                         fetchSnapshots={this.fetchSnapshots}
                         snapshots={this.state.snapshots}
                     />
                     <AccountCards 
+                        loading={this.state.loading}
                         config={this.state.config} 
                         sorted={this.state.sorted} 
                         groupByDefault={this.state.groupByDefault} 
