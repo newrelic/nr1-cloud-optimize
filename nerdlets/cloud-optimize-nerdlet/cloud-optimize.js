@@ -92,20 +92,20 @@ export default class CloudOptimize extends React.Component {
 
     handleUserConfig(){
         return new Promise((resolve) => {
-            console.log("fetching user config from nerdstorage")
+            //console.log("fetching user config from nerdstorage")
             getDocument("cloudOptimizeCfg", "main").then(async (data)=>{
                 let currentConfig = data
                 let { config } = this.state // defaultConfig
                 if(currentConfig){
                     // needed for backwards compatibility before multicloud support
                     if(!currentConfig.cloudData){
-                        console.log("cloudData was not available in config, injecting defaults")
+                        //console.log("cloudData was not available in config, injecting defaults")
                         currentConfig.cloudData = Object.assign({}, config.cloudData)
                     }
                     await this.setState({config: currentConfig}) 
                     await writeDocument("cloudOptimizeCfg", "main", currentConfig)
                 }else{
-                    console.log("writing default config")
+                    //console.log("writing default config")
                     await writeDocument("cloudOptimizeCfg", "main", config)
                 }
                 resolve()
@@ -114,7 +114,7 @@ export default class CloudOptimize extends React.Component {
     }
 
     async fetchAccounts(){
-        console.log("fetching newrelic accounts")
+        //console.log("fetching newrelic accounts")
         await this.setState({accounts: await accountsWithData("SystemSample")})
     }
 
@@ -129,7 +129,7 @@ export default class CloudOptimize extends React.Component {
         accounts.forEach(async (account)=>{
             let results = await NerdGraphQuery.query({query: getInstanceData(account.id)})
             if(results.errors){
-                console.log(results.errors)
+                console.log("get instance data error", results.errors)
             }else{
                 let systemSamples = (((((results || {}).data || {}).actor || {}).account || {}).system || {}).results || []
                 let networkSamples = (((((results || {}).data || {}).actor || {}).account || {}).network || {}).results || []
