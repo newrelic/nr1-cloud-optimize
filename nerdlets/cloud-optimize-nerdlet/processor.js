@@ -37,21 +37,24 @@ export const processSample = (account, sample, config, networkSamples, cloudData
   }
 
   sample.matchedInstance = pluckCloudInstance(sample.ec2InstanceType || sample.instanceType, sample.operatingSystem, cloudData)
-  sample.instancePrice1 = sample.matchedInstance.onDemandPrice * config.discountMultiplier
-  sample.suggestions = determineCloudInstance(config, sample, cloudData)
-
-
-  if(sample.suggestions){
-    let optimizedSuggestion = sample.suggestions.suggested
-    sample.suggestedInstanceType = optimizedSuggestion.instanceType
-    sample.instancePrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
-    sample.saving = sample.instancePrice1 - sample.instancePrice2
+  if(sample.matchedInstance){
+    sample.instancePrice1 = sample.matchedInstance.onDemandPrice * config.discountMultiplier
+    sample.suggestions = determineCloudInstance(config, sample, cloudData)
+  
+    if(sample.suggestions){
+      let optimizedSuggestion = sample.suggestions.suggested
+      sample.suggestedInstanceType = optimizedSuggestion.instanceType
+      sample.instancePrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
+      sample.saving = sample.instancePrice1 - sample.instancePrice2
+    }
+  
+    sample.accountId = account.id
+    sample.accountName = account.name
+  
+    return sample
   }
 
-  sample.accountId = account.id
-  sample.accountName = account.name
-
-  return sample
+  return null
 }
 
 export const groupInstances = (data, type, val, state) => {

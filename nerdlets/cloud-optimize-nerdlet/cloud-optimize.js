@@ -135,7 +135,8 @@ export default class CloudOptimize extends React.Component {
                 let systemSamples = (((((results || {}).data || {}).actor || {}).account || {}).system || {}).results || []
                 let networkSamples = (((((results || {}).data || {}).actor || {}).account || {}).network || {}).results || []
                 systemSamples.forEach((sample)=>{
-                    tempInstanceData.push(processSample(account, sample, config, networkSamples, cloudData))
+                    let instance = processSample(account, sample, config, networkSamples, cloudData)
+                    if(instance) tempInstanceData.push(instance)
                 })
                 await this.setState({"instanceData": tempInstanceData})
                 this.groupAndSort(tempInstanceData, "", "")
