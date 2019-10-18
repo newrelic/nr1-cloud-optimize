@@ -1,6 +1,6 @@
 import React from 'react';
 import { NerdGraphQuery } from 'nr1';
-import { getCollection, writeDocument, getInstanceData, accountsWithData } from './utils';
+import { getDocument, getCollection, writeDocument, getInstanceData, accountsWithData } from './utils';
 import { processSample, groupInstances } from './processor';
 import MenuBar from './components/menuBar'
 import HeaderCosts from './components/headerCosts'
@@ -56,6 +56,7 @@ export default class CloudOptimize extends React.Component {
         this.handleParentState = this.handleParentState.bind(this)
         this.fetchSnapshots = this.fetchSnapshots.bind(this)
         this.fetchCloudPricing = this.fetchCloudPricing.bind(this)
+        this.handleUserConfig = this.handleUserConfig.bind(this)
     }
 
     handleParentState(key,val,trigger){
@@ -90,17 +91,25 @@ export default class CloudOptimize extends React.Component {
     }
 
     handleUserConfig(){
-        return new Promise(async (resolve) => {
-            console.log("fetching newrelic user config from nerdstore")
-            let configs = await getCollection("cloudOptimizeCfg")
-            if(configs.length === 1 && configs[0].id == "main"){ // set existing config
-                console.log("loading existing config")
-                await this.setState({config: configs[0].document}) 
-            }else{ // write in default config
-                console.log("writing default config")
-                await writeDocument("cloudOptimizeCfg", "main", this.state.config)
-            }
-            resolve()
+        return new Promise((resolve) => {
+            console.log("fetching user config from nerdstorage")
+            getDocument("cloudOptimizeCfg", "main").then(async (data)=>{
+                let currentConfig = data
+                let { config } = this.state // defaultConfig
+                if(currentConfig){
+                    // needed for backwards compatibility before multicloud support
+                    if(!currentConfig.cloudData){
+                        console.log("cloudData was not available in config, injecting defaults")
+                        currentConfig.cloudData = Object.assign({}, config.cloudData)
+                    }
+                    await this.setState({config: currentConfig}) 
+                    await writeDocument("cloudOptimizeCfg", "main", currentConfig)
+                }else{
+                    console.log("writing default config")
+                    await writeDocument("cloudOptimizeCfg", "main", config)
+                }
+                resolve()
+            })
         });
     }
 

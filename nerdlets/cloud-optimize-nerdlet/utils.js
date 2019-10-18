@@ -1,10 +1,15 @@
 import { UserStorageQuery, UserStorageMutation, NerdGraphQuery } from 'nr1';
 import gql from 'graphql-tag';
- 
+
 export const getCollection = async (collection) => {
     let result = await UserStorageQuery.query({ collection: collection })
     let collectionResult = (result || {}).data || []
     return collectionResult
+}
+
+export const getDocument = async (collection, documentId) => {
+  let result = await UserStorageQuery.query({ collection: collection, documentId: documentId })
+  return result.data
 }
 
 export const writeDocument = async (collection, documentId, payload) => {

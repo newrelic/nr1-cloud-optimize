@@ -7,6 +7,8 @@ export default class AccountCards extends React.Component {
 
     render() {
         let isLoading = this.props.loading || this.props.completedAccounts != this.props.accounts
+        let noAccounts = isLoading == false && this.props.accounts == 0
+
         return (
             <Segment className="segment-clear" style={{textAlign:"center", marginTop:"0px", minHeight:this.props.height}}>
                 <Dimmer active={isLoading}>
@@ -16,6 +18,14 @@ export default class AccountCards extends React.Component {
                         {this.props.instances} Instances Inspected
                     </Loader>
                 </Dimmer>
+                
+                <h2 style={{ display: noAccounts ? "" : "none" }}>
+                    Unable to load accounts!
+                </h2>
+                <h2 style={{ display: noAccounts ? "" : "none" }}>
+                    Please refresh to try again, and ensure you are using a UUID associated to your account.
+                </h2>
+
                 <Card.Group style={{margin:"auto","width":"100%"}} centered>
                     {this.props.sorted.map((item, i)=>{
                         let header = item.group
