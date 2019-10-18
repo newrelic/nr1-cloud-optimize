@@ -1,18 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Modal, Icon, Button, Table } from 'semantic-ui-react'
 import SnapshotTable from './snapshotTable'
 import { writeDocument } from '../../utils'
 
 export default class SnapshotCard extends React.Component {
-
-    // static propTypes = {
-    //     snapshots: PropTypes.array.isRequired,
-    //     cloudOptimizeSnapshots: PropTypes.object.isRequired,
-    //     data: PropTypes.object.isRequired,
-    //     config: PropTypes.object.isRequired,
-    //     fetchSnapshots: PropTypes.object.isRequired
-    // }
 
     constructor(props){
         super(props)

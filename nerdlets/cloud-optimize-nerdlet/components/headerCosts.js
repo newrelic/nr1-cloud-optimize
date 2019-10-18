@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Segment, Statistic, Popup, Icon, Modal, Header, List } from 'semantic-ui-react'
+import { Segment, Statistic, Popup, Icon, Modal, List } from 'semantic-ui-react'
 
 export default class HeaderCost extends React.Component {
 
