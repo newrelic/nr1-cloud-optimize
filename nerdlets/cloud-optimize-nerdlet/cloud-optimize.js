@@ -11,7 +11,7 @@ export default class CloudOptimize extends React.Component {
     constructor(props){
         super(props)
         this.state = { 
-            loading: null,
+            loading: true,
             completedAccounts: 0,
             accounts: [],
             instanceData: [],
@@ -58,20 +58,23 @@ export default class CloudOptimize extends React.Component {
     }
 
     handleParentState(key,val,trigger){
-        // store config updates back into nerdStore
-        if(key == "config") writeDocument("cloudOptimizeCfg", "main", val)
-        
-        this.setState({[key]:val})
-        switch(trigger) {
-            case "groupAndSort":
-                this.groupAndSort(null,"",null)
-                break;
-            case "groupAndSortRecalc":
-                this.groupAndSort(null,"recalc",null)
-                break
-            default:
-              // 
-          }
+        return new Promise(async (resolve) => {
+            // store config updates back into nerdStore
+            if(key == "config") writeDocument("cloudOptimizeCfg", "main", val)
+            
+            await this.setState({[key]:val})
+            switch(trigger) {
+                case "groupAndSort":
+                    this.groupAndSort(null,"",null)
+                    break;
+                case "groupAndSortRecalc":
+                    this.groupAndSort(null,"recalc",null)
+                    break
+                default:
+                // 
+            }
+          resolve()
+        });
     }
 
     async componentDidMount(){
@@ -153,9 +156,12 @@ export default class CloudOptimize extends React.Component {
         })
     }
 
-    fetchCloudPricing(){
+    fetchCloudPricing(cfg){
         let { config, cloudData, cloudRegions } = this.state
-        
+        if(cfg){
+            config = Object.assign({},cfg)
+        }
+
         return new Promise((resolve)=>{
             let cloudPromises = Object.keys(config.cloudData).map((cloud)=>{
                 return new Promise((resolve)=>{
@@ -203,6 +209,7 @@ export default class CloudOptimize extends React.Component {
                         snapshots={this.state.snapshots}
                     />
                     <AccountCards 
+                        loading={this.state.loading}
                         config={this.state.config} 
                         sorted={this.state.sorted} 
                         groupByDefault={this.state.groupByDefault} 

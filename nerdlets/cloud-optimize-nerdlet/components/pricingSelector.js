@@ -8,12 +8,12 @@ export default class PricingSelector extends React.Component {
         this.handleConfigurator = this.handleConfigurator.bind(this)
     }
 
-    handleConfigurator(e,data,type){
+    async handleConfigurator(e,data,type){
         let tempConfig = this.props.config
         if(data.value && data.name){
             tempConfig.cloudData[data.name] = data.value
-            this.props.handleParentState("config",tempConfig,"groupAndSortRecalc")
-            this.props.fetchCloudPricing()
+            await this.props.fetchCloudPricing(tempConfig)
+            await this.props.handleParentState("config", tempConfig, "groupAndSortRecalc")
         }
     }
 

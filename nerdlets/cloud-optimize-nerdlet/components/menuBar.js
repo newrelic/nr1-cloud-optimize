@@ -12,16 +12,16 @@ export default class MenuBar extends React.Component {
         this.handleDropdownChange = this.handleDropdownChange.bind(this)
     }
 
-    handleDropdownChange(event, data, type){
+    async handleDropdownChange(event, data, type){
         let tempConfig = this.props.config
         tempConfig[type] = data.value
-        this.props.handleParentState("config",tempConfig,"groupAndSort")
+        await this.props.handleParentState("config", tempConfig, "groupAndSort")
     }
 
-    handleOptimize(e){
+    async handleOptimize(e){
         let tempConfig = this.props.config
         tempConfig["optimizeBy"] = e.target.value
-        this.props.handleParentState("config",tempConfig,"groupAndSort")
+        await this.props.handleParentState("config", tempConfig, "groupAndSort")
     }
 
     render() {
