@@ -11,7 +11,7 @@ export const pluckCloudInstance = (instanceType, operatingSystem, cloudData) => 
             }
         }
     }
-    console.log(`unable to get cloud instance price for ${instanceType} : ${operatingSystem}`)
+    //console.log(`unable to get cloud instance price for ${instanceType} : ${operatingSystem}`)
     return false
 }
 

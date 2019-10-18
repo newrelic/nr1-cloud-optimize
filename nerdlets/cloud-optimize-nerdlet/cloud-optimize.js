@@ -16,7 +16,6 @@ export default class CloudOptimize extends React.Component {
             accounts: [],
             instanceData: [],
             snapshots: [],
-            awsPricing: null,
             cloudData: {
                 amazon: null,
                 azure: null,
@@ -40,7 +39,6 @@ export default class CloudOptimize extends React.Component {
             config: {
                 optimizeBy: 50,
                 groupBy: "", sortBy: "", sort: "desc",
-                awsPricingRegion: "us-east-1",
                 discountMultiplier: 1, lastReportPeriod: 24, // 1 day in hours
                 staleInstanceCpu: 5, staleInstanceMem: 5,
                 staleReceiveBytesPerSecond: 0, staleTransmitBytesPerSecond: 0,
