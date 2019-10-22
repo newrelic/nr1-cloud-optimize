@@ -18,10 +18,7 @@ export const pluckCloudInstance = (instanceType, operatingSystem, cloudData) => 
 export const processSample = (account, sample, config, networkSamples, cloudData) => {
   sample.timeSinceLastReported = new Date().getTime() - sample.timestamp
   sample.hostname = sample.facet[0]
-  sample.apmApplicationNames = sample.facet[1]
-  sample.entityGuid = sample.facet[2]
-  sample.awsRegion = sample.facet[3]
-  sample.apps = sample.facet[1] ? sample.facet[1].split("|").filter(Boolean) : []
+  sample.apps = sample.apmApplicationNames ? sample.apmApplicationNames.split("|").filter(Boolean) : []
   sample.memGB = Math.round(sample.memTotalBytes/1024/1024/1024)
   sample.numCpu = parseFloat(sample.numCpu)
   sample.awsInstanceType = sample.ec2InstanceType
@@ -29,7 +26,7 @@ export const processSample = (account, sample, config, networkSamples, cloudData
   sample.transmitBytesPerSecond = 0
 
   for(let z=0;z<networkSamples.length;z++){
-      if(sample.entityGuid == networkSamples[z].facet[1]){
+      if(sample.entityGuid == networkSamples[z].entityGuid){
           sample.receiveBytesPerSecond = networkSamples[z].receiveBytesPerSecond
           sample.transmitBytesPerSecond = networkSamples[z].transmitBytesPerSecond
           break
