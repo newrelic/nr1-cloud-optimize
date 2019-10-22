@@ -17,7 +17,7 @@ export const pluckCloudInstance = (instanceType, operatingSystem, cloudData) => 
 
 export const processSample = (account, sample, config, networkSamples, cloudData) => {
   sample.timeSinceLastReported = new Date().getTime() - sample.timestamp
-  sample.hostname = sample.facet[0]
+  sample.hostname = sample.facet
   sample.apps = sample.apmApplicationNames ? sample.apmApplicationNames.split("|").filter(Boolean) : []
   sample.memGB = Math.round(sample.memTotalBytes/1024/1024/1024)
   sample.numCpu = parseFloat(sample.numCpu)
