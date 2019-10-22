@@ -86,7 +86,7 @@ export default class OptimizationCandidates extends React.Component {
 
         return (
             <Modal size="fullscreen" trigger={<Button size="mini" onClick={()=>this.setState({modalInstanceData: this.props.instances, column: null, direction: null})}>Show Optimization Candidates</Button>}>
-                <Modal.Header>Optimization Candidates<span style={{float:"right"}}>
+                <Modal.Header>Optimization Candidates - {this.props.header}<span style={{float:"right"}}>
                     <CsvDownload style={{
                         borderRadius:"6px",
                         border:"1px solid #000000",
