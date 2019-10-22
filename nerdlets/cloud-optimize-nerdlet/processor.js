@@ -25,6 +25,14 @@ export const processSample = (account, sample, config, networkSamples, cloudData
   sample.receiveBytesPerSecond = 0
   sample.transmitBytesPerSecond = 0
 
+  if(sample.awsRegion){
+    sample.region = `aws-${sample.awsRegion}`
+  }else if(sample.regionName){
+    sample.region = `azure-${sample.regionName}`
+  }else if(sample.zone){
+    sample.region = `gcp-${sample.zone}`
+  }
+
   for(let z=0;z<networkSamples.length;z++){
       if(sample.entityGuid == networkSamples[z].entityGuid){
           sample.receiveBytesPerSecond = networkSamples[z].receiveBytesPerSecond
