@@ -80,7 +80,7 @@ export default class AccountCards extends React.Component {
                                 </Table>
                             </Card.Content>
                             <Card.Content>
-                                <OptimizationCandidates instances={item.instances} />
+                                <OptimizationCandidates instances={item.instances} header={header} />
                             </Card.Content>
                         </Card>)
                     })}

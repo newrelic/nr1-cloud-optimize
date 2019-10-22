@@ -29,10 +29,9 @@ export default class MenuBar extends React.Component {
             { key: 1, text: 'NR Account', value: 'accountName' },
             { key: 2, text: 'Cloud Account', value: 'providerAccountName' },
             { key: 3, text: 'Applications', value: 'apmApplicationNames' },
-            { key: 4, text: 'Instance Type', value: 'instanceType' },
-            { key: 5, text: 'AWS Instance Type', value: 'awsInstanceType' },
-            { key: 6, text: 'Suggested Instance Type', value: 'suggestedInstanceType' },
-            { key: 7, text: 'AWS Region', value: 'awsRegion' },
+            { key: 4, text: 'Region', value: 'region' },
+            { key: 5, text: 'Instance Type', value: 'instanceType' },
+            { key: 6, text: 'Suggested Instance Type', value: 'suggestedInstanceType' }
         ]
 
         const sortOptions = [
