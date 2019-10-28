@@ -70,3 +70,21 @@
 .segment-clear {
   background: "" !important;
 }
+
+.ui.card, .ui.cards>.card {
+  border-radius: 0 !important;
+}
+
+.ui.table {
+  border-radius: 0 !important;
+}
+
+.ui.celled.table > thead > tr > th {
+  text-transform: uppercase !important;
+  padding-bottom: 3px !important;
+  border-left: 0px !important;
+}
+
+.ui.celled.table > tbody > tr > td {
+  border-left: 0px !important;
+}
