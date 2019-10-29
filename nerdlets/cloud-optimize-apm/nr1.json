@@ -1,0 +1,10 @@
+{
+    "schemaType": "NERDLET",
+    "id": "cloud-optimize-apm",
+    "actionCategory": "monitor",
+    "description": "Optimize your application",
+    "displayName": "Optimize",
+    "entities": [
+        {"domain": "APM", "type": "APPLICATION"}
+    ]
+}

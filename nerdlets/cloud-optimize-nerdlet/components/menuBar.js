@@ -1,8 +1,8 @@
 import React from 'react'
 import { Menu, Dropdown, Popup } from 'semantic-ui-react'
-import Configuration from './config'
+import Configuration from '../../shared/components/config'
 import SnapshotList from './snapshots/snapshotList'
-import PricingSelector from './pricingSelector'
+import PricingSelector from '../../shared/components/pricingSelector'
 
 export default class MenuBar extends React.Component {
 
@@ -15,13 +15,13 @@ export default class MenuBar extends React.Component {
     async handleDropdownChange(event, data, type){
         let tempConfig = this.props.config
         tempConfig[type] = data.value
-        await this.props.handleParentState("config", tempConfig, "groupAndSort")
+        await this.props.handleParentState("config", tempConfig, "groupAndSortRecalc")
     }
 
     async handleOptimize(e){
         let tempConfig = this.props.config
         tempConfig["optimizeBy"] = e.target.value
-        await this.props.handleParentState("config", tempConfig, "groupAndSort")
+        await this.props.handleParentState("config", tempConfig, "groupAndSortRecalc")
     }
 
     render() {

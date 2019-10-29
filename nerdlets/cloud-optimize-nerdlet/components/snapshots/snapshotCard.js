@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal, Icon, Button, Table } from 'semantic-ui-react'
 import SnapshotTable from './snapshotTable'
-import { writeDocument } from '../../utils'
+import { writeDocument } from '../../../shared/lib/utils'
 
 export default class SnapshotCard extends React.Component {
 

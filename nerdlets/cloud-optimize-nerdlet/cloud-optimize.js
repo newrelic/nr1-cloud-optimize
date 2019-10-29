@@ -1,7 +1,7 @@
 import React from 'react';
 import { NerdGraphQuery } from 'nr1';
-import { getDocument, getCollection, writeDocument, getInstanceData, accountsWithData } from './utils';
-import { processSample, groupInstances } from './processor';
+import { getDocument, getCollection, writeDocument, getInstanceData, accountsWithData } from '../shared/lib/utils';
+import { processSample, groupInstances } from '../shared/lib/processor';
 import MenuBar from './components/menuBar'
 import HeaderCosts from './components/headerCosts'
 import AccountCards from './components/accountCards'
