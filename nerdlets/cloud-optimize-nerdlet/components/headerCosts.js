@@ -1,15 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Segment, Statistic, Popup, Icon, Modal, List } from 'semantic-ui-react'
 
 export default class HeaderCost extends React.Component {
-
-    static propTypes = {
-        totals: PropTypes.object.isRequired,
-        multiplier: PropTypes.number.isRequired,
-        title: PropTypes.string.isRequired,
-    }
-
     render() {
         return (
             <Segment inverted={false} className="header-bar header-bar-light" style={{position:"relative"}}> 

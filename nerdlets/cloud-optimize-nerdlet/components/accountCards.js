@@ -46,8 +46,8 @@ export default class AccountCards extends React.Component {
                                 <span style={{fontSize:"13px"}}>{header}</span>
                                 <span style={{float:"right", cursor:"pointer"}}><SnapshotCard fetchSnapshots={this.props.fetchSnapshots} config={this.props.config} data={item} snapshots={this.props.snapshots} cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}/></span>
                             </Card.Content>
-                            <Card.Content>
-                            <Table celled inverted={false}>
+                            <Card.Content style={{paddingTop:"5px", paddingBottom:"5px"}}>
+                            <Table celled inverted={false} basic='very'>
                                 <Table.Header>
                                     <Table.Row>
                                         <Table.HeaderCell></Table.HeaderCell>

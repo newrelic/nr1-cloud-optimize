@@ -1,0 +1,219 @@
+@import url('//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css');
+
+#root {
+    padding: 0;
+    background-color: #f4f5f5;
+  }
+
+.main {
+  height: 100%;
+  // padding-top: 5px;
+  // padding-left: 5px;
+}
+
+.main-dark {
+  background-color: black;
+}
+
+.main-light {
+  background-color: #f4f5f5;
+}
+
+.header-bar {
+  text-align: center;
+  margin-bottom: 0px
+}
+
+.segment-clear {
+  background: "" !important;
+}
+
+.header-bar-light {
+  // background-color: #EDEEEE;
+}
+
+.menu-bar {
+  margin-bottom: 0px;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.card {
+    margin-bottom: 1px;
+    width: 400px;
+}
+
+.card-dark {
+    background-color: rgb(51, 51, 51)
+}
+
+.card-content-dark {
+  color: white
+}
+
+.card-content-light {
+    color: black
+}
+
+.config-dark {
+    background-color: black;
+}
+
+.ui.compact.table td {
+    padding: .2em .5em !important;
+}
+
+.ui.table td {
+  padding: .2em .5em !important;
+}
+
+.ui.mini.button, .ui.mini.buttons .button, .ui.mini.buttons .or {
+  font-size: .78571429rem !important;
+}
+
+.segment-clear {
+  background: "" !important;
+}
+
+.utility-bar {
+  width: 100%;
+  height: 60px;
+  background-color: #EDEEEE;
+  display: flex;
+  // justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding-left: 16px;
+  border-top: 1px solid #d5d7d7;
+
+  hr {
+    height: 100%;
+    width: 0px;
+    margin: 16px;
+    border-right: 1px dotted #b9bdbdaf;
+    border-left:  0;
+  }
+}
+
+.filter-button{
+  padding-top: 9.5px !important;
+  padding-bottom: 9.5px;
+  padding-left: 14px;
+}
+
+.filter-menu-right{
+  float: right !important;
+  margin-right: 10px !important;
+
+  button{
+    margin-right:10px !important;
+    padding: 14px !important;
+    background-color: #fafbfb !important;
+  }
+}
+
+.filter-button{
+  margin-right:10px !important;
+  padding: 14.5px !important;
+  background-color: #fafbfb !important;
+}
+
+.ui.grid>.relaxed.row>.column, .ui.relaxed.grid>.column:not(.row), .ui.relaxed.grid>.row>.column {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+// .ui.grid>.column:not(.row), .ui.grid>.row>.column {
+//   padding-left: 10px !important;
+//   padding-right: 10px !important;
+// }
+
+.flex-push {
+  margin-left: auto;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 11px 0;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.26), 0px 0px 1px rgba(13, 13, 13, 0.26);
+  background: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 0px solid #000101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #ffffff;
+  height: 24px;
+  width: 5px;
+  border-radius: 0px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -11px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: rgba(128, 128, 128, 0);
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.26), 0px 0px 1px rgba(13, 13, 13, 0.26);
+  background: rgba(0, 0, 0, 0);
+  border-radius: 25px;
+  border: 0px solid #000101;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #ffffff;
+  height: 24px;
+  width: 5px;
+  border-radius: 0px;
+  background: #ffffff;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: rgba(0, 0, 0, 0);
+  border: 0px solid #000101;
+  border-radius: 50px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.26), 0px 0px 1px rgba(13, 13, 13, 0.26);
+}
+input[type=range]::-ms-fill-upper {
+  background: rgba(0, 0, 0, 0);
+  border: 0px solid #000101;
+  border-radius: 50px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.26), 0px 0px 1px rgba(13, 13, 13, 0.26);
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #ffffff;
+  height: 24px;
+  width: 5px;
+  border-radius: 0px;
+  background: #ffffff;
+  cursor: pointer;
+  height: 2px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: rgba(0, 0, 0, 0);
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: rgba(128, 128, 128, 0);
+}

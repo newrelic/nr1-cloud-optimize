@@ -62,13 +62,22 @@ export const processSample = (account, sample, config, networkSamples, cloudData
   return null
 }
 
-export const groupInstances = (data, type, val, state) => {
+export const groupInstances = (data, type, val, state, forceGroupBy) => {
         let tempData = data || state.instanceData
         let { config, groupByDefault, cloudData } = state
-        let groupBy = (type == "groupBy" ? val : null) || config.groupBy || groupByDefault
+        let groupBy = forceGroupBy ? "nr.cloud.optimize.flat" : (type == "groupBy" ? val : null) || config.groupBy || groupByDefault
 
         if(type == "awsPricingRegion" || type == "recalc"){
             tempData.forEach((sample,i)=>{
+
+                // reset
+                sample.suggestions = null
+                sample.suggestion = null
+                tempData[i].instancePrice1 = 0
+                tempData[i].instancePrice2 = 0
+                tempData[i].saving = 0
+                //
+
                 tempData[i].matchedInstance = pluckCloudInstance(tempData[i].ec2InstanceType || tempData[i].instanceType, tempData[i].operatingSystem, cloudData)
                 tempData[i].instancePrice1 = tempData[i].matchedInstance.onDemandPrice * config.discountMultiplier
                 sample.suggestions = determineCloudInstance(config, tempData[i], cloudData)

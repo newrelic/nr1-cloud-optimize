@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Table } from 'semantic-ui-react'
-import { deleteDocument } from '../../utils'
+import { deleteDocument } from '../../../shared/lib/utils'
 export default class SnapshotTable extends React.Component {
 
     constructor(props){
