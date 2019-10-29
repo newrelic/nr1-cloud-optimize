@@ -41,7 +41,7 @@ export default class HostMetrics extends React.Component {
                                     </Statistic>
                                     <Statistic>
                                         <Statistic.Value>{(hostMetrics.MaxMemoryBytes/1024/1024).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Statistic.Value>
-                                        <Statistic.Label>Max Memory MB</Statistic.Label>
+                                        <Statistic.Label>Max Memory Used MB</Statistic.Label>
                                     </Statistic>
                                 </Statistic.Group>
                         </Grid.Column>
