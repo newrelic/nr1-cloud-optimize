@@ -19,6 +19,8 @@ To confirm you can use the following query for eg. `SELECT * FROM SystemSample W
 
 ![Screenshot #1](screenshots/screenshot_01.png)
 ![Screenshot #2](screenshots/screenshot_02.png)
+![Screenshot #3](screenshots/screenshot_03.png)
+In-Context Application Optimization requires APM
 
 ## Open Source License
 
@@ -32,7 +34,9 @@ Required:
 
 You'll get the best possible data out of this application if you also:
 
-- [Activate the EC2 integration](https://docs.newrelic.com/docs/integrations/amazon-integrations/get-started/connect-aws-infrastructure) to group by your cloud provider account.
+- [Activate the EC2 integration](https://docs.newrelic.com/docs/integrations/amazon-integrations/get-started/connect-aws-infrastructure) to group by your AWS cloud provider account.
+- [Activate the Azure VMs integration](https://docs.newrelic.com/docs/integrations/microsoft-azure-integrations/azure-integrations-list/azure-vms-monitoring-integration) to group by your Azure cloud provider account.
+- [Activate the Google Compute integration](https://docs.newrelic.com/docs/integrations/google-cloud-platform-integrations/gcp-integrations-list/google-compute-engine-monitoring-integration) to group by your GCP cloud provider account.
 - [Install APM on your applications](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#apm-install) to group by application.
 
 ## Getting started
