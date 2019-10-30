@@ -203,6 +203,7 @@ export default class CloudOptimizeApm extends React.Component {
                     }
                 })
                 hosts = [... new Set(hosts)]
+                containerIds = [... new Set(containerIds)]
                 resolve({hosts, containerIds})
             });
         });
