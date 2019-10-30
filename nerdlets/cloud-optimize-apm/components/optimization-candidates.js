@@ -74,19 +74,21 @@ export default class OptimizationCandidates extends React.Component {
     }
 
     render() {
+        let { hasCloud } = this.props
+        let header = hasCloud ? "Optimization Candidates" : "Service does not appear to have any cloud instances."
         return (
             <>
                 <Segment style={{width:"100%", marginLeft: "10px", marginRight: "10px"}}>
 
                 <Grid.Row>
                     <Grid.Column>
-                        <Header as='h4' style={{textTransform:"uppercase"}}>Optimization Candidates</Header>
+                        <Header as='h4' style={{textTransform: hasCloud ? "uppercase" : ""}}>{header}</Header>
                     </Grid.Column>
                 </Grid.Row>
 
-                <Divider/>
+                <Divider style={{display:hasCloud?"":"none"}}/>
 
-                <Grid.Row>
+                <Grid.Row style={{display:hasCloud?"":"none"}}>
 
                     <Grid.Column>
                     <Table inverted={false} striped sortable size="small">

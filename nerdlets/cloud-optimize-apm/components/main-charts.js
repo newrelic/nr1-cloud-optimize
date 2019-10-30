@@ -36,8 +36,9 @@ export default class MainCharts extends React.Component {
                             }
                         </Segment>
                     </Grid.Column>
-
-                    <Grid.Column style={{display: containerIds.length > 0 ? "" : "none"}}>
+                    
+                    {containerIds.length > 0 ? 
+                    <Grid.Column>
                         <Segment className="segment-clear" >
                             <h4 style={chartHeader}>Container Performance - Max Cpu & Memory</h4>
                             { entityData && entityData.account && entityData.account.id ? 
@@ -48,7 +49,8 @@ export default class MainCharts extends React.Component {
                                 /> : ""
                             }
                         </Segment>
-                    </Grid.Column>
+                    </Grid.Column> : ""
+                    }
                 </ChartGroup>
             </Grid.Row>
         )

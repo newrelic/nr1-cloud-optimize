@@ -58,6 +58,7 @@ export default class CloudOptimizeApm extends React.Component {
                 optimizedCount: 0,
                 nonOptimizedCount: 0
             },
+            hasCloud: false,
             config: {
                 optimizeBy: 50,
                 groupBy: "", sortBy: "", sort: "desc",
@@ -106,10 +107,17 @@ export default class CloudOptimizeApm extends React.Component {
         }
     }
 
+    async componentDidUpdate(){
+        if(this.props.nerdletUrlState && this.props.nerdletUrlState.entityGuid && this.state.entityGuid != this.props.nerdletUrlState.entityGuid){
+            await this.setState({ entityGuid: this.props.nerdletUrlState.entityGuid })
+            this.fetchData(this.props.nerdletUrlState.entityGuid)
+        }
+    }
+
     async fetchData(entityGuid){
         let result = await nerdGraphQuery(getEntityData(entityGuid))
         let entityData = ((result || {}).actor || {}).entity || {}
-        let { config, cloudData } = this.state
+        let { config, cloudData, hasCloud } = this.state
         if(entityData){
             await this.handleUserConfig()
             await this.setState({entityData})
@@ -130,9 +138,11 @@ export default class CloudOptimizeApm extends React.Component {
                     MaxRxBytes: 0
                 }
 
+                let currentHasCloud = false
                 let tempInstanceData = []
                 systemSamples.forEach((sample)=>{
                     let instance = processSample(entityData.account, sample, config, networkSamples, cloudData)
+                    if(instance.matchedInstance) currentHasCloud = true
                     if(instance) tempInstanceData.push(instance)
                     if(instance.maxCpuPercent > hostMetrics.MaxCpuPercent) hostMetrics.MaxCpuPercent = instance.maxCpuPercent
                     if(instance.maxMemoryPercent > hostMetrics.MaxMemPerc) hostMetrics.MaxMemPerc = instance.maxMemoryPercent
@@ -140,8 +150,9 @@ export default class CloudOptimizeApm extends React.Component {
                     if(instance.transmitBytesPerSecond > hostMetrics.MaxTxBytes) hostMetrics.MaxTxBytes = instance.transmitBytesPerSecond
                     if(instance.receiveBytesPerSecond > hostMetrics.MaxRxBytes) hostMetrics.MaxRxBytes = instance.receiveBytesPerSecond
                 })
-
-                await this.setState({"instanceData": tempInstanceData, hostMetrics})
+                hasCloud = currentHasCloud
+                
+                await this.setState({"instanceData": tempInstanceData, hostMetrics, hasCloud})
                 this.groupAndSort(tempInstanceData, "", "")
             }
             if(containerIds && containerIds.length > 0){
@@ -278,7 +289,7 @@ export default class CloudOptimizeApm extends React.Component {
     }
 
     render() {
-        let { entityData, hosts, containerIds, totals, hostMetrics, containerMetrics, sorted, data } = this.state
+        let { entityData, hosts, containerIds, totals, hostMetrics, containerMetrics, sorted, hasCloud } = this.state
 
         return (
             <div>
@@ -302,11 +313,11 @@ export default class CloudOptimizeApm extends React.Component {
                             containerIds={containerIds}
                         />
 
-                        <HostMetrics hostMetrics={hostMetrics} />
+                        { hostMetrics.Hosts > 0 ? <HostMetrics hostMetrics={hostMetrics} /> : "" }
 
                         { containerIds.length > 0 ?  <ContainerOptimization containerMetrics={containerMetrics} containerIds={containerIds} /> : "" }
 
-                        <OptimizationCandidates sorted={sorted}/>
+                        <OptimizationCandidates sorted={sorted} hasCloud={hasCloud}/>
                     </Grid>
                 </Segment>
             </div>
