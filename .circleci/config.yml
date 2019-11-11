@@ -36,7 +36,7 @@ nr1-profile-env-name: &nr1-profile-env-name
 # The Nerdpack UUID we should deploy with
 # Currently set to one associated with DemotronV2
 nr1-nerdpack-uuid: &nr1-nerdpack-uuid
-  7e874b6e-c010-4933-a15d-ea5b2e54d029
+  e30b3b37-db06-439a-b030-cd5bcf7ee323
 
 # Channel we deploy to on pushes to master
 nr1-deploy-channel: &nr1-deploy-channel
@@ -365,6 +365,9 @@ jobs:
       - command-install-json-cli
       - command-install-nr1-cli
       - command-deploy
+
+    environment:
+      NR1_NERDPACK_UUID: *nr1-nerdpack-uuid
 
 workflows:
   # A merge or commit to the master branch
