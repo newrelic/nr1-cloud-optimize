@@ -147,12 +147,17 @@ commands:
     steps:
       - run: npm install
 
-      - snyk/scan
-
       - save_cache:
           key: *npm-cache-key
           paths:
             - node_modules
+  
+  # Run separately from command-npm-install because we don't want to run this on pull requests. It requires a Snyk API token which is privately stored in ENV variables
+  # To expose we would have to open up _all_ env variables by turning on "Pass secrets to builds from forked pull requests" which we do NOT want to do
+  # Snyk is installed in our Github org and will scan the pull requests via that method
+  command-snyk-scan:
+    steps:
+      - snyk/scan
 
   command-restore-npm:
     steps:
@@ -342,10 +347,15 @@ jobs:
 
     steps:
       - command-restore-source
+
       # Necessary so github.com is a known host for when semantic-release interacts with git
       # TO DO - Replace with a smaller slice of the checkout command
       - command-checkout-source
       - command-restore-npm
+
+      # Double-check dependencies with snyk before we release and deploy
+      - command-snyk-scan
+
       - command-setup-ci-keys
 
       # https://semantic-release.gitbook.io/semantic-release/usage/plugins
