@@ -176,7 +176,7 @@ commands:
       - run:
           name: "Install json cli tool"
           command: |
-            npm install -g json
+            sudo npm install -g json
 
   # TO DO - Cache or add to base docker image pre-installed
   command-install-nr1-cli:
@@ -193,7 +193,7 @@ commands:
       - run:
           name: "Install OSS CLI"
           command: |
-            npm install -g @newrelic/osscli
+            sudo npm install -g @newrelic/osscli
             
   # TO DO - Replace command-validate-nerdpack-schema and command-validate-opensource-files with the oss-cli
   # This will allow us to make changes at-will vs. updating dozens of config.yml's
@@ -252,7 +252,7 @@ commands:
       - run:
           name: "Setting target UUID"
           command: |
-            json -I -f package.json -e 'this.nr1.uuid="${NR1_NERDPACK_UUID}"'
+            json -I -f package.json -e "this.nr1.uuid='${NR1_NERDPACK_UUID}'"
 
       - run:
           name: "Build"
