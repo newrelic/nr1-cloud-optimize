@@ -53,6 +53,11 @@ github-semantic-bot: &github-semantic-bot
   GIT_COMMITTER_NAME: "@semantic-release-bot"
   GIT_COMMITTER_EMAIL: "opensource+nr1-cloud-optimize@newrelic.com"
 
+# Third Party generation configs
+third-party-bot: &third-party-bot
+  THIRD_PARTY_GIT_AUTHOR_NAME: "devfreddy"
+  THIRD_PARTY_GIT_AUTHOR_EMAIL: "mfrederick@newrelic.com"
+
 # Fingerprint for a Github repository write access deploy key
 # Required for
   # - commiting the incremented package.json version back to the repository
@@ -193,7 +198,7 @@ commands:
       - run:
           name: "Install OSS CLI"
           command: |
-            sudo npm install -g @newrelic/osscli
+            sudo npm install -g @newrelic/newrelic-oss-cli
             
   # TO DO - Replace command-validate-nerdpack-schema and command-validate-opensource-files with the oss-cli
   # This will allow us to make changes at-will vs. updating dozens of config.yml's
@@ -365,9 +370,52 @@ jobs:
           command: |
             npx semantic-release
 
-  # TO DO - Profile keys (private env variables) & actual commands including adding --profile etc.
+  job-generate-third-party-notices:
+    executor: node10browsers
+
+    environment:
+      <<: *third-party-bot
+
+    steps:
+      - command-restore-source
+      - command-restore-npm
+      - command-install-oss-cli
+      
+      - add_ssh_keys:
+          fingerprints:
+            - *deploy-key-fingerprint
+
+      - run:
+          name: Generate Third Party Notices
+          command: |
+            # latest commit
+            LATEST_COMMIT=$(git rev-parse HEAD)
+
+            # latest commit where package.json was changed
+            LAST_CHANGED_COMMIT=$(git log -1 --format=format:%H --full-diff package.json)
+
+            if [ $LAST_CHANGED_COMMIT = $LATEST_COMMIT ]; then
+              git config user.email "${THIRD_PARTY_GIT_AUTHOR_EMAIL}"
+              git config user.name "${THIRD_PARTY_GIT_AUTHOR_NAME}"
+
+              oss third-party manifest
+              oss third-party notices
+
+              git add third_party_manifest.json
+              git add THIRD_PARTY_NOTICES.md
+
+              git commit -m 'chore: update third-party manifest and notices [skip ci]'
+              git push origin ${CIRCLE_BRANCH}
+
+            else
+              echo "No change in package.json, not regenerating third-party notices"
+            fi
+
   job-deploy:
     executor: node10browsers
+
+    environment:
+      NR1_NERDPACK_UUID: *nr1-nerdpack-uuid
 
     steps:
       - command-restore-source
@@ -376,14 +424,20 @@ jobs:
       - command-install-nr1-cli
       - command-deploy
 
-    environment:
-      NR1_NERDPACK_UUID: *nr1-nerdpack-uuid
-
 workflows:
   # A merge or commit to the master branch
   release:
     jobs:
       - job-checkout-and-build:
+          filters:
+            branches:
+              only:
+                - master
+
+      - job-generate-third-party-notices:
+          requires:
+            - job-checkout-and-build
+
           filters:
             branches:
               only:
