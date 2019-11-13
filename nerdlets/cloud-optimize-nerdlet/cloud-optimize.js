@@ -1,6 +1,6 @@
 import React from 'react';
-import { NerdGraphQuery } from 'nr1';
-import { getDocument, getCollection, writeDocument, getInstanceData, accountsWithData } from '../shared/lib/utils';
+import { NerdGraphQuery, NrqlQuery } from 'nr1';
+import { getDocument, getCollection, writeDocument, getInstanceData, accountsWithData, getSystemSampleKeySetNRQL, isCloudLabel } from '../shared/lib/utils';
 import { processSample, groupInstances } from '../shared/lib/processor';
 import MenuBar from './components/menuBar'
 import HeaderCosts from './components/headerCosts'
@@ -27,6 +27,7 @@ export default class CloudOptimize extends React.Component {
                 google: []
             },
             groupByDefault: "accountName",
+            cloudLabelGroups: [],
             sortByDefault: "nonOptimizedCost",
             sorted: [], sort: "desc",
             totals: {
@@ -38,7 +39,7 @@ export default class CloudOptimize extends React.Component {
             },
             config: {
                 optimizeBy: 50,
-                groupBy: "", sortBy: "", sort: "desc",
+                groupBy: "", groupByLabel: "", sortBy: "", sort: "desc",
                 discountMultiplier: 1, lastReportPeriod: 24, // 1 day in hours
                 staleInstanceCpu: 5, staleInstanceMem: 5,
                 staleReceiveBytesPerSecond: 0, staleTransmitBytesPerSecond: 0,
@@ -128,7 +129,12 @@ export default class CloudOptimize extends React.Component {
         let tempInstanceData = []
         let { config, completedAccounts, cloudData } = this.state
         accounts.forEach(async (account)=>{
-            let results = await NerdGraphQuery.query({query: getInstanceData(account.id)})
+            let systemSampleKeySetResults = await NrqlQuery.query({accountId: account.id, query: getSystemSampleKeySetNRQL, formatType: NrqlQuery.FORMAT_TYPE.RAW});
+            let labelAttributes = systemSampleKeySetResults.data.raw.results[0].allKeys.filter(isCloudLabel);
+            let newGroups = new Set(this.state.cloudLabelGroups);
+            labelAttributes.forEach((att) => newGroups.add(att));
+            await this.setState({cloudLabelGroups: Array.from(newGroups)});
+            let results = await NerdGraphQuery.query({query: getInstanceData(account.id, labelAttributes)});
             if(results.errors){
                 console.log("get instance data error", results.errors)
             }else{
@@ -143,7 +149,7 @@ export default class CloudOptimize extends React.Component {
             }
             completedAccounts = completedAccounts + 1
             await this.setState({completedAccounts})
-        }) 
+        })
     }
 
     groupAndSort(data, type, val){
@@ -208,6 +214,7 @@ export default class CloudOptimize extends React.Component {
                         instanceLength={this.state.sorted.length} 
                         fetchSnapshots={this.fetchSnapshots}
                         snapshots={this.state.snapshots}
+                        cloudLabelGroups={this.state.cloudLabelGroups}
                     />
                     <AccountCards 
                         loading={this.state.loading}

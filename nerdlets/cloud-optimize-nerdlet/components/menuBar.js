@@ -3,6 +3,8 @@ import { Menu, Dropdown, Popup } from 'semantic-ui-react'
 import Configuration from '../../shared/components/config'
 import SnapshotList from './snapshots/snapshotList'
 import PricingSelector from '../../shared/components/pricingSelector'
+import { cloudLabelAttributeToDisplayName } from '../../shared/lib/utils'
+import _ from 'lodash';
 
 export default class MenuBar extends React.Component {
 
@@ -13,8 +15,9 @@ export default class MenuBar extends React.Component {
     }
 
     async handleDropdownChange(event, data, type){
-        let tempConfig = this.props.config
-        tempConfig[type] = data.value
+        let tempConfig = this.props.config;
+        tempConfig[type] = data.value;
+        tempConfig[type+'Label'] = data.text;
         await this.props.handleParentState("config", tempConfig, "groupAndSortRecalc")
     }
 
@@ -25,14 +28,18 @@ export default class MenuBar extends React.Component {
     }
 
     render() {
-        const groupOptions = [
-            { key: 1, text: 'NR Account', value: 'accountName' },
-            { key: 2, text: 'Cloud Account', value: 'providerAccountName' },
-            { key: 3, text: 'Applications', value: 'apmApplicationNames' },
-            { key: 4, text: 'Region', value: 'region' },
-            { key: 5, text: 'Instance Type', value: 'instanceType' },
-            { key: 6, text: 'Suggested Instance Type', value: 'suggestedInstanceType' }
+        const standardGroupOptions = [
+            { attributeName: 'accountName', displayName: 'NR Account' },
+            { attributeName: 'providerAccountName', displayName: 'Cloud Account' },
+            { attributeName: 'apmApplicationNames', displayName: 'Applications' },
+            { attributeName: 'region', displayName: 'Region' },
+            { attributeName: 'instanceType', displayName: 'Instance Type' },
+            { attributeName: 'suggestedInstanceType', displayName: 'Suggested Instance Type' }
         ]
+
+        const cloudLabelGroupOptions = this.props.cloudLabelGroups.map((group) => {
+            return { attributeName: group, displayName: cloudLabelAttributeToDisplayName(group) }
+        });
 
         const sortOptions = [
             { key: 1, text: 'Saving Value', value: 'saving' },
@@ -46,11 +53,23 @@ export default class MenuBar extends React.Component {
         return(
             <Menu inverted={false} className="menu-bar">
                 <Menu.Item>Group By:</Menu.Item>
-                <Dropdown 
-                    options={groupOptions} simple item
-                    onChange={(event, data)=>{this.handleDropdownChange(event, data, "groupBy")}} 
+                <Dropdown item
                     value={this.props.config.groupBy || "accountName"}
-                />
+                    text={this.props.config.groupByLabel || "NR Account"}
+                >
+                    <Dropdown.Menu>
+                        {standardGroupOptions.map(group => {
+                            return <Dropdown.Item key={group.attributeName} value={group.attributeName} text={group.displayName} onClick={(event, data)=>{this.handleDropdownChange(event, data, "groupBy")}} />
+                        })}
+                        <Dropdown.Divider/>
+                        <Dropdown.Header icon="cloud" content="Cloud Tags/Labels"/>
+                        <Dropdown.Menu scrolling>
+                            {cloudLabelGroupOptions.map(group => {
+                                return <Dropdown.Item key={group.attributeName} value={group.attributeName} text={group.displayName} onClick={(event, data)=>{this.handleDropdownChange(event, data, "groupBy")}} />
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown.Menu>
+                </Dropdown>
                 <Menu.Item>{this.props.instanceLength}</Menu.Item>
 
                 <Menu.Item>Sort By:</Menu.Item>
