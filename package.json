@@ -5,7 +5,9 @@
   "version": "0.2.3",
   "scripts": {
     "start": "nr1 nerdpack:serve",
-    "test": "exit 0"
+    "test": "exit 0",
+    "eslint-check": "eslint nerdlets/",
+    "eslint-fix": "eslint nerdlets/ --fix"
   },
   "nr1": {
     "uuidAlt": "a95ed543-c1e4-4bcd-a9a4-ad2d68440def",
@@ -34,6 +36,8 @@
     "not dead"
   ],
   "devDependencies": {
+    "@semantic-release/changelog": "^3.0.5",
+    "@semantic-release/git": "^7.0.18",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.3.0",
     "eslint-config-prettier": "^6.2.0",
