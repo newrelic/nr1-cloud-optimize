@@ -378,6 +378,11 @@ jobs:
 
     steps:
       - command-restore-source
+
+      # Necessary so github.com is a known host
+      # TO DO - Replace with a smaller slice of the checkout command or cache .ssh folder
+      - command-checkout-source
+
       - command-restore-npm
       - command-install-oss-cli
       
@@ -404,7 +409,10 @@ jobs:
               git add third_party_manifest.json
               git add THIRD_PARTY_NOTICES.md
 
-              git commit -m 'chore: update third-party manifest and notices [skip ci]'
+              # Removed [skip ci] because we need to re-trigger the release workflow for semantic-release which exits early when we check-in this file
+              # The local branch master is behind the remote one, therefore a new version won't be published
+              # https://github.com/semantic-release/semantic-release/issues/1208
+              git commit -m 'chore: update third-party manifest and notices'
               git push origin ${CIRCLE_BRANCH}
 
             else
@@ -446,6 +454,7 @@ workflows:
       - job-generate-release:
           requires:
             - job-checkout-and-build
+            - job-generate-third-party-notices
 
           filters:
             branches:
