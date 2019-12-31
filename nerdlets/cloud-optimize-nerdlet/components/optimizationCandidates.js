@@ -108,6 +108,10 @@ export default class OptimizationCandidates extends React.Component {
                                     onClick={()=>this.handleTableSort('hostname')}>
                                 host</Table.HeaderCell>
                                 <Table.HeaderCell
+                                    sorted={this.state.column === 'entityName' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('entityName')}>
+                                entity</Table.HeaderCell>
+                                <Table.HeaderCell
                                     sorted={this.state.column === 'maxCpuPercent' ? this.state.direction : null}
                                     onClick={()=>this.handleTableSort('maxCpuPercent')}>
                                 maxCpuPercent
