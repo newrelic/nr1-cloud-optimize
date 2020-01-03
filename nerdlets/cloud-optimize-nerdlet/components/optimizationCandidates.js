@@ -76,6 +76,9 @@ export default class OptimizationCandidates extends React.Component {
             // delete arrays and objects to avoid any issues with csv export
             delete instanceData.suggestions
             delete instanceData.hostnameapmApplicationNamesentityGuidawsRegion
+            if(instanceData.matchedInstance){
+            	instanceData.matchedInstance = instanceData.matchedInstance['type']
+              }
             for(let z=0;z<Object.keys(instanceData).length;z++){
                 if(Array.isArray(instanceData[Object.keys(instanceData)[z]])){
                     delete instanceData[Object.keys(instanceData)[z]]
