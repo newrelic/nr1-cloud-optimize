@@ -108,6 +108,10 @@ export default class OptimizationCandidates extends React.Component {
                                     onClick={()=>this.handleTableSort('hostname')}>
                                 host</Table.HeaderCell>
                                 <Table.HeaderCell
+                                    sorted={this.state.column === 'entityName' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('entityName')}>
+                                entity</Table.HeaderCell>
+                                <Table.HeaderCell
                                     sorted={this.state.column === 'maxCpuPercent' ? this.state.direction : null}
                                     onClick={()=>this.handleTableSort('maxCpuPercent')}>
                                 maxCpuPercent
@@ -175,6 +179,7 @@ export default class OptimizationCandidates extends React.Component {
                                     return (
                                         <Table.Row key={i} active={instance.suggestedInstanceType == "stale"}>
                                             <Table.Cell><a style={{color: instance.suggestedInstanceType == "stale" ? "black" : "black"}} href={link} rel="noopener noreferrer" target="_blank">{instance.hostname} <Icon name='external alternate' /></a></Table.Cell>
+                                            <Table.Cell><a style={{color: instance.suggestedInstanceType == "stale" ? "black" : "black"}} href={link} rel="noopener noreferrer" target="_blank">{instance.entityName} <Icon name='external alternate' /></a></Table.Cell>
                                             <Table.Cell>{instance.maxCpuPercent.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{instance.maxMemoryPercent.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{instance.transmitBytesPerSecond.toFixed(2)}</Table.Cell>
