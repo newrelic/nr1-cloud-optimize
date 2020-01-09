@@ -77,7 +77,9 @@ export default class OptimizationCandidates extends React.Component {
             delete instanceData.suggestions
             delete instanceData.hostnameapmApplicationNamesentityGuidawsRegion
             if(instanceData.matchedInstance){
-            	instanceData.matchedInstance = instanceData.matchedInstance['type']
+            	instanceData.matchedInstanceType = instanceData.matchedInstance['type']
+            	instanceData.matchedInstanceCategory = instanceData.matchedInstance['category']
+            	instanceData.matchedInstancePrice = instanceData.matchedInstance['onDemandPrice']
               }
             for(let z=0;z<Object.keys(instanceData).length;z++){
                 if(Array.isArray(instanceData[Object.keys(instanceData)[z]])){
