@@ -34,7 +34,8 @@ export default class MenuBar extends React.Component {
             { attributeName: 'apmApplicationNames', displayName: 'Applications' },
             { attributeName: 'region', displayName: 'Region' },
             { attributeName: 'instanceType', displayName: 'Instance Type' },
-            { attributeName: 'suggestedInstanceType', displayName: 'Suggested Instance Type' }
+            { attributeName: 'suggestedInstanceType', displayName: 'Suggested Instance Type' },
+            { attributeName: 'entityName', displayName: 'Entity' }
         ]
 
         const cloudLabelGroupOptions = this.props.cloudLabelGroups.map((group) => {
