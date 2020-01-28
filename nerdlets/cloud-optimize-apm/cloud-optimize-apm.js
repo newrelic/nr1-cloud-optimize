@@ -109,8 +109,7 @@ export default class CloudOptimizeApm extends React.Component {
 
     async fetchSystemData(entityData){
         return new Promise((resolve)=>{
-            const hostPromises = entityData.nrdbQuery.results.slice(0,5).map((result) =>
-            // let hostPromises = entityData.nrdbQuery.results.map((result) =>
+            const hostPromises = entityData.nrdbQuery.results.map((result) =>
                 nerdGraphQuery(getInfraHost(entityData.account.id, result.facet[0], result.facet[1], entityData.applicationId))
             )
 
