@@ -217,3 +217,43 @@ input[type=range]:focus::-ms-fill-lower {
 input[type=range]:focus::-ms-fill-upper {
   background: rgba(128, 128, 128, 0);
 }
+
+.config-optimize-by-header-wrapper {
+  background-color: '#fafbfb';
+  height: '45px';
+  border-radius: '3px';
+}
+
+.config-optimize-by-header {
+  width: '90%';
+  text-transform: 'uppercase';
+  font-weight: 600;
+  line-height: '45px';
+  vertical-align: 'middle';
+}
+
+.config-optimize-by-input-wrapper {
+  background-color: '#fafbfb';
+  height: '45px';
+  margin-right: '10px';
+  border-radius: '3px';
+  width: '200px';
+  line-height: '45px';
+}
+
+.config-optimize-by-input {
+  width: '90%';
+  margin-left: '10px';
+  margin-right: '10px';
+  line-height: '45px';
+}
+
+.statistic-menu-bar-wrapper {
+  background-color: '#fafbfb';
+  height: '45px';
+  border-radius: '3px';
+  padding-left: '15px';
+  padding-right: '15px';
+  margin-top: '10px';
+  margin-bottom: '10px';
+}

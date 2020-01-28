@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const _ = require('lodash')
 
 export const pluckCloudInstance = (instanceType, operatingSystem, cloudData) => {
@@ -63,7 +64,7 @@ export const processSample = (account, sample, config, networkSamples, cloudData
 }
 
 export const groupInstances = (data, type, val, state, forceGroupBy) => {
-        let tempData = data || state.instanceData
+        let tempData = data || state.instanceData || []
         let { config, groupByDefault, cloudData } = state
         let groupBy = forceGroupBy ? "nr.cloud.optimize.flat" : (type == "groupBy" ? val : null) || config.groupBy || groupByDefault
 

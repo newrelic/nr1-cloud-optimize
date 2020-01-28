@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { NerdGraphQuery } from 'nr1';
 import gql from 'graphql-tag';
 
