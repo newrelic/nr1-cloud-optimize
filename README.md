@@ -26,7 +26,7 @@ This project is distributed under the [Apache 2 license](blob/master/LICENSE).
 
 Requires [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure).
 
-You’ll get the best possible data out of this application if you also:
+You'll get the best possible data out of this application if you also:
 
 - [Activate the EC2 integration](https://docs.newrelic.com/docs/integrations/amazon-integrations/get-started/connect-aws-infrastructure) to group by your AWS cloud provider account.
 - [Activate the Azure VMs integration](https://docs.newrelic.com/docs/integrations/microsoft-azure-integrations/azure-integrations-list/azure-vms-monitoring-integration) to group by your Azure cloud provider account.
