@@ -74,7 +74,6 @@ Visit [https://one.newrelic.com](https://one.newrelic.com), navigate to the Nerd
 New Relic hosts and moderates an online forum where you can interact with New Relic employees as well as other customers to get help and share best practices. Like all New Relic open source community projects, there's a related topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
 
 [https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936](https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936)
-_(Note: URL subject to change before GA)_
 
 Please do not report issues with Cloud Optimize to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
 
