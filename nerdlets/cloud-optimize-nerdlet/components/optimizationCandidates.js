@@ -162,6 +162,16 @@ export default class OptimizationCandidates extends React.Component {
                                 suggestedInstanceType
                                 </Table.HeaderCell>
                                 <Table.HeaderCell
+                                    sorted={this.state.column === 'suggestedInstanceTypeNumCPU' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('suggestedInstanceTypeNumCPU')}>
+                                suggestedInstanceTypeNumCPU
+                                </Table.HeaderCell>
+                                <Table.HeaderCell
+                                    sorted={this.state.column === 'suggestedInstanceTypeMemGB' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('suggestedInstanceTypeMemGB')}>
+                                suggestedInstanceTypeMemGB
+                                </Table.HeaderCell>
+                                <Table.HeaderCell
                                     sorted={this.state.column === 'instancePrice2' ? this.state.direction : null}
                                     onClick={()=>this.handleTableSort('instancePrice2')}>
                                     suggested price /m
@@ -196,6 +206,8 @@ export default class OptimizationCandidates extends React.Component {
                                             <Table.Cell style={{textAlign:"center"}}>
                                              {tempSuggestions.length > 0 ?  this.renderSuggestionsModal(instance.suggestedInstanceType, tempSuggestions) : instance.suggestedInstanceType}
                                             </Table.Cell>
+                                            <Table.Cell>{instance.suggestedInstanceTypeNumCPU}</Table.Cell>
+                                            <Table.Cell>{instance.suggestedInstanceTypeMemGB}</Table.Cell>
                                             <Table.Cell>{(instance.instancePrice2 * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                             <Table.Cell>{(instance.saving * monthlyHours).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Table.Cell>
                                         </Table.Row>
