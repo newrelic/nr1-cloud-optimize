@@ -49,6 +49,8 @@ export const processSample = (account, sample, config, networkSamples, cloudData
     if(sample.suggestions){
       let optimizedSuggestion = sample.suggestions.suggested
       sample.suggestedInstanceType = optimizedSuggestion.instanceType
+      sample.suggestedMemGB = Math.round(optimizedSuggestion.memTotalBytes/1024/1024/1024)
+      sample.suggestedNumCpu = parseFloat(optimizedSuggestion.numCpu)
       sample.instancePrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
       sample.saving = sample.instancePrice1 - sample.instancePrice2
     }
@@ -74,6 +76,8 @@ export const groupInstances = (data, type, val, state, forceGroupBy) => {
                 sample.suggestions = null
                 sample.suggestion = null
                 tempData[i].instancePrice1 = 0
+                tempData[i].suggestedMemGB = 0
+                tempData[i].suggestedNumCpu = 0
                 tempData[i].instancePrice2 = 0
                 tempData[i].saving = 0
                 //
@@ -85,6 +89,8 @@ export const groupInstances = (data, type, val, state, forceGroupBy) => {
                 if(tempData[i].suggestions){    
                     let optimizedSuggestion = tempData[i].suggestions.suggested
                     tempData[i].suggestedInstanceType = optimizedSuggestion.instanceType
+                    tempData[i].suggestedMemGB = Math.round(optimizedSuggestion.memTotalBytes/1024/1024/1024)
+                    tempData[i].suggestedNumCpu = parseFloat(optimizedSuggestion.numCpu)
                     tempData[i].instancePrice2 = parseFloat(optimizedSuggestion.price) * config.discountMultiplier
                     tempData[i].saving = tempData[i].instancePrice1 - tempData[i].instancePrice2
                 }else{
