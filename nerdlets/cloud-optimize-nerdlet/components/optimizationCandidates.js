@@ -80,6 +80,8 @@ export default class OptimizationCandidates extends React.Component {
             	instanceData.matchedInstanceType = instanceData.matchedInstance['type']
             	instanceData.matchedInstanceCategory = instanceData.matchedInstance['category']
             	instanceData.matchedInstancePrice = instanceData.matchedInstance['onDemandPrice']
+                instanceData.matchedNumCPUe = instanceData.matchedInstance['cpusPerVm']
+                instanceData.matchedMemGB = instanceData.matchedInstance['memPerVm']
               }
             for(let z=0;z<Object.keys(instanceData).length;z++){
                 if(Array.isArray(instanceData[Object.keys(instanceData)[z]])){
