@@ -61,9 +61,12 @@ Visit [https://one.newrelic.com/?nerdpacks=local](https://one.newrelic.com/?nerd
 Open a command prompt in the nerdpack's directory and run the following commands.
 
 ```bash
-# If you need to create a new uuid for the account to which you're deploying this Nerdpack, use the following
+# To create a new uuid for the nerdpack so that you can deploy it to your account:
 # nr1 nerdpack:uuid -g [--profile=your_profile_name]
-# to see a list of APIkeys / profiles available in your development environment, run nr1 profiles:list
+
+# To see a list of APIkeys / profiles available in your development environment:
+# nr1 profiles:list
+
 nr1 nerdpack:publish [--profile=your_profile_name]
 nr1 nerdpack:deploy [-c [DEV|BETA|STABLE]] [--profile=your_profile_name]
 nr1 nerdpack:subscribe [-c [DEV|BETA|STABLE]] [--profile=your_profile_name]
