@@ -1,6 +1,6 @@
-[![New Relic One Catalog Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/New_Relic_One_Catalog_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#nr1-catalog)
+# Documentation
 
-# Cloud Optimize (nr1-cloud-optimize)
+[![New Relic One Catalog Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/New_Relic_One_Catalog_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#nr1-catalog)
 
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
 
@@ -14,15 +14,15 @@ Users of Cloud Optimize are able to select the hosts, regions and other configur
 
 This application supports AWS, GCP, and Azure cloud infrastructures.
 
-![Screenshot #1](catalog/screenshots/nr1-cloud-optimize-1.png)
-![Screenshot #2](catalog/screenshots/nr1-cloud-optimize-2.png)
-![Screenshot #3](catalog/screenshots/nr1-cloud-optimize-3.png)
+![Screenshot #1](https://github.com/newrelic/nr1-cloud-optimize/blob/master/catalog/screenshots/nr1-cloud-optimize-1.png)
+![Screenshot #2](https://github.com/newrelic/nr1-cloud-optimize/blob/master/catalog/screenshots/nr1-cloud-optimize-2.png)
+![Screenshot #3](https://github.com/newrelic/nr1-cloud-optimize/blob/master/catalog/screenshots/nr1-cloud-optimize-3.png)
 
 > In-Context Application Optimization requires APM
 
 ## Open Source License
 
-This project is distributed under the [Apache 2 license](blob/master/LICENSE).
+This project is distributed under the [Apache 2 license](https://github.com/newrelic/nr1-cloud-optimize/blob/master/LICENSE).
 
 ## Dependencies
 
@@ -88,6 +88,6 @@ Issues and enhancement requests can be submitted in the [Issues tab of this repo
 
 ## Contributing
 
-Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](./CONTRIBUTING.md).
+Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](https://github.com/newrelic/nr1-cloud-optimize/blob/master/CONTRIBUTING.md).
 
 Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. If you'd like to execute our corporate CLA, or if you have any questions, please drop us an email at opensource@newrelic.com.
