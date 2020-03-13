@@ -1,9 +1,3 @@
-# Documentation
-
-[![New Relic One Catalog Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/New_Relic_One_Catalog_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#nr1-catalog)
-
-![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
-
 ## Usage
 
 Cloud Optimize analyzes your cloud environment using the [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure) cloud integrations.
@@ -13,10 +7,6 @@ The application compares the size of your instances to their utilization, identi
 Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.
 
 This application supports AWS, GCP, and Azure cloud infrastructures.
-
-![Screenshot #1](https://github.com/newrelic/nr1-cloud-optimize/blob/master/catalog/screenshots/nr1-cloud-optimize-1.png)
-![Screenshot #2](https://github.com/newrelic/nr1-cloud-optimize/blob/master/catalog/screenshots/nr1-cloud-optimize-2.png)
-![Screenshot #3](https://github.com/newrelic/nr1-cloud-optimize/blob/master/catalog/screenshots/nr1-cloud-optimize-3.png)
 
 > In-Context Application Optimization requires APM
 

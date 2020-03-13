@@ -1,5 +1,5 @@
 {
-  "tagline": "Identify right-sizing opportunities and potential savings of your AWS, GCP, and Azure instances across your cloud environment",
+  "tagline": "Right-size AWS, GCP, and Azure",
   "repository": "https://github.com/newrelic/nr1-cloud-optimize.git",
   "details": "Cloud Optimize analyzes your cloud environment using the New Relic Infrastructure cloud integrations. \n\n The application compares the size of your instances to their utilization, identifying resources that are sized larger than needed. Cloud Optimize will estimate your savings by optimizing resource size.\n\n Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.\n\n This application supports AWS, GCP, and Azure cloud infrastructures.",
   "support": {
