@@ -35,7 +35,7 @@ export default class Config extends React.Component {
     render() {
         let labelWidth = "230px"
         return (
-            <Modal size="small" trigger={this.props.button ? <Button className="filter-button" icon="cog" content="Configuration"/> : <Menu.Item>Configuration &nbsp;<Icon name='cog' /></Menu.Item>}>
+            <Modal size="small" trigger={this.props.button ? <Button className="filter-button" icon="cog" content="Configuration"/> : <Menu.Item>Configuration &nbsp;<Icon name='cog' /></Menu.Item>} closeIcon>
                 <Modal.Header>Advanced Configuration</Modal.Header>
                 <Modal.Content className="config config-dark">
                     <Form inverted={false}>

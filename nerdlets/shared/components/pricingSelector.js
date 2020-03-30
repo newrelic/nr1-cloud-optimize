@@ -30,7 +30,7 @@ export default class PricingSelector extends React.Component {
             return {  "key": region.name, "text": region.name, "value": region.id }
         })
 
-        return <Modal trigger={this.props.button ? <Button className="filter-button" icon="cloud" content="Set Cloud Regions"/> : <Menu.Item>Set Cloud Regions</Menu.Item>}>
+        return <Modal trigger={this.props.button ? <Button className="filter-button" icon="cloud" content="Set Cloud Regions"/> : <Menu.Item>Set Cloud Regions</Menu.Item>} closeIcon>
                     <Modal.Header>Configure Regions</Modal.Header>
                     <Modal.Content>
                         <Form inverted={false} style={{height:"100%"}}>
