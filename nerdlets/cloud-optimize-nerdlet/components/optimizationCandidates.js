@@ -39,7 +39,7 @@ export default class OptimizationCandidates extends React.Component {
                 <Button style={{width:"100%"}} size="mini" inverted={false} 
                     content={<span>{suggestedInstanceType}&nbsp;<Icon style={{float:"right"}} name="list alternate outline"/></span>   
                 } />
-            }>
+            } closeIcon>
                 <Modal.Header>Alternate Suggestions</Modal.Header>
                 <Modal.Content>
                     <Table inverted={false} striped compact>
@@ -90,8 +90,8 @@ export default class OptimizationCandidates extends React.Component {
         })
 
         return (
-            <Modal size="fullscreen" trigger={<Button size="mini" onClick={()=>this.setState({modalInstanceData: this.props.instances, column: null, direction: null})}>Show Optimization Candidates</Button>}>
-                <Modal.Header>Optimization Candidates - {this.props.header}<span style={{float:"right"}}>
+            <Modal size="fullscreen" trigger={<Button size="mini" onClick={()=>this.setState({modalInstanceData: this.props.instances, column: null, direction: null})}>Show Optimization Candidates</Button>} closeIcon>
+                <Modal.Header>Optimization Candidates - {this.props.header}<span style={{float:"right", position: "relative", right: "22px"}}>
                     <CsvDownload style={{
                         borderRadius:"6px",
                         border:"1px solid #000000",

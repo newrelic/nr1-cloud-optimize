@@ -43,7 +43,7 @@ export default class OptimizationCandidates extends React.Component {
                 <Button style={{width:"100%"}} size="mini" inverted={false} 
                     content={<span>{suggestedInstanceType}&nbsp;<Icon style={{float:"right"}} name="list alternate outline"/></span>   
                 } />
-            }>
+            } closeIcon>
                 <Modal.Header>Alternate Suggestions</Modal.Header>
                 <Modal.Content>
                     <Table inverted={false} striped compact>
