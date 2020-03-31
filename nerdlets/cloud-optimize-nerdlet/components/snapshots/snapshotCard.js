@@ -47,7 +47,9 @@ export default class SnapshotCard extends React.Component {
                     float:"right",
                     padding:"6px 24px",
                     textDecoration:"none",
-                    cursor:"pointer"
+                    cursor:"pointer",
+                    position: "relative",
+                    right: "22px"
                 }} 
                 onClick={()=>{this.writeSnapshot(this.props.data, this.props.config)}}
             />
@@ -72,7 +74,7 @@ export default class SnapshotCard extends React.Component {
                                 cursor:"pointer"
                             }}
                         />
-                    }>
+                    } closeIcon>
                     <Modal.Header>Snapshot Alert</Modal.Header>
                     <Modal.Content style={{backgroundColor:"black", color:"white"}}>
                         <span>We thought we&apos;d let you know your current optimization config differs. <br/>
@@ -101,7 +103,7 @@ export default class SnapshotCard extends React.Component {
     render() {
         let snapshots = this.readSnapshots(this.props.data.group)
         return (
-            <Modal size={"fullscreen"} trigger={<Icon name='clone' />}>
+            <Modal size={"fullscreen"} trigger={<Icon name='clone' />} closeIcon>
                 <Modal.Header>
                     Snapshots ({snapshots.length}) - {this.props.data.group}
                     {this.writeSnapshotButton()}

@@ -13,7 +13,7 @@ export default class HeaderCost extends React.Component {
                     <Popup basic content='Savings based on difference between Non-Optimized & Optimized cost estimates' trigger={<Statistic.Label>Potential Savings &nbsp;&nbsp;</Statistic.Label>} />
                     <Statistic.Value>${(this.props.totals.saving * this.props.multiplier).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</Statistic.Value>
                 </Statistic> &nbsp;&nbsp;&nbsp;
-                <Modal trigger={<Icon style={{cursor:"pointer", float:"right"}} name='question' color='blue' size='large' circular />}>
+                <Modal trigger={<Icon style={{cursor:"pointer", float:"right"}} name='question' color='blue' size='large' circular />} closeIcon>
                     <Modal.Header>Optimization Logic & Features</Modal.Header>
                     <Modal.Content>
                     <Modal.Description>

@@ -39,7 +39,7 @@ export default class OptimizationCandidates extends React.Component {
                 <Button style={{width:"100%"}} size="mini" inverted={false} 
                     content={<span>{suggestedInstanceType}&nbsp;<Icon style={{float:"right"}} name="list alternate outline"/></span>   
                 } />
-            }>
+            } closeIcon>
                 <Modal.Header>Alternate Suggestions</Modal.Header>
                 <Modal.Content>
                     <Table inverted={false} striped compact>
@@ -76,6 +76,11 @@ export default class OptimizationCandidates extends React.Component {
             // delete arrays and objects to avoid any issues with csv export
             delete instanceData.suggestions
             delete instanceData.hostnameapmApplicationNamesentityGuidawsRegion
+            if(instanceData.matchedInstance){
+            	instanceData.matchedInstanceType = instanceData.matchedInstance['type']
+            	instanceData.matchedInstanceCategory = instanceData.matchedInstance['category']
+            	instanceData.matchedInstancePrice = instanceData.matchedInstance['onDemandPrice']
+              }
             for(let z=0;z<Object.keys(instanceData).length;z++){
                 if(Array.isArray(instanceData[Object.keys(instanceData)[z]])){
                     delete instanceData[Object.keys(instanceData)[z]]
@@ -85,8 +90,8 @@ export default class OptimizationCandidates extends React.Component {
         })
 
         return (
-            <Modal size="fullscreen" trigger={<Button size="mini" onClick={()=>this.setState({modalInstanceData: this.props.instances, column: null, direction: null})}>Show Optimization Candidates</Button>}>
-                <Modal.Header>Optimization Candidates - {this.props.header}<span style={{float:"right"}}>
+            <Modal size="fullscreen" trigger={<Button size="mini" onClick={()=>this.setState({modalInstanceData: this.props.instances, column: null, direction: null})}>Show Optimization Candidates</Button>} closeIcon>
+                <Modal.Header>Optimization Candidates - {this.props.header}<span style={{float:"right", position: "relative", right: "22px"}}>
                     <CsvDownload style={{
                         borderRadius:"6px",
                         border:"1px solid #000000",
@@ -107,6 +112,10 @@ export default class OptimizationCandidates extends React.Component {
                                     sorted={this.state.column === 'hostname' ? this.state.direction : null}
                                     onClick={()=>this.handleTableSort('hostname')}>
                                 host</Table.HeaderCell>
+                                <Table.HeaderCell
+                                    sorted={this.state.column === 'entityName' ? this.state.direction : null}
+                                    onClick={()=>this.handleTableSort('entityName')}>
+                                entity</Table.HeaderCell>
                                 <Table.HeaderCell
                                     sorted={this.state.column === 'maxCpuPercent' ? this.state.direction : null}
                                     onClick={()=>this.handleTableSort('maxCpuPercent')}>
@@ -175,6 +184,7 @@ export default class OptimizationCandidates extends React.Component {
                                     return (
                                         <Table.Row key={i} active={instance.suggestedInstanceType == "stale"}>
                                             <Table.Cell><a style={{color: instance.suggestedInstanceType == "stale" ? "black" : "black"}} href={link} rel="noopener noreferrer" target="_blank">{instance.hostname} <Icon name='external alternate' /></a></Table.Cell>
+                                            <Table.Cell><a style={{color: instance.suggestedInstanceType == "stale" ? "black" : "black"}} href={link} rel="noopener noreferrer" target="_blank">{instance.entityName} <Icon name='external alternate' /></a></Table.Cell>
                                             <Table.Cell>{instance.maxCpuPercent.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{instance.maxMemoryPercent.toFixed(2)}</Table.Cell>
                                             <Table.Cell>{instance.transmitBytesPerSecond.toFixed(2)}</Table.Cell>

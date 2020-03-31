@@ -2,19 +2,12 @@
   "private": true,
   "name": "nr1-cloud-optimize",
   "description": "Nerdpack cloud-optimize",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "scripts": {
     "start": "nr1 nerdpack:serve",
     "test": "exit 0",
     "eslint-check": "eslint nerdlets/",
     "eslint-fix": "eslint nerdlets/ --fix"
-  },
-  "nr1": {
-    "uuidAlt": "a95ed543-c1e4-4bcd-a9a4-ad2d68440def",
-    "uuidStaging": "35e0f5ec-7e97-4d04-ba95-1779c936878c",
-    "sdkVersion": 2,
-    "uuidLGA": "eb714647-7de2-4ed0-9ec8-2e18e2ae6385",
-    "uuid": "e30b3b37-db06-439a-b030-cd5bcf7ee323"
   },
   "bugs": {
     "email": "opensource@newrelic.com"
