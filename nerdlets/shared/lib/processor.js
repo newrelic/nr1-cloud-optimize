@@ -5,17 +5,17 @@ export const pluckCloudInstance = (
   operatingSystem,
   cloudData
 ) => {
-  let clouds = Object.keys(cloudData);
-  for (var i = 0; i < clouds.length; i++) {
-    for (var z = 0; z < cloudData[clouds[i]].length; z++) {
-      if (cloudData[clouds[i]][z].type == instanceType) {
-        let instance = cloudData[clouds[i]][z];
+  const clouds = Object.keys(cloudData);
+  for (let i = 0; i < clouds.length; i++) {
+    for (let z = 0; z < cloudData[clouds[i]].length; z++) {
+      if (cloudData[clouds[i]][z].type === instanceType) {
+        const instance = cloudData[clouds[i]][z];
         instance.cloud = clouds[i];
         return instance;
       }
     }
   }
-  //console.log(`unable to get cloud instance price for ${instanceType} : ${operatingSystem}`)
+  // console.log(`unable to get cloud instance price for ${instanceType} : ${operatingSystem}`)
   return false;
 };
 
@@ -46,7 +46,7 @@ export const processSample = (
   }
 
   for (let z = 0; z < networkSamples.length; z++) {
-    if (sample.entityGuid == networkSamples[z].entityGuid) {
+    if (sample.entityGuid === networkSamples[z].entityGuid) {
       sample.receiveBytesPerSecond = networkSamples[z].receiveBytesPerSecond;
       sample.transmitBytesPerSecond = networkSamples[z].transmitBytesPerSecond;
       break;
@@ -64,7 +64,7 @@ export const processSample = (
     sample.suggestions = determineCloudInstance(config, sample, cloudData);
 
     if (sample.suggestions) {
-      let optimizedSuggestion = sample.suggestions.suggested;
+      const optimizedSuggestion = sample.suggestions.suggested;
       sample.suggestedInstanceType = optimizedSuggestion.instanceType;
       sample.instancePrice2 =
         parseFloat(optimizedSuggestion.price) * config.discountMultiplier;
@@ -81,13 +81,13 @@ export const processSample = (
 };
 
 export const groupInstances = (data, type, val, state, forceGroupBy) => {
-  let tempData = data || state.instanceData;
-  let { config, groupByDefault, cloudData } = state;
-  let groupBy = forceGroupBy
+  const tempData = data || state.instanceData;
+  const { config, groupByDefault, cloudData } = state;
+  const groupBy = forceGroupBy
     ? 'nr.cloud.optimize.flat'
-    : (type == 'groupBy' ? val : null) || config.groupBy || groupByDefault;
+    : (type === 'groupBy' ? val : null) || config.groupBy || groupByDefault;
 
-  if (type == 'awsPricingRegion' || type == 'recalc') {
+  if (type === 'awsPricingRegion' || type === 'recalc') {
     tempData.forEach((sample, i) => {
       // reset
       sample.suggestions = null;
@@ -111,7 +111,7 @@ export const groupInstances = (data, type, val, state, forceGroupBy) => {
       );
 
       if (tempData[i].suggestions) {
-        let optimizedSuggestion = tempData[i].suggestions.suggested;
+        const optimizedSuggestion = tempData[i].suggestions.suggested;
         tempData[i].suggestedInstanceType = optimizedSuggestion.instanceType;
         tempData[i].instancePrice2 =
           parseFloat(optimizedSuggestion.price) * config.discountMultiplier;
@@ -124,28 +124,28 @@ export const groupInstances = (data, type, val, state, forceGroupBy) => {
     });
   }
 
-  let totals = {
+  const totals = {
     optimizedCost: 0,
     nonOptimizedCost: 0,
     saving: 0,
     optimizedCount: 0,
-    nonOptimizedCount: 0,
+    nonOptimizedCount: 0
   };
 
-  let grouped = _(tempData)
+  const grouped = _(tempData)
     .groupBy(x => x[groupBy])
     .map((value, key) => {
-      let summary = {
+      const summary = {
         optimizedCost: 0,
         nonOptimizedCost: 0,
         saving: 0,
         optimizedCount: 0,
         nonOptimizedCount: 0,
-        totalInstances: value.length,
+        totalInstances: value.length
       };
 
       value.forEach(instance => {
-        if (instance.saving > 0 && instance.instanceType == 'stale') {
+        if (instance.saving > 0 && instance.instanceType === 'stale') {
           summary.optimizedCost += instance.instancePrice2;
           summary.nonOptimizedCost += instance.instancePrice1;
           summary.saving += instance.saving;
@@ -192,11 +192,11 @@ export const groupInstances = (data, type, val, state, forceGroupBy) => {
 };
 
 export const determineCloudInstance = (cfg, instanceData, cloudData) => {
-  let numCpu = instanceData.numCpu * cfg.rightSizeCpu;
-  let memoryGb = instanceData.memGB * cfg.rightSizeMem;
-  let discoveredPrices = [];
-  let strategy = 'cost';
-  let cloud = instanceData.matchedInstance.cloud;
+  const numCpu = instanceData.numCpu * cfg.rightSizeCpu;
+  const memoryGb = instanceData.memGB * cfg.rightSizeMem;
+  const discoveredPrices = [];
+  const strategy = 'cost';
+  const cloud = instanceData.matchedInstance.cloud;
 
   // Instance Inclusion
   if (
@@ -247,22 +247,22 @@ export const determineCloudInstance = (cfg, instanceData, cloudData) => {
   }
 
   if (
-    cpuCheck == cpuStale &&
-    memCheck == memStale &&
-    recCheck == recStale &&
-    traCheck == traStale
+    cpuCheck === cpuStale &&
+    memCheck === memStale &&
+    recCheck === recStale &&
+    traCheck === traStale
   ) {
     discoveredPrices.push({
       price: 0,
       instanceType: 'stale',
       suggestion: 'stale',
-      strategy: strategy,
+      strategy: strategy
     });
 
-    let priceDiscovery = {
+    const priceDiscovery = {
       cheapest: discoveredPrices[0],
       suggested: discoveredPrices[0],
-      all: discoveredPrices,
+      all: discoveredPrices
     };
 
     return priceDiscovery;
@@ -281,42 +281,42 @@ export const determineCloudInstance = (cfg, instanceData, cloudData) => {
     let prices = cloudData[cloud];
 
     // store combinations per family, eg. combinations for direct match, cpu+, mem+, cpu and mem+
-    let instanceFamiliesDirect = {};
-    let instanceFamiliesCpu = {};
-    let instanceFamiliesMem = {};
-    let instanceFamiliesCpuMem = {};
+    const instanceFamiliesDirect = {};
+    const instanceFamiliesCpu = {};
+    const instanceFamiliesMem = {};
+    const instanceFamiliesCpuMem = {};
 
     // order price list by cost
     prices = _.orderBy(
       prices,
       [
         function(e) {
-          return e['onDemandPrice'];
-        },
+          return e.onDemandPrice;
+        }
       ],
       ['asc', 'desc']
     );
 
-    for (var i = 0; i < prices.length; i++) {
-      if (checkExclusion(cfg.instanceOptionsCurrent, prices[i]['type'])) {
+    for (let i = 0; i < prices.length; i++) {
+      if (checkExclusion(cfg.instanceOptionsCurrent, prices[i].type)) {
         continue;
       }
 
       // directly matching
       if (
-        prices[i]['cpusPerVm'] == numCpu &&
-        parseFloat(prices[i]['memPerVm']) == memoryGb
+        prices[i].cpusPerVm === numCpu &&
+        parseFloat(prices[i].memPerVm) === memoryGb
       ) {
-        if (!instanceFamiliesDirect[prices[i]['category']]) {
-          let payload = {
+        if (!instanceFamiliesDirect[prices[i].category]) {
+          const payload = {
             price: parseFloat(prices[i].onDemandPrice).toFixed(2),
-            instanceType: prices[i]['type'],
-            instanceFamily: prices[i]['category'],
-            vcpu: prices[i]['cpusPerVm'],
-            memory: prices[i]['memPerVm'],
-            strategy: strategy,
+            instanceType: prices[i].type,
+            instanceFamily: prices[i].category,
+            vcpu: prices[i].cpusPerVm,
+            memory: prices[i].memPerVm,
+            strategy: strategy
           };
-          instanceFamiliesDirect[prices[i]['category']] = payload;
+          instanceFamiliesDirect[prices[i].category] = payload;
           discoveredPrices.push(payload);
           continue;
         }
@@ -324,19 +324,19 @@ export const determineCloudInstance = (cfg, instanceData, cloudData) => {
 
       // a bit more cpu
       if (
-        prices[i]['cpusPerVm'] > numCpu &&
-        parseFloat(prices[i]['memPerVm']) == memoryGb
+        prices[i].cpusPerVm > numCpu &&
+        parseFloat(prices[i].memPerVm) === memoryGb
       ) {
-        if (!instanceFamiliesCpu[prices[i]['category']]) {
-          let payload = {
+        if (!instanceFamiliesCpu[prices[i].category]) {
+          const payload = {
             price: parseFloat(prices[i].onDemandPrice).toFixed(2),
-            instanceType: prices[i]['type'],
-            instanceFamily: prices[i]['category'],
-            vcpu: prices[i]['cpusPerVm'],
-            memory: prices[i]['memPerVm'],
-            strategy: strategy,
+            instanceType: prices[i].type,
+            instanceFamily: prices[i].category,
+            vcpu: prices[i].cpusPerVm,
+            memory: prices[i].memPerVm,
+            strategy: strategy
           };
-          instanceFamiliesCpu[prices[i]['category']] = payload;
+          instanceFamiliesCpu[prices[i].category] = payload;
           discoveredPrices.push(payload);
           continue;
         }
@@ -344,19 +344,19 @@ export const determineCloudInstance = (cfg, instanceData, cloudData) => {
 
       // a bit more mem
       if (
-        prices[i]['cpusPerVm'] == numCpu &&
-        parseFloat(prices[i]['memPerVm']) > memoryGb
+        prices[i].cpusPerVm === numCpu &&
+        parseFloat(prices[i].memPerVm) > memoryGb
       ) {
-        if (!instanceFamiliesMem[prices[i]['category']]) {
-          let payload = {
+        if (!instanceFamiliesMem[prices[i].category]) {
+          const payload = {
             price: parseFloat(prices[i].onDemandPrice).toFixed(2),
-            instanceType: prices[i]['type'],
-            instanceFamily: prices[i]['category'],
-            vcpu: prices[i]['cpusPerVm'],
-            memory: prices[i]['memPerVm'],
-            strategy: strategy,
+            instanceType: prices[i].type,
+            instanceFamily: prices[i].category,
+            vcpu: prices[i].cpusPerVm,
+            memory: prices[i].memPerVm,
+            strategy: strategy
           };
-          instanceFamiliesMem[prices[i]['category']] = payload;
+          instanceFamiliesMem[prices[i].category] = payload;
           discoveredPrices.push(payload);
           continue;
         }
@@ -364,19 +364,19 @@ export const determineCloudInstance = (cfg, instanceData, cloudData) => {
 
       // a bit more cpu & mem
       if (
-        prices[i]['cpusPerVm'] > numCpu &&
-        parseFloat(prices[i]['memPerVm']) > memoryGb
+        prices[i].cpusPerVm > numCpu &&
+        parseFloat(prices[i].memPerVm) > memoryGb
       ) {
-        if (!instanceFamiliesCpuMem[prices[i]['category']]) {
-          let payload = {
+        if (!instanceFamiliesCpuMem[prices[i].category]) {
+          const payload = {
             price: parseFloat(prices[i].onDemandPrice).toFixed(2),
-            instanceType: prices[i]['type'],
-            instanceFamily: prices[i]['category'],
-            vcpu: prices[i]['cpusPerVm'],
-            memory: prices[i]['memPerVm'],
-            strategy: strategy,
+            instanceType: prices[i].type,
+            instanceFamily: prices[i].category,
+            vcpu: prices[i].cpusPerVm,
+            memory: prices[i].memPerVm,
+            strategy: strategy
           };
-          instanceFamiliesCpuMem[prices[i]['category']] = payload;
+          instanceFamiliesCpuMem[prices[i].category] = payload;
           discoveredPrices.push(payload);
           continue;
         }
@@ -384,10 +384,10 @@ export const determineCloudInstance = (cfg, instanceData, cloudData) => {
     }
 
     if (discoveredPrices.length > 0) {
-      let priceDiscovery = {
+      const priceDiscovery = {
         cheapest: discoveredPrices[0],
         suggested: discoveredPrices[0],
-        all: discoveredPrices,
+        all: discoveredPrices
       };
 
       if (instanceData.maxCpuPercent >= cfg.optimizeBy) {

@@ -1,12 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Menu, Dropdown, Popup } from 'semantic-ui-react';
 import Configuration from '../../shared/components/config';
 import SnapshotList from './snapshots/snapshotList';
 import PricingSelector from '../../shared/components/pricingSelector';
 import { cloudLabelAttributeToDisplayName } from '../../shared/lib/utils';
-import _ from 'lodash';
 
 export default class MenuBar extends React.Component {
+  static propTypes = {
+    config: PropTypes.object,
+    handleParentState: PropTypes.func,
+    cloudLabelGroups: PropTypes.array,
+    instanceLength: PropTypes.number,
+    snapshots: PropTypes.array,
+    fetchSnapshots: PropTypes.func,
+    cloudOptimizeSnapshots: PropTypes.func,
+    cloudRegions: PropTypes.array,
+    fetchCloudPricing: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
     this.handleOptimize = this.handleOptimize.bind(this);
@@ -14,9 +26,9 @@ export default class MenuBar extends React.Component {
   }
 
   async handleDropdownChange(event, data, type) {
-    let tempConfig = this.props.config;
+    const tempConfig = this.props.config;
     tempConfig[type] = data.value;
-    tempConfig[type + 'Label'] = data.text;
+    tempConfig[`${type}Label`] = data.text;
     await this.props.handleParentState(
       'config',
       tempConfig,
@@ -25,8 +37,8 @@ export default class MenuBar extends React.Component {
   }
 
   async handleOptimize(e) {
-    let tempConfig = this.props.config;
-    tempConfig['optimizeBy'] = e.target.value;
+    const tempConfig = this.props.config;
+    tempConfig.optimizeBy = e.target.value;
     await this.props.handleParentState(
       'config',
       tempConfig,
@@ -43,14 +55,14 @@ export default class MenuBar extends React.Component {
       { attributeName: 'instanceType', displayName: 'Instance Type' },
       {
         attributeName: 'suggestedInstanceType',
-        displayName: 'Suggested Instance Type',
-      },
+        displayName: 'Suggested Instance Type'
+      }
     ];
 
     const cloudLabelGroupOptions = this.props.cloudLabelGroups.map(group => {
       return {
         attributeName: group,
-        displayName: cloudLabelAttributeToDisplayName(group),
+        displayName: cloudLabelAttributeToDisplayName(group)
       };
     });
 
@@ -60,7 +72,7 @@ export default class MenuBar extends React.Component {
       { key: 3, text: 'Non Optimized Count', value: 'nonOptimizedCount' },
       { key: 4, text: 'Optimized Value', value: 'optimizedCost' },
       { key: 5, text: 'Optimized Count', value: 'optimizedCount' },
-      { key: 6, text: 'Instance Count', value: 'totalInstances' },
+      { key: 6, text: 'Instance Count', value: 'totalInstances' }
     ];
 
     return (
@@ -116,11 +128,7 @@ export default class MenuBar extends React.Component {
         />
         <Popup
           trigger={<Menu.Item>Optimize By:</Menu.Item>}
-          content={
-            'Optimize Instances below ' +
-            this.props.config.optimizeBy +
-            '% CPU or Memory Utilization'
-          }
+          content={`Optimize Instances below ${this.props.config.optimizeBy}% CPU or Memory Utilization`}
           basic
         />
         <Menu.Item>
@@ -135,11 +143,7 @@ export default class MenuBar extends React.Component {
         </Menu.Item>
         <Popup
           trigger={<Menu.Item>{this.props.config.optimizeBy}</Menu.Item>}
-          content={
-            'Optimize Instances below ' +
-            this.props.config.optimizeBy +
-            '% CPU or Memory Utilization'
-          }
+          content={`Optimize Instances below ${this.props.config.optimizeBy}% CPU or Memory Utilization`}
           basic
         />
 

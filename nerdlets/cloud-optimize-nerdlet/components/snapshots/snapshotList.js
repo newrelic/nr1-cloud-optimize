@@ -1,12 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Icon, Menu } from 'semantic-ui-react';
 import SnapshotTable from './snapshotTable';
 import _ from 'lodash';
 
 export default class SnapshotList extends React.Component {
+  static propTypes = {
+    fetchSnapshots: PropTypes.func,
+    snapshots: PropTypes.array,
+    cloudOptimizeSnapshots: PropTypes.func
+  };
+
   renderSnapshotList(groups) {
-    let grouped = _(groups)
-      .groupBy(x => x.document['g'])
+    const grouped = _(groups)
+      .groupBy(x => x.document.g)
       .map((value, key) => {
         return { group: key, data: value };
       })

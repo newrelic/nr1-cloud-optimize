@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Segment,
   Table,
@@ -7,7 +8,7 @@ import {
   Divider,
   Button,
   Grid,
-  Header,
+  Header
 } from 'semantic-ui-react';
 import { navigation } from 'nr1';
 import _ from 'lodash';
@@ -15,36 +16,45 @@ import _ from 'lodash';
 const monthlyHours = 720;
 
 export default class OptimizationCandidates extends React.Component {
+  static propTypes = {
+    sorted: PropTypes.array,
+    hasCloud: PropTypes.bool
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       column: null,
       direction: null,
-      data: [],
+      data: []
     };
   }
 
+  /* eslint-disable react/no-deprecated */
+  // Tracking issue https://github.com/newrelic/nr1-cloud-optimize/issues/38
   componentWillReceiveProps(props) {
+    const { sorted } = props;
     this.setState({
-      data: props.sorted && props.sorted[0] ? props.sorted[0].instances : [],
+      data: sorted && sorted[0] ? sorted[0].instances : []
     });
   }
+  /* eslint-enable */
 
   handleTableSort(clickedColumn) {
+    const { data, direction } = this.state;
     if (this.state.column !== clickedColumn) {
       this.setState({
         column: clickedColumn,
-        data: _.sortBy(this.state.data, [clickedColumn]),
-        direction: 'ascending',
+        data: _.sortBy(data, [clickedColumn]),
+        direction: 'ascending'
       });
       return;
     }
 
     this.setState({
       column: clickedColumn,
-      data: this.state.data.reverse(),
-      direction:
-        this.state.direction === 'ascending' ? 'descending' : 'ascending',
+      data: data.reverse(),
+      direction: direction === 'ascending' ? 'descending' : 'ascending'
     });
   }
 
@@ -102,8 +112,8 @@ export default class OptimizationCandidates extends React.Component {
   }
 
   render() {
-    let { hasCloud } = this.props;
-    let header = hasCloud
+    const { hasCloud } = this.props;
+    const header = hasCloud
       ? 'Optimization Candidates'
       : 'Service does not appear to have any cloud instances.';
     return (
@@ -265,7 +275,7 @@ export default class OptimizationCandidates extends React.Component {
                       instance.suggestions &&
                       instance.saving > 0
                     ) {
-                      let tempSuggestions =
+                      const tempSuggestions =
                         instance.suggestions && instance.suggestions.all
                           ? [...instance.suggestions.all]
                           : [];
@@ -274,7 +284,7 @@ export default class OptimizationCandidates extends React.Component {
                       return (
                         <Table.Row
                           key={i}
-                          active={instance.suggestedInstanceType == 'stale'}
+                          active={instance.suggestedInstanceType === 'stale'}
                         >
                           <Table.Cell
                             style={{ cursor: 'pointer' }}
@@ -325,6 +335,8 @@ export default class OptimizationCandidates extends React.Component {
                           </Table.Cell>
                         </Table.Row>
                       );
+                    } else {
+                      return '';
                     }
                   })}
                 </Table.Body>

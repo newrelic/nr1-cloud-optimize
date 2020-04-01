@@ -1,18 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Icon, Button, Table } from 'semantic-ui-react';
 import SnapshotTable from './snapshotTable';
 import { writeDocument } from '../../../shared/lib/utils';
 
 export default class SnapshotCard extends React.Component {
+  static propTypes = {
+    fetchSnapshots: PropTypes.func,
+    snapshots: PropTypes.array,
+    config: PropTypes.object,
+    data: PropTypes.object,
+    cloudOptimizeSnapshots: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
-    this.state = { configMatch: true };
+    this.state = {};
     this.readSnapshots = this.readSnapshots.bind(this);
     this.writeSnapshot = this.writeSnapshot.bind(this);
   }
 
   async writeSnapshot(data, config) {
-    let payload = {
+    const payload = {
       t: new Date().getTime(),
       c: config,
       g: data.group,
@@ -20,7 +29,7 @@ export default class SnapshotCard extends React.Component {
       oc: data.optimizedCost,
       s: data.saving,
       noi: data.nonOptimizedCount,
-      oi: data.optimizedCount,
+      oi: data.optimizedCount
     };
     await writeDocument('cloudOptimizeSnapshots', `ss_${payload.t}`, payload);
     this.props.fetchSnapshots();
@@ -28,10 +37,10 @@ export default class SnapshotCard extends React.Component {
 
   readSnapshots(group) {
     return this.props.snapshots
-      .filter(snapshot => group == snapshot.document.g)
+      .filter(snapshot => group === snapshot.document.g)
       .map(ss => {
         ss.document.configMatch =
-          JSON.stringify(this.props.config) == JSON.stringify(ss.document.c);
+          JSON.stringify(this.props.config) === JSON.stringify(ss.document.c);
         return ss.document;
       });
   }
@@ -52,7 +61,7 @@ export default class SnapshotCard extends React.Component {
           float: 'right',
           padding: '6px 24px',
           textDecoration: 'none',
-          cursor: 'pointer',
+          cursor: 'pointer'
         }}
         onClick={() => {
           this.writeSnapshot(this.props.data, this.props.config);
@@ -81,7 +90,7 @@ export default class SnapshotCard extends React.Component {
                 float: 'right',
                 padding: '6px 24px',
                 textDecoration: 'none',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }}
             />
           }
@@ -124,9 +133,9 @@ export default class SnapshotCard extends React.Component {
   }
 
   render() {
-    let snapshots = this.readSnapshots(this.props.data.group);
+    const snapshots = this.readSnapshots(this.props.data.group);
     return (
-      <Modal size={'fullscreen'} trigger={<Icon name="clone" />}>
+      <Modal size="fullscreen" trigger={<Icon name="clone" />}>
         <Modal.Header>
           Snapshots ({snapshots.length}) - {this.props.data.group}
           {this.writeSnapshotButton()}
@@ -137,13 +146,11 @@ export default class SnapshotCard extends React.Component {
             style={{ overflow: 'scroll', height: '100%', minHeight: '275px' }}
           >
             <div style={{ position: 'absolute', height: '100%', zIndex: 100 }}>
-              {
-                <SnapshotTable
-                  data={this.props.data}
-                  fetchSnapshots={this.props.fetchSnapshots}
-                  cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}
-                />
-              }
+              <SnapshotTable
+                data={this.props.data}
+                fetchSnapshots={this.props.fetchSnapshots}
+                cloudOptimizeSnapshots={this.props.cloudOptimizeSnapshots}
+              />
             </div>
             <div style={{ display: 'flex', paddingLeft: '415px' }}>
               {snapshots.map((snapshot, i) => (

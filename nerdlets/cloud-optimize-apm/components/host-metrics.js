@@ -1,13 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Header, Statistic, Divider, Segment } from 'semantic-ui-react';
 
 export default class HostMetrics extends React.Component {
+  static propTypes = {
+    hostMetrics: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
   }
 
   render() {
-    let { hostMetrics } = this.props;
+    const { hostMetrics } = this.props;
 
     return (
       <>

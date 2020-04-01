@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Table, Icon, Modal } from 'semantic-ui-react';
 import CsvDownload from 'react-json-to-csv';
 import _ from 'lodash';
@@ -6,32 +7,35 @@ import _ from 'lodash';
 const monthlyHours = 720;
 
 export default class OptimizationCandidates extends React.Component {
+  static propTypes = {
+    instances: PropTypes.array,
+    header: PropTypes.string
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       column: null,
       direction: null,
-      modalInstanceData: [],
+      modalInstanceData: []
     };
   }
 
   handleTableSort(clickedColumn) {
+    const { modalInstanceData, direction } = this.state;
     if (this.state.column !== clickedColumn) {
       this.setState({
         column: clickedColumn,
-        modalInstanceData: _.sortBy(this.state.modalInstanceData, [
-          clickedColumn,
-        ]),
-        direction: 'ascending',
+        modalInstanceData: _.sortBy(modalInstanceData, [clickedColumn]),
+        direction: 'ascending'
       });
       return;
     }
 
     this.setState({
       column: clickedColumn,
-      modalInstanceData: this.state.modalInstanceData.reverse(),
-      direction:
-        this.state.direction === 'ascending' ? 'descending' : 'ascending',
+      modalInstanceData: modalInstanceData.reverse(),
+      direction: direction === 'ascending' ? 'descending' : 'ascending'
     });
   }
 
@@ -89,20 +93,21 @@ export default class OptimizationCandidates extends React.Component {
   }
 
   render() {
-    let exported = [...this.props.instances]
+    const { instances, header } = this.props;
+    const { direction, column } = this.state;
+    const exported = [...instances]
       .filter(instance => instance.suggestion || instance.saving > 0)
       .map(instance => {
-        let instanceData = { ...instance };
+        const instanceData = { ...instance };
         // delete arrays and objects to avoid any issues with csv export
         delete instanceData.suggestions;
         delete instanceData.hostnameapmApplicationNamesentityGuidawsRegion;
         if (instanceData.matchedInstance) {
-          instanceData.matchedInstanceType =
-            instanceData.matchedInstance['type'];
+          instanceData.matchedInstanceType = instanceData.matchedInstance.type;
           instanceData.matchedInstanceCategory =
-            instanceData.matchedInstance['category'];
+            instanceData.matchedInstance.category;
           instanceData.matchedInstancePrice =
-            instanceData.matchedInstance['onDemandPrice'];
+            instanceData.matchedInstance.onDemandPrice;
         }
         for (let z = 0; z < Object.keys(instanceData).length; z++) {
           if (Array.isArray(instanceData[Object.keys(instanceData)[z]])) {
@@ -120,9 +125,9 @@ export default class OptimizationCandidates extends React.Component {
             size="mini"
             onClick={() =>
               this.setState({
-                modalInstanceData: this.props.instances,
+                modalInstanceData: instances,
                 column: null,
-                direction: null,
+                direction: null
               })
             }
           >
@@ -131,7 +136,7 @@ export default class OptimizationCandidates extends React.Component {
         }
       >
         <Modal.Header>
-          Optimization Candidates - {this.props.header}
+          Optimization Candidates - {header}
           <span style={{ float: 'right' }}>
             <CsvDownload
               style={{
@@ -142,7 +147,7 @@ export default class OptimizationCandidates extends React.Component {
                 fontWeight: 'bold',
                 padding: '6px 24px',
                 textDecoration: 'none',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }}
               data={exported}
             >
@@ -155,125 +160,81 @@ export default class OptimizationCandidates extends React.Component {
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'hostname'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'hostname' ? direction : null}
                   onClick={() => this.handleTableSort('hostname')}
                 >
                   host
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'entityName'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'entityName' ? direction : null}
                   onClick={() => this.handleTableSort('entityName')}
                 >
                   entity
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'maxCpuPercent'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'maxCpuPercent' ? direction : null}
                   onClick={() => this.handleTableSort('maxCpuPercent')}
                 >
                   maxCpuPercent
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'maxMemoryPercent'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'maxMemoryPercent' ? direction : null}
                   onClick={() => this.handleTableSort('maxMemoryPercent')}
                 >
                   maxMemoryPercent
                 </Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={
-                    this.state.column === 'transmitBytesPerSecond'
-                      ? this.state.direction
-                      : null
+                    column === 'transmitBytesPerSecond' ? direction : null
                   }
                   onClick={() => this.handleTableSort('transmitBytesPerSecond')}
                 >
                   maxTransmitBytes/s
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'receiveBytesPerSecond'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'receiveBytesPerSecond' ? direction : null}
                   onClick={() => this.handleTableSort('receiveBytesPerSecond')}
                 >
                   maxReceiveBytes/s
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'numCpu' ? this.state.direction : null
-                  }
+                  sorted={column === 'numCpu' ? direction : null}
                   onClick={() => this.handleTableSort('numCpu')}
                 >
                   numCpu
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'memGB' ? this.state.direction : null
-                  }
+                  sorted={column === 'memGB' ? direction : null}
                   onClick={() => this.handleTableSort('memGB')}
                 >
                   memGB
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'instanceType'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'instanceType' ? direction : null}
                   onClick={() => this.handleTableSort('instanceType')}
                 >
                   instanceType
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'instancePrice1'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'instancePrice1' ? direction : null}
                   onClick={() => this.handleTableSort('instancePrice1')}
                 >
                   price /m
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'suggestedInstanceType'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'suggestedInstanceType' ? direction : null}
                   onClick={() => this.handleTableSort('suggestedInstanceType')}
                 >
                   suggestedInstanceType
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'instancePrice2'
-                      ? this.state.direction
-                      : null
-                  }
+                  sorted={column === 'instancePrice2' ? direction : null}
                   onClick={() => this.handleTableSort('instancePrice2')}
                 >
                   suggested price /m
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={
-                    this.state.column === 'saving' ? this.state.direction : null
-                  }
+                  sorted={column === 'saving' ? direction : null}
                   onClick={() => this.handleTableSort('saving')}
                 >
                   saving /m
@@ -284,27 +245,25 @@ export default class OptimizationCandidates extends React.Component {
             <Table.Body>
               {this.state.modalInstanceData.map((instance, i) => {
                 if (instance.suggestion && instance.saving > 0) {
-                  let tempSuggestions =
+                  const tempSuggestions =
                     instance.suggestions && instance.suggestions.all
                       ? [...instance.suggestions.all]
                       : [];
                   tempSuggestions.shift();
 
-                  let link =
-                    'https://one.newrelic.com/redirect/entity/' +
-                    instance.entityGuid;
+                  const link = `https://one.newrelic.com/redirect/entity/${instance.entityGuid}`;
                   return (
                     <Table.Row
                       key={i}
-                      active={instance.suggestedInstanceType == 'stale'}
+                      active={instance.suggestedInstanceType === 'stale'}
                     >
                       <Table.Cell>
                         <a
                           style={{
                             color:
-                              instance.suggestedInstanceType == 'stale'
+                              instance.suggestedInstanceType === 'stale'
                                 ? 'black'
-                                : 'black',
+                                : 'black'
                           }}
                           href={link}
                           rel="noopener noreferrer"
@@ -317,9 +276,9 @@ export default class OptimizationCandidates extends React.Component {
                         <a
                           style={{
                             color:
-                              instance.suggestedInstanceType == 'stale'
+                              instance.suggestedInstanceType === 'stale'
                                 ? 'black'
-                                : 'black',
+                                : 'black'
                           }}
                           href={link}
                           rel="noopener noreferrer"
@@ -369,6 +328,8 @@ export default class OptimizationCandidates extends React.Component {
                       </Table.Cell>
                     </Table.Row>
                   );
+                } else {
+                  return '';
                 }
               })}
             </Table.Body>

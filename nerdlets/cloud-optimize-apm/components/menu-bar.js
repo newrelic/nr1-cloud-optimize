@@ -1,17 +1,26 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Statistic } from 'semantic-ui-react';
 import PricingSelector from '../../shared/components/pricingSelector';
 import Config from '../../shared/components/config';
 
 export default class MenuBar extends React.Component {
+  static propTypes = {
+    config: PropTypes.object,
+    handleParentState: PropTypes.func,
+    cloudRegions: PropTypes.array,
+    fetchCloudPricing: PropTypes.func,
+    totals: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
     this.handleOptimize = this.handleOptimize.bind(this);
   }
 
   async handleOptimize(e) {
-    let tempConfig = this.props.config;
-    tempConfig['optimizeBy'] = e.target.value;
+    const tempConfig = this.props.config;
+    tempConfig.optimizeBy = e.target.value;
     await this.props.handleParentState(
       'config',
       tempConfig,
@@ -20,14 +29,14 @@ export default class MenuBar extends React.Component {
   }
 
   render() {
-    let { totals } = this.props;
-    let optimizedPerc =
+    const { totals } = this.props;
+    const optimizedPerc =
       (totals.optimizedCount /
         (totals.nonOptimizedCount + totals.optimizedCount)) *
       100;
-    let savings =
-      '$' +
-      (totals.saving * 720 * 12).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    const savings = `$${(totals.saving * 720 * 12)
+      .toFixed(2)
+      .replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
 
     return (
       <div className="utility-bar">
@@ -41,14 +50,14 @@ export default class MenuBar extends React.Component {
             paddingLeft: '15px',
             paddingRight: '15px',
             marginTop: '10px',
-            marginBottom: '10px',
+            marginBottom: '10px'
           }}
         >
           <Statistic
             size="small"
             horizontal
-            label={`Optimized`}
-            value={(isNaN(optimizedPerc) ? '0' : optimizedPerc) + '%'}
+            label="Optimized"
+            value={`${isNaN(optimizedPerc) ? '0' : optimizedPerc}%`}
             style={{ marginTop: '7px' }}
           />
         </div>
@@ -61,25 +70,25 @@ export default class MenuBar extends React.Component {
             paddingLeft: '15px',
             paddingRight: '15px',
             marginTop: '10px',
-            marginBottom: '10px',
+            marginBottom: '10px'
           }}
         >
           <Statistic
             size="small"
             horizontal
-            label={`Potential Yearly Saving`}
+            label="Potential Yearly Saving"
             value={savings}
             style={{ marginTop: '7px' }}
           />
         </div>
 
-        <div className="flex-push"></div>
+        <div className="flex-push" />
 
         <div
           style={{
             backgroundColor: '#fafbfb',
             height: '45px',
-            borderRadius: '3px',
+            borderRadius: '3px'
           }}
         >
           <span
@@ -88,7 +97,7 @@ export default class MenuBar extends React.Component {
               textTransform: 'uppercase',
               fontWeight: 600,
               lineHeight: '45px',
-              verticalAlign: 'middle',
+              verticalAlign: 'middle'
             }}
           >
             &nbsp;&nbsp;Optimize By: {this.props.config.optimizeBy}%&nbsp;
@@ -102,7 +111,7 @@ export default class MenuBar extends React.Component {
             marginRight: '10px',
             borderRadius: '3px',
             width: '200px',
-            lineHeight: '45px',
+            lineHeight: '45px'
           }}
         >
           <input
@@ -110,7 +119,7 @@ export default class MenuBar extends React.Component {
               width: '90%',
               marginLeft: '10px',
               marginRight: '10px',
-              lineHeight: '45px',
+              lineHeight: '45px'
             }}
             type="range"
             max="80"

@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { AutoSizer } from 'nr1';
 import {
   nerdGraphQuery,
   getEntityData,
   getInfraHost,
   getInstanceData,
-  getContainerPerformance,
+  getContainerPerformance
 } from './utils';
 import MenuBar from './components/menu-bar';
 import { getDocument, writeDocument } from '../shared/lib/utils';
@@ -14,8 +16,13 @@ import MainCharts from './components/main-charts';
 import OptimizationCandidates from './components/optimization-candidates';
 import ContainerOptimization from './components/container-optimization';
 import HostMetrics from './components/host-metrics';
+import _ from 'lodash';
 
 export default class CloudOptimizeApm extends React.Component {
+  static propTypes = {
+    nerdletUrlState: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +33,7 @@ export default class CloudOptimizeApm extends React.Component {
         MaxCpuSysPerc: 0,
         MaxMemPerc: 0,
         MaxMemResidentBytes: 0,
-        MaxUniqueDailyContainers: 0,
+        MaxUniqueDailyContainers: 0
       },
       hostMetrics: {
         uniqueDailyHosts: 0,
@@ -35,7 +42,7 @@ export default class CloudOptimizeApm extends React.Component {
         MaxMemPerc: 0,
         MaxMemoryBytes: 0,
         MaxTxBytes: 0,
-        MaxRxBytes: 0,
+        MaxRxBytes: 0
       },
       systemSamples: [],
       networkSamples: [],
@@ -46,12 +53,12 @@ export default class CloudOptimizeApm extends React.Component {
       cloudData: {
         amazon: null,
         azure: null,
-        google: null,
+        google: null
       },
       cloudRegions: {
         amazon: [],
         azure: [],
-        google: [],
+        google: []
       },
       groupByDefault: 'accountName',
       sortByDefault: 'nonOptimizedCost',
@@ -62,7 +69,7 @@ export default class CloudOptimizeApm extends React.Component {
         nonOptimizedCost: 0,
         saving: 0,
         optimizedCount: 0,
-        nonOptimizedCount: 0,
+        nonOptimizedCount: 0
       },
       hasCloud: false,
       config: {
@@ -83,9 +90,9 @@ export default class CloudOptimizeApm extends React.Component {
         cloudData: {
           amazon: 'us-east-1',
           azure: 'eastus',
-          google: 'us-east1',
-        },
-      },
+          google: 'us-east1'
+        }
+      }
     };
     this.handleParentState = this.handleParentState.bind(this);
     this.fetchCloudPricing = this.fetchCloudPricing.bind(this);
@@ -93,10 +100,37 @@ export default class CloudOptimizeApm extends React.Component {
     this.fetchData = this.fetchData.bind(this);
   }
 
+  async componentDidMount() {
+    if (this.props.nerdletUrlState && this.props.nerdletUrlState.entityGuid) {
+      await this.setState({
+        entityGuid: this.props.nerdletUrlState.entityGuid
+      });
+      this.fetchData(this.props.nerdletUrlState.entityGuid);
+    }
+  }
+
+  /* eslint-disable react/no-did-update-set-state */
+  // tracking issue https://github.com/newrelic/nr1-cloud-optimize/issues/39
+  async componentDidUpdate() {
+    if (
+      this.props.nerdletUrlState &&
+      this.props.nerdletUrlState.entityGuid &&
+      this.state.entityGuid !== this.props.nerdletUrlState.entityGuid
+    ) {
+      this.setState({
+        entityGuid: this.props.nerdletUrlState.entityGuid
+      });
+      this.fetchData(this.props.nerdletUrlState.entityGuid);
+    }
+  }
+  /* eslint-enable */
+
+  /* eslint-disable no-async-promise-executor */
+  // tracking issue https://github.com/newrelic/nr1-cloud-optimize/issues/39
   handleParentState(key, val, trigger) {
     return new Promise(async resolve => {
       // store config updates back into nerdStore
-      if (key == 'config') writeDocument('cloudOptimizeCfg', 'main', val);
+      if (key === 'config') writeDocument('cloudOptimizeCfg', 'main', val);
 
       await this.setState({ [key]: val });
       switch (trigger) {
@@ -112,61 +146,40 @@ export default class CloudOptimizeApm extends React.Component {
       resolve();
     });
   }
-
-  async componentDidMount() {
-    if (this.props.nerdletUrlState && this.props.nerdletUrlState.entityGuid) {
-      await this.setState({
-        entityGuid: this.props.nerdletUrlState.entityGuid,
-      });
-      this.fetchData(this.props.nerdletUrlState.entityGuid);
-    }
-  }
-
-  async componentDidUpdate() {
-    if (
-      this.props.nerdletUrlState &&
-      this.props.nerdletUrlState.entityGuid &&
-      this.state.entityGuid != this.props.nerdletUrlState.entityGuid
-    ) {
-      await this.setState({
-        entityGuid: this.props.nerdletUrlState.entityGuid,
-      });
-      this.fetchData(this.props.nerdletUrlState.entityGuid);
-    }
-  }
+  /* eslint-enable */
 
   async fetchData(entityGuid) {
-    let result = await nerdGraphQuery(getEntityData(entityGuid));
-    let entityData = ((result || {}).actor || {}).entity || {};
+    const result = await nerdGraphQuery(getEntityData(entityGuid));
+    const entityData = ((result || {}).actor || {}).entity || {};
     let { config, cloudData, hasCloud } = this.state;
     if (entityData) {
       await this.handleUserConfig();
       await this.setState({ entityData });
-      let { hosts, containerIds } = await this.fetchSystemData(entityData);
+      const { hosts, containerIds } = await this.fetchSystemData(entityData);
       if (hosts && hosts.length > 0) {
         await this.setState({ hosts, containerIds });
-        let {
+        const {
           systemSamples,
           networkSamples,
-          uniqueDailyHosts,
+          uniqueDailyHosts
         } = await this.fetchHostPerformance(entityData.account.id, hosts);
         await this.setState({ systemSamples, networkSamples });
         await this.fetchCloudPricing();
 
-        let hostMetrics = {
+        const hostMetrics = {
           uniqueDailyHosts: uniqueDailyHosts,
           Hosts: systemSamples.length,
           MaxCpuPercent: 0,
           MaxMemPerc: 0,
           MaxMemoryBytes: 0,
           MaxTxBytes: 0,
-          MaxRxBytes: 0,
+          MaxRxBytes: 0
         };
 
         let currentHasCloud = false;
-        let tempInstanceData = [];
+        const tempInstanceData = [];
         systemSamples.forEach(sample => {
-          let instance = processSample(
+          const instance = processSample(
             entityData.account,
             sample,
             config,
@@ -191,30 +204,32 @@ export default class CloudOptimizeApm extends React.Component {
         await this.setState({
           instanceData: tempInstanceData,
           hostMetrics,
-          hasCloud,
+          hasCloud
         });
         this.groupAndSort(tempInstanceData, '', '');
       }
       if (containerIds && containerIds.length > 0) {
-        let containerMetrics = await this.fetchContainerPerformanceData(
+        const containerMetrics = await this.fetchContainerPerformanceData(
           entityData.account.id,
           entityData.applicationId
         );
-        await this.setState({ containerMetrics });
+        this.setState({ containerMetrics });
       }
     }
-    await this.setState({ loading: false });
+    this.setState({ loading: false });
   }
 
+  /* eslint-disable no-async-promise-executor */
+  // tracking issue https://github.com/newrelic/nr1-cloud-optimize/issues/39
   async fetchContainerPerformanceData(accountId, appId) {
     return new Promise(async resolve => {
-      let ngResult = await nerdGraphQuery(
+      const ngResult = await nerdGraphQuery(
         getContainerPerformance(accountId, appId)
       );
-      let result =
+      const result =
         ((((ngResult || {}).actor || {}).account || {}).container || {})
           .results || [];
-      let uniques =
+      const uniques =
         ((((ngResult || {}).actor || {}).account || {}).uniqueContainers || {})
           .results || [];
       let MaxUniqueDailyContainers = 0;
@@ -226,10 +241,11 @@ export default class CloudOptimizeApm extends React.Component {
       resolve(result[0]);
     });
   }
+  /* eslint-enable */
 
   async fetchSystemData(entityData) {
     return new Promise(resolve => {
-      let hostPromises = entityData.nrdbQuery.results.map(result =>
+      const hostPromises = entityData.nrdbQuery.results.map(result =>
         nerdGraphQuery(
           getInfraHost(
             entityData.account.id,
@@ -243,10 +259,10 @@ export default class CloudOptimizeApm extends React.Component {
       let containerIds = [];
       Promise.all(hostPromises).then(values => {
         values.forEach(value => {
-          let systemHost =
+          const systemHost =
             ((((value || {}).actor || {}).account || {}).system || {})
               .results || [];
-          let processHost =
+          const processHost =
             ((((value || {}).actor || {}).account || {}).container || {})
               .results || [];
           if (systemHost[0]) {
@@ -254,13 +270,11 @@ export default class CloudOptimizeApm extends React.Component {
             processHost.forEach(item => {
               containerIds.push(item.containerId);
             });
-          } else {
-            if (processHost[0]) {
-              processHost.forEach(item => {
-                containerIds.push(item.containerId);
-              });
-              hosts.push(processHost[0].hostname);
-            }
+          } else if (processHost[0]) {
+            processHost.forEach(item => {
+              containerIds.push(item.containerId);
+            });
+            hosts.push(processHost[0].hostname);
           }
         });
         hosts = [...new Set(hosts)];
@@ -270,18 +284,20 @@ export default class CloudOptimizeApm extends React.Component {
     });
   }
 
+  /* eslint-disable no-async-promise-executor */
+  // tracking issue https://github.com/newrelic/nr1-cloud-optimize/issues/39
   async fetchHostPerformance(accountId, hosts) {
     return new Promise(async resolve => {
-      let results = await nerdGraphQuery(
-        getInstanceData(accountId, "'" + hosts.join("','") + "'")
+      const results = await nerdGraphQuery(
+        getInstanceData(accountId, `'${hosts.join("','")}'`)
       );
-      let systemSamples =
+      const systemSamples =
         ((((results || {}).actor || {}).account || {}).system || {}).results ||
         [];
-      let networkSamples =
+      const networkSamples =
         ((((results || {}).actor || {}).account || {}).network || {}).results ||
         [];
-      let uniqueHostsResult =
+      const uniqueHostsResult =
         ((((results || {}).actor || {}).account || {}).uniqueHosts || {})
           .results || [];
       let uniqueDailyHosts = 0;
@@ -292,24 +308,26 @@ export default class CloudOptimizeApm extends React.Component {
       resolve({ systemSamples, networkSamples, uniqueDailyHosts });
     });
   }
+  /* eslint-enable */
 
   handleUserConfig() {
     return new Promise(resolve => {
-      //console.log("fetching user config from nerdstorage")
+      // console.log("fetching user config from nerdstorage")
       getDocument('cloudOptimizeCfg', 'main').then(async data => {
-        let currentConfig = data;
-        let { config } = this.state; // defaultConfig
+        const currentConfig = data;
+        const { config } = this.state; // defaultConfig
         if (currentConfig) {
           // needed for backwards compatibility before multicloud support
           if (!currentConfig.cloudData) {
-            //console.log("cloudData was not available in config, injecting defaults")
-            currentConfig.cloudData = Object.assign({}, config.cloudData);
+            // console.log("cloudData was not available in config, injecting defaults")
+            currentConfig.cloudData = { ...config.cloudData };
           }
-          await this.setState({ config: currentConfig });
-          await writeDocument('cloudOptimizeCfg', 'main', currentConfig);
+          this.setState({ config: currentConfig }, () => {
+            writeDocument('cloudOptimizeCfg', 'main', currentConfig);
+          });
         } else {
-          //console.log("writing default config")
-          await writeDocument('cloudOptimizeCfg', 'main', config);
+          // console.log("writing default config")
+          writeDocument('cloudOptimizeCfg', 'main', config);
         }
         resolve();
       });
@@ -319,11 +337,11 @@ export default class CloudOptimizeApm extends React.Component {
   fetchCloudPricing(cfg) {
     let { config, cloudData, cloudRegions } = this.state;
     if (cfg) {
-      config = Object.assign({}, cfg);
+      config = { ...cfg };
     }
 
     return new Promise(resolve => {
-      let cloudPromises = Object.keys(config.cloudData).map(cloud => {
+      const cloudPromises = Object.keys(config.cloudData).map(cloud => {
         return new Promise(resolve => {
           fetch(
             `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/${cloud}/regions.json`
@@ -359,30 +377,29 @@ export default class CloudOptimizeApm extends React.Component {
   }
 
   groupAndSort(data, type, val) {
-    let sortBy =
-      (type == 'sortBy' ? val : null) ||
-      this.state.config.sortBy ||
-      this.state.sortByDefault;
-    let { totals, grouped, tempData } = groupInstances(
+    const { config, sortByDefault, sort } = this.state;
+    const sortBy =
+      (type === 'sortBy' ? val : null) || config.sortBy || sortByDefault;
+    const { totals, grouped, tempData } = groupInstances(
       data,
       type,
       val,
       this.state,
       true
     );
-    let finalSort =
-      this.state.sort == 'asc'
+    const finalSort =
+      sort === 'asc'
         ? _.sortBy(grouped, sortBy)
         : _.sortBy(grouped, sortBy).reverse();
     this.setState({
       sorted: finalSort,
       totals: totals,
-      data: tempData,
+      data: tempData
     });
   }
 
   render() {
-    let {
+    const {
       entityData,
       hosts,
       containerIds,
@@ -391,63 +408,70 @@ export default class CloudOptimizeApm extends React.Component {
       containerMetrics,
       sorted,
       hasCloud,
+      config,
+      cloudRegions,
+      loading
     } = this.state;
 
     return (
-      <div>
-        <MenuBar
-          handleParentState={this.handleParentState}
-          config={this.state.config}
-          cloudRegions={this.state.cloudRegions}
-          fetchCloudPricing={this.fetchCloudPricing}
-          totals={totals}
-        />
-
-        <Segment
-          style={{
-            minHeight: this.props.height - 75,
-            padding: '0px',
-            backgroundColor: '#f7f7f8',
-            border: '0px',
-          }}
-        >
-          <Dimmer active={this.state.loading}>
-            <Loader style={{ top: '150px' }} size="big">
-              Loading
-            </Loader>
-          </Dimmer>
-
-          <Grid
-            relaxed
-            stretched
-            columns={'equal'}
-            style={{ padding: '3px', margin: '0px' }}
-          >
-            <MainCharts
-              entityData={entityData}
-              hosts={hosts}
-              containerIds={containerIds}
+      <AutoSizer>
+        {({ height }) => (
+          <div>
+            <MenuBar
+              handleParentState={this.handleParentState}
+              config={config}
+              cloudRegions={cloudRegions}
+              fetchCloudPricing={this.fetchCloudPricing}
+              totals={totals}
             />
 
-            {hostMetrics.Hosts > 0 ? (
-              <HostMetrics hostMetrics={hostMetrics} />
-            ) : (
-              ''
-            )}
+            <Segment
+              style={{
+                minHeight: height - 75,
+                padding: '0px',
+                backgroundColor: '#f7f7f8',
+                border: '0px'
+              }}
+            >
+              <Dimmer active={loading}>
+                <Loader style={{ top: '150px' }} size="big">
+                  Loading
+                </Loader>
+              </Dimmer>
 
-            {containerIds.length > 0 ? (
-              <ContainerOptimization
-                containerMetrics={containerMetrics}
-                containerIds={containerIds}
-              />
-            ) : (
-              ''
-            )}
+              <Grid
+                relaxed
+                stretched
+                columns="equal"
+                style={{ padding: '3px', margin: '0px' }}
+              >
+                <MainCharts
+                  entityData={entityData}
+                  hosts={hosts}
+                  containerIds={containerIds}
+                />
 
-            <OptimizationCandidates sorted={sorted} hasCloud={hasCloud} />
-          </Grid>
-        </Segment>
-      </div>
+                {hostMetrics.Hosts > 0 ? (
+                  <HostMetrics hostMetrics={hostMetrics} />
+                ) : (
+                  ''
+                )}
+
+                {containerIds.length > 0 ? (
+                  <ContainerOptimization
+                    containerMetrics={containerMetrics}
+                    containerIds={containerIds}
+                  />
+                ) : (
+                  ''
+                )}
+
+                <OptimizationCandidates sorted={sorted} hasCloud={hasCloud} />
+              </Grid>
+            </Segment>
+          </div>
+        )}
+      </AutoSizer>
     );
   }
 }

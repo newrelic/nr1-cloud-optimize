@@ -1,13 +1,29 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Card, Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react';
 import OptimizationCandidates from './optimizationCandidates';
 import SnapshotCard from './snapshots/snapshotCard';
 
 export default class AccountCards extends React.Component {
+  static propTypes = {
+    loading: PropTypes.bool,
+    completedAccounts: PropTypes.number,
+    accounts: PropTypes.array,
+    instances: PropTypes.array,
+    sorted: PropTypes.array,
+    config: PropTypes.object,
+    fetchSnapshots: PropTypes.func,
+    cloudOptimizeSnapshots: PropTypes.func,
+    height: PropTypes.string,
+    groupByDefault: PropTypes.string,
+    snapshots: PropTypes.array
+  };
+
   render() {
-    let isLoading =
-      this.props.loading || this.props.completedAccounts != this.props.accounts;
-    let noAccounts = isLoading == false && this.props.accounts == 0;
+    const isLoading =
+      this.props.loading ||
+      this.props.completedAccounts !== this.props.accounts;
+    const noAccounts = isLoading === false && this.props.accounts === 0;
 
     return (
       <Segment
@@ -15,7 +31,7 @@ export default class AccountCards extends React.Component {
         style={{
           textAlign: 'center',
           marginTop: '0px',
-          minHeight: this.props.height,
+          minHeight: this.props.height
         }}
       >
         <Dimmer active={isLoading}>
@@ -41,19 +57,19 @@ export default class AccountCards extends React.Component {
         <Card.Group style={{ margin: 'auto', width: '100%' }} centered>
           {this.props.sorted.map((item, i) => {
             let header = item.group;
-            if (this.props.config.groupBy == 'apmApplicationNames') {
-              let apps = item.group
+            if (this.props.config.groupBy === 'apmApplicationNames') {
+              const apps = item.group
                 ? item.group.split('|').filter(Boolean)
                 : 'uncategorized';
               header = apps.map((app, i) =>
-                i + 1 == apps.length ? app : app + ', '
+                i + 1 === apps.length ? app : `${app}, `
               );
             }
 
-            header = header == 'null' || !header ? 'uncategorized' : header;
+            header = header === 'null' || !header ? 'uncategorized' : header;
 
             if (
-              (this.props.config.groupBy || this.props.groupByDefault) ==
+              (this.props.config.groupBy || this.props.groupByDefault) ===
               'accountName'
             ) {
               header = (
@@ -93,7 +109,7 @@ export default class AccountCards extends React.Component {
                   <Table celled inverted={false} basic="very">
                     <Table.Header>
                       <Table.Row>
-                        <Table.HeaderCell></Table.HeaderCell>
+                        <Table.HeaderCell />
                         <Table.HeaderCell>Monthly</Table.HeaderCell>
                         <Table.HeaderCell>Yearly</Table.HeaderCell>
                       </Table.Row>

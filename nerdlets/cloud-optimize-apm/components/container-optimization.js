@@ -1,13 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Header, Statistic, Divider, Segment } from 'semantic-ui-react';
 
 export default class ContainerOptimization extends React.Component {
+  static propTypes = {
+    containerIds: PropTypes.array,
+    containerMetrics: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
   }
 
   render() {
-    let { containerIds, containerMetrics } = this.props;
+    const { containerIds, containerMetrics } = this.props;
 
     return (
       <>

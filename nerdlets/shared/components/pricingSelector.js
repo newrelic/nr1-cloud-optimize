@@ -1,14 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, Modal, Menu, Form, Button } from 'semantic-ui-react';
 
-export default class PricingSelector extends React.Component {
+export default class PricingSelector extends React.PureComponent {
+  static propTypes = {
+    config: PropTypes.object,
+    fetchCloudPricing: PropTypes.func,
+    handleParentState: PropTypes.func,
+    cloudRegions: PropTypes.object,
+    button: PropTypes.bool
+  };
+
   constructor(props) {
     super(props);
     this.handleConfigurator = this.handleConfigurator.bind(this);
   }
 
-  async handleConfigurator(e, data, type) {
-    let tempConfig = this.props.config;
+  async handleConfigurator(e, data) {
+    const tempConfig = this.props.config;
     if (data.value && data.name) {
       tempConfig.cloudData[data.name] = data.value;
       await this.props.fetchCloudPricing(tempConfig);
@@ -21,15 +30,15 @@ export default class PricingSelector extends React.Component {
   }
 
   render() {
-    let amazonRegions = this.props.cloudRegions.amazon.map(region => {
+    const amazonRegions = this.props.cloudRegions.amazon.map(region => {
       return { key: region.name, text: region.name, value: region.id };
     });
 
-    let googleRegions = this.props.cloudRegions.google.map(region => {
+    const googleRegions = this.props.cloudRegions.google.map(region => {
       return { key: region.name, text: region.name, value: region.id };
     });
 
-    let azureRegions = this.props.cloudRegions.azure.map(region => {
+    const azureRegions = this.props.cloudRegions.azure.map(region => {
       return { key: region.name, text: region.name, value: region.id };
     });
 

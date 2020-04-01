@@ -2,10 +2,10 @@ import { NerdGraphQuery } from 'nr1';
 import gql from 'graphql-tag';
 
 export const nerdGraphQuery = async query => {
-  let nerdGraphData = await NerdGraphQuery.query({
+  const nerdGraphData = await NerdGraphQuery.query({
     query: gql`
       ${query}
-    `,
+    `
   });
   return nerdGraphData.data;
 };

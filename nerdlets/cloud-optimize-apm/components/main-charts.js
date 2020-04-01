@@ -1,12 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Segment, Grid } from 'semantic-ui-react';
 import { ChartGroup, LineChart } from 'nr1';
 
 export default class MainCharts extends React.Component {
+  static propTypes = {
+    entityData: PropTypes.object,
+    hosts: PropTypes.array,
+    containerIds: PropTypes.array
+  };
+
   render() {
-    let { entityData, hosts, containerIds } = this.props;
-    let chartStyle = { height: '310px', width: '100%' };
-    let chartHeader = { textTransform: 'uppercase', paddingTop: '5px' };
+    const { entityData, hosts, containerIds } = this.props;
+    const chartStyle = { height: '310px', width: '100%' };
+    const chartHeader = { textTransform: 'uppercase', paddingTop: '5px' };
 
     return (
       <Grid.Row style={{ paddingTop: '5px' }}>
@@ -20,9 +27,9 @@ export default class MainCharts extends React.Component {
                 <LineChart
                   style={chartStyle}
                   accountId={entityData.account.id}
-                  query={`SELECT max(cpuPercent) as 'CpuPerc', max(memoryUsedBytes/memoryTotalBytes) as 'MemPerc' FROM SystemSample FACET hostname WHERE hostname IN (${"'" +
-                    hosts.join("','") +
-                    "'"}) SINCE 1 WEEK AGO TIMESERIES`}
+                  query={`SELECT max(cpuPercent) as 'CpuPerc', max(memoryUsedBytes/memoryTotalBytes) as 'MemPerc' FROM SystemSample FACET hostname WHERE hostname IN (${`'${hosts.join(
+                    "','"
+                  )}'`}) SINCE 1 WEEK AGO TIMESERIES`}
                 />
               ) : (
                 ''
@@ -39,9 +46,9 @@ export default class MainCharts extends React.Component {
                 <LineChart
                   style={chartStyle}
                   accountId={entityData.account.id}
-                  query={`SELECT max(receiveBytesPerSecond) as 'RxBytesPerSec', max(transmitBytesPerSecond) as 'TxBytesPerSec' FROM NetworkSample FACET hostname WHERE hostname IN (${"'" +
-                    hosts.join("','") +
-                    "'"}) SINCE 1 WEEK AGO TIMESERIES`}
+                  query={`SELECT max(receiveBytesPerSecond) as 'RxBytesPerSec', max(transmitBytesPerSecond) as 'TxBytesPerSec' FROM NetworkSample FACET hostname WHERE hostname IN (${`'${hosts.join(
+                    "','"
+                  )}'`}) SINCE 1 WEEK AGO TIMESERIES`}
                 />
               ) : (
                 ''

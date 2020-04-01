@@ -1,14 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Segment,
   Statistic,
   Popup,
   Icon,
   Modal,
-  List,
+  List
 } from 'semantic-ui-react';
 
 export default class HeaderCost extends React.Component {
+  static propTypes = {
+    title: PropTypes.string,
+    totals: PropTypes.object,
+    multiplier: PropTypes.number,
+    completedAccounts: PropTypes.number,
+    instances: PropTypes.number
+  };
+
   render() {
     return (
       <Segment
@@ -130,7 +139,7 @@ export default class HeaderCost extends React.Component {
             float: 'left',
             position: 'absolute',
             top: '16px',
-            width: '130px',
+            width: '130px'
           }}
         >
           <List style={{ textAlign: 'left' }}>

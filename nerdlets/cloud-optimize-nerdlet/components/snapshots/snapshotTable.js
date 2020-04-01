@@ -1,7 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Table } from 'semantic-ui-react';
 import { deleteDocument } from '../../../shared/lib/utils';
+
 export default class SnapshotTable extends React.Component {
+  static propTypes = {
+    fetchSnapshots: PropTypes.func,
+    data: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
     this.deleteSnapshot = this.deleteSnapshot.bind(this);
@@ -13,15 +20,15 @@ export default class SnapshotTable extends React.Component {
   }
 
   render() {
-    let data = this.props.data;
-    let timestamp = data.t
+    const data = this.props.data;
+    const timestamp = data.t
       ? new Date(data.t)
           .toString()
           .split(' ')
           .filter((item, i) => i < 5 && i > 0)
           .join(' ')
       : '';
-    let currentTimestamp = new Date()
+    const currentTimestamp = new Date()
       .toString()
       .split(' ')
       .filter((item, i) => i < 5 && i > 0)
@@ -33,14 +40,14 @@ export default class SnapshotTable extends React.Component {
         style={{
           width: '400px',
           minWidth: '400px',
-          margin: '5px',
+          margin: '5px'
           // overflowX: "auto",
         }}
       >
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>
-              {timestamp ? timestamp : <span>Current State</span>}
+              {timestamp || <span>Current State</span>}
             </Table.HeaderCell>
             <Table.HeaderCell>Monthly</Table.HeaderCell>
             <Table.HeaderCell>Yearly</Table.HeaderCell>

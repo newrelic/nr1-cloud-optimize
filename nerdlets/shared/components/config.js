@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Divider,
   Form,
@@ -7,18 +8,24 @@ import {
   Modal,
   Menu,
   Dropdown,
-  Button,
+  Button
 } from 'semantic-ui-react';
 import { deleteDocument } from '../lib/utils';
 
-export default class Config extends React.Component {
+export default class Config extends React.PureComponent {
+  static propTypes = {
+    config: PropTypes.object,
+    handleParentState: PropTypes.func,
+    button: PropTypes.bool
+  };
+
   constructor(props) {
     super(props);
     this.handleConfigurator = this.handleConfigurator.bind(this);
   }
 
   async handleConfigurator(e, data, type) {
-    let tempConfig = this.props.config;
+    const tempConfig = this.props.config;
     if (!isNaN(data.value)) {
       tempConfig[type] = data.value;
       await this.props.handleParentState(
@@ -37,17 +44,17 @@ export default class Config extends React.Component {
   }
 
   handleAddition = async (e, { value }) => {
-    let tempConfig = this.props.config;
-    tempConfig['instanceOptions'] = [
+    const tempConfig = this.props.config;
+    tempConfig.instanceOptions = [
       { text: value, value },
-      ...this.props.config.instanceOptions,
+      ...this.props.config.instanceOptions
     ];
     await this.props.handleParentState('config', tempConfig);
   };
 
   handleChange = async (e, { value }) => {
-    let tempConfig = this.props.config;
-    tempConfig['instanceOptionsCurrent'] = value;
+    const tempConfig = this.props.config;
+    tempConfig.instanceOptionsCurrent = value;
     await this.props.handleParentState(
       'config',
       tempConfig,
@@ -56,7 +63,7 @@ export default class Config extends React.Component {
   };
 
   render() {
-    let labelWidth = '230px';
+    const labelWidth = '230px';
     return (
       <Modal
         size="small"
