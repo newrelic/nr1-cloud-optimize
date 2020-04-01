@@ -129,7 +129,7 @@ export default class SnapshotCard extends React.Component {
         </Modal>
       );
     }
-    return '';
+    return null;
   }
 
   render() {

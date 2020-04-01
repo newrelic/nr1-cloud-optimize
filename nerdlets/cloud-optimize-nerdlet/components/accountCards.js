@@ -8,13 +8,13 @@ export default class AccountCards extends React.Component {
   static propTypes = {
     loading: PropTypes.bool,
     completedAccounts: PropTypes.number,
-    accounts: PropTypes.array,
-    instances: PropTypes.array,
+    accounts: PropTypes.number,
+    instances: PropTypes.number,
     sorted: PropTypes.array,
     config: PropTypes.object,
     fetchSnapshots: PropTypes.func,
     cloudOptimizeSnapshots: PropTypes.func,
-    height: PropTypes.string,
+    height: PropTypes.number,
     groupByDefault: PropTypes.string,
     snapshots: PropTypes.array
   };

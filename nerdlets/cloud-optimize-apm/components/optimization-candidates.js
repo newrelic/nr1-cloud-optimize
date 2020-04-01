@@ -336,7 +336,7 @@ export default class OptimizationCandidates extends React.Component {
                         </Table.Row>
                       );
                     } else {
-                      return '';
+                      return null;
                     }
                   })}
                 </Table.Body>

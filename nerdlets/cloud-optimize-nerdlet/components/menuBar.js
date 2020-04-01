@@ -15,7 +15,7 @@ export default class MenuBar extends React.Component {
     snapshots: PropTypes.array,
     fetchSnapshots: PropTypes.func,
     cloudOptimizeSnapshots: PropTypes.func,
-    cloudRegions: PropTypes.array,
+    cloudRegions: PropTypes.object,
     fetchCloudPricing: PropTypes.func
   };
 

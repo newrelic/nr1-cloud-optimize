@@ -9,7 +9,7 @@ const monthlyHours = 720;
 export default class OptimizationCandidates extends React.Component {
   static propTypes = {
     instances: PropTypes.array,
-    header: PropTypes.string
+    header: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
   };
 
   constructor(props) {
@@ -329,7 +329,7 @@ export default class OptimizationCandidates extends React.Component {
                     </Table.Row>
                   );
                 } else {
-                  return '';
+                  return null;
                 }
               })}
             </Table.Body>
