@@ -1,63 +1,53 @@
 import { UserStorageQuery, UserStorageMutation, NerdGraphQuery } from 'nr1';
 import gql from 'graphql-tag';
 
-export const getCollection = async collection => {
-  const result = await UserStorageQuery.query({ collection: collection });
-  const collectionResult = (result || {}).data || [];
-  return collectionResult;
-};
+export const getCollection = async (collection) => {
+    let result = await UserStorageQuery.query({ collection: collection })
+    let collectionResult = (result || {}).data || []
+    return collectionResult
+}
 
 export const getDocument = async (collection, documentId) => {
-  const result = await UserStorageQuery.query({
-    collection: collection,
-    documentId: documentId
-  });
-  return result.data;
-};
+  let result = await UserStorageQuery.query({ collection: collection, documentId: documentId })
+  return result.data
+}
 
 export const writeDocument = async (collection, documentId, payload) => {
-  const result = await UserStorageMutation.mutate({
-    actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
-    collection: collection,
-    documentId: documentId,
-    document: payload
-  });
-  return result;
-};
+  let result = await UserStorageMutation.mutate({
+                  actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+                  collection: collection,
+                  documentId: documentId,
+                  document: payload
+                })
+  return result
+}
 
 export const deleteDocument = async (collection, documentId) => {
-  const result = await UserStorageMutation.mutate({
-    actionType: UserStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
-    collection: collection,
-    documentId: documentId
-  });
-  return result;
-};
+  let result = await UserStorageMutation.mutate({
+                  actionType: UserStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
+                  collection: collection,
+                  documentId: documentId
+                })
+  return result
+}
 
-export const accountsQuery = gql`
-  {
-    actor {
-      accounts {
-        id
-        name
-      }
+export const accountsQuery = gql`{
+  actor {
+    accounts {
+      id
+      name
     }
   }
-`;
+}`
 
-export const isCloudLabel = attributeName => /label\..+/.test(attributeName);
+export const isCloudLabel = (attributeName) => /label\..+/.test(attributeName);
 
-export const cloudLabelAttributeToDisplayName = attributeName =>
-  attributeName.match(/label\.(.+)/)[1];
+export const cloudLabelAttributeToDisplayName = (attributeName) => attributeName.match(/label\.(.+)/)[1];
 
 export const getSystemSampleKeySetNRQL = 'SELECT keyset() FROM SystemSample';
 
 export const getInstanceData = (accountId, cloudLabelAttributes) => {
-  const cloudLabelSelectString =
-    (cloudLabelAttributes.length > 0 ? ', ' : '') +
-    cloudLabelAttributes
-      .map(att => `latest(\`${att}\`) as '${att}'`)
-      .join(', ');
+  let cloudLabelSelectString = ((cloudLabelAttributes.length > 0) ? ", " : "") + cloudLabelAttributes.map(att => `latest(\`${att}\`) as '${att}'`).join(', ');
   return gql`{
     actor {
       account(id: ${accountId}) {
@@ -69,24 +59,17 @@ export const getInstanceData = (accountId, cloudLabelAttributes) => {
         }
       }
     }
-  }`;
-};
+  }`
+}
 
 // Taken from Lew's nr1-container-explorer https://github.com/newrelic/nr1-container-explorer/
-export const accountsWithData = async eventType => {
-  const gql = `{actor {accounts {name id reportingEventTypes(filter:["${eventType}"])}}}`;
-  const result = await NerdGraphQuery.query({ query: gql });
-  if (result.errors) {
-    /* eslint-disable no-console */
-    console.log(
-      "Can't get reporting event types because NRDB is grumpy at NerdGraph.",
-      result.errors
-    );
-    console.log(JSON.stringify(result.errors.slice(0, 5), 0, 2));
-    /* eslint-enable */
-    return [];
+export const accountsWithData = async (eventType) => {
+  const gql = `{actor {accounts {name id reportingEventTypes(filter:["${eventType}"])}}}`
+  let result = await NerdGraphQuery.query({query: gql}) 
+  if(result.errors) {
+    console.log("Can't get reporting event types because NRDB is grumpy at NerdGraph.", result.errors)
+    console.log(JSON.stringify(result.errors.slice(0, 5), 0, 2))
+    return []
   }
-  return result.data.actor.accounts.filter(
-    a => a.reportingEventTypes.length > 0
-  );
-};
+  return result.data.actor.accounts.filter(a => a.reportingEventTypes.length > 0)
+}

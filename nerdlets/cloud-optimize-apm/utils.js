@@ -1,17 +1,13 @@
 import { NerdGraphQuery } from 'nr1';
 import gql from 'graphql-tag';
 
-export const nerdGraphQuery = async query => {
-  const nerdGraphData = await NerdGraphQuery.query({
-    query: gql`
-      ${query}
-    `
-  });
-  return nerdGraphData.data;
-};
+export const nerdGraphQuery = async (query) => {
+    let nerdGraphData = await NerdGraphQuery.query({query: gql`${query}`})
+    return nerdGraphData.data
+}
 
-export const getEntityData = entity => {
-  return `{
+export const getEntityData = (entity) => {
+    return `{
         actor {
           entity(guid: "${entity}") {
             ... on ApmApplicationEntity {
@@ -40,8 +36,9 @@ export const getEntityData = entity => {
             }
           }
         }
-      }`;
-};
+      }`
+}
+
 
 export const getInstanceData = (accountId, hosts) => {
   return gql`{
@@ -58,8 +55,8 @@ export const getInstanceData = (accountId, hosts) => {
         }
       }
     }
-  }`;
-};
+  }`
+}
 
 export const getInfraHost = (accountId, hostname, containerId, appId) => {
   return gql`{
@@ -68,16 +65,13 @@ export const getInfraHost = (accountId, hostname, containerId, appId) => {
         system: nrql(query: "FROM SystemSample SELECT hostname WHERE (hostname = '${hostname}' OR fullHostname = '${hostname}') LIMIT 1 since 1 week ago", timeout: 30000) {
           results
         }
-        container: nrql(query: "FROM ProcessSample SELECT latest(hostname) as 'hostname' WHERE (containerId LIKE '${containerId ||
-          hostname}%' ${
-    appId ? `OR apmApplicationIds LIKE '%${appId}%'` : ''
-  }) FACET containerId since 1 week ago LIMIT 2000", timeout: 30000) {
+        container: nrql(query: "FROM ProcessSample SELECT latest(hostname) as 'hostname' WHERE (containerId LIKE '${containerId || hostname}%' ${appId ? `OR apmApplicationIds LIKE '%${appId}%'` : ""}) FACET containerId since 1 week ago LIMIT 2000", timeout: 30000) {
           results
         }
       }
     }
-  }`;
-};
+  }`
+}
 
 export const getInfraAccount = (appId, appName) => {
   return gql`{
@@ -95,8 +89,8 @@ export const getInfraAccount = (appId, appName) => {
         }
       }
     }
-  }`;
-};
+  }`
+}
 
 export const getContainerPerformance = (accountId, appId) => {
   return gql`{
@@ -110,5 +104,5 @@ export const getContainerPerformance = (accountId, appId) => {
         }
       }
     }
-  }`;
-};
+  }`
+}
