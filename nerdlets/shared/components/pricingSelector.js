@@ -1,16 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Dropdown, Modal, Menu, Form, Button } from 'semantic-ui-react';
 
-export default class PricingSelector extends React.PureComponent {
-  static propTypes = {
-    config: PropTypes.object,
-    fetchCloudPricing: PropTypes.func,
-    handleParentState: PropTypes.func,
-    cloudRegions: PropTypes.object,
-    button: PropTypes.bool
-  };
-
+export default class PricingSelector extends React.Component {
   constructor(props) {
     super(props);
     this.handleConfigurator = this.handleConfigurator.bind(this);
@@ -55,6 +46,7 @@ export default class PricingSelector extends React.PureComponent {
             <Menu.Item>Set Cloud Regions</Menu.Item>
           )
         }
+        closeIcon
       >
         <Modal.Header>Configure Regions</Modal.Header>
         <Modal.Content>
