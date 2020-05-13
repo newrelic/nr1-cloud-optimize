@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react';
+import { Card, Table, Dimmer, Loader, Segment } from 'semantic-ui-react';
 import OptimizationCandidates from './optimizationCandidates';
 import SnapshotCard from './snapshots/snapshotCard';
 
@@ -79,7 +79,7 @@ export default class AccountCards extends React.Component {
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  {header} <Icon name="external alternate" />
+                  {header}
                 </a>
               );
             }

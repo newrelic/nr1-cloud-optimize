@@ -293,7 +293,6 @@ export default class OptimizationCandidates extends React.Component {
                             }
                           >
                             {instance.hostname}{' '}
-                            <Icon name="external alternate" />
                           </Table.Cell>
                           <Table.Cell>
                             {instance.maxCpuPercent.toFixed(2)}
