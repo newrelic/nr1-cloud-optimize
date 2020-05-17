@@ -1,9 +1,80 @@
-import { UserStorageQuery, UserStorageMutation, NerdGraphQuery } from 'nr1';
+import {
+  UserStorageQuery,
+  UserStorageMutation,
+  NerdGraphQuery,
+  EntityStorageQuery,
+  AccountStorageQuery
+} from 'nr1';
 import gql from 'graphql-tag';
 
-export const getCollection = async collection => {
-  const result = await UserStorageQuery.query({ collection: collection });
-  const collectionResult = (result || {}).data || [];
+export const getTagValue = (tags, tag) => {
+  if (tags) {
+    for (let z = 0; z < tags.length; z++) {
+      if (tags[z].key === tag) {
+        if (tags[z].values.length === 1) {
+          return tags[z].values[0];
+        } else {
+          return tags[z].values;
+        }
+      }
+    }
+  }
+  return null;
+};
+
+export const buildTags = (currentTags, newTags) => {
+  newTags.forEach(tag => {
+    currentTags.push(`${tag.key}:${tag.values[0]}`);
+  });
+  return [...new Set(currentTags)].sort();
+};
+
+export const existsInObjArray = (array, key, value) => {
+  for (let z = 0; z < (array || []).length; z++) {
+    if (array[z][key] === value) {
+      return z;
+    }
+  }
+  return false;
+};
+
+export const roundHalf = num => {
+  return num < 0.5 ? 0.5 : Math.round(num * 2) / 2;
+};
+
+// chunking for batching nerdgraph calls
+export const chunk = (arr, size) =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+
+export const getEntityCollection = async (collection, guid, documentId) => {
+  const payload = { collection };
+  payload.entityGuid = guid;
+  if (documentId) payload.documentId = documentId;
+  const result = await EntityStorageQuery.query(payload);
+  const collectionResult = (result || {}).data || (documentId ? null : []);
+  return collectionResult;
+};
+
+export const getAccountCollection = async (
+  accountId,
+  collection,
+  documentId
+) => {
+  const payload = { collection };
+  payload.accountId = accountId;
+  if (documentId) payload.documentId = documentId;
+  const result = await AccountStorageQuery.query(payload);
+  const collectionResult = (result || {}).data || (documentId ? null : []);
+  return collectionResult;
+};
+
+export const getCollection = async (collection, documentId) => {
+  const payload = { collection };
+  if (documentId) payload.documentId = documentId;
+  const result = await UserStorageQuery.query(payload);
+  const collectionResult = (result || {}).data || (documentId ? null : []);
   return collectionResult;
 };
 

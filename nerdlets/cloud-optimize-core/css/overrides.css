@@ -1,0 +1,98 @@
+/* 
+NR1 styling clashes with semantic
+This file reimplements semantic css with !important to allow Semantic components to be styled correctly
+*/
+
+.ui.search.selection.dropdown > input.search {
+  line-height: 1.21428571em !important;
+  padding: 0.67857143em 2.1em 0.67857143em 1em !important;
+}
+
+/* .ui.search.dropdown > input.search {
+  position: absolute !important;
+  z-index: 2 !important;
+} */
+
+.singledrop > input.search {
+  position: absolute !important;
+  z-index: 2 !important;
+}
+
+/* #excludedInstanceTypes,
+#includedInstanceTypes {
+  position: relative !important;
+} */
+
+.ui.search.dropdown > input.search {
+  background: none transparent !important;
+  border: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  cursor: text !important;
+  top: 0 !important;
+  left: 1px !important;
+  width: 100% !important;
+  outline: 0 !important;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important;
+  padding: inherit !important;
+}
+
+.ui.card,
+.ui.cards > .card {
+  border-radius: 0 !important;
+}
+
+.ui.mini.button,
+.ui.mini.buttons .button,
+.ui.mini.buttons .or {
+  font-size: 0.78571429rem !important;
+}
+
+.ui.icon.button > .icon,
+.ui.icon.buttons .button > .icon {
+  opacity: 0.9 !important;
+  margin: 0 !important;
+  vertical-align: top !important;
+}
+
+.ui.button,
+.ui.buttons .button,
+.ui.buttons .or {
+  font-size: 1rem !important;
+}
+
+i.small.icon,
+i.small.icons {
+  line-height: 1;
+  font-size: 0.75em !important;
+}
+
+table {
+  border-radius: 0 !important;
+}
+
+.ui.checkbox input[type='checkbox'],
+.ui.checkbox input[type='radio'] {
+  cursor: pointer !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  opacity: 0 !important;
+  outline: 0 !important;
+  z-index: 3 !important;
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.ui.menu .dropdown.item .menu {
+  min-width: calc(100% - 1px) !important;
+  border-radius: 0 0 0.28571429rem 0.28571429rem !important;
+  background: #fff !important;
+  margin: 0 0 0 !important;
+  -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-box-direction: normal !important;
+  -ms-flex-direction: column !important;
+  flex-direction: column !important;
+}
