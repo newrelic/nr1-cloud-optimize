@@ -161,17 +161,25 @@ export class DataProvider extends Component {
       workloadEntities = await this.processWorkloads(workloadEntities);
     }
 
-    let entities = await this.getEntityData(nonWorkloadEntities);
+    const tempEntities = await this.getEntityData(nonWorkloadEntities);
 
     // stitch relevant entities back into workloads so on prem cost/cu calculations can be made
-    workloadEntities = this.addEntityDataToWorkload(entities, workloadEntities);
+    workloadEntities = this.addEntityDataToWorkload(
+      tempEntities,
+      workloadEntities
+    );
     workloadEntities = this.calculateWorkloadDatacenterCost(workloadEntities);
 
     // get pricing, matches and optimized matches and perform any decoration if required
-    entities = await this.processEntities(entities, workloadEntities);
+    const { entities, entityCostTotals } = await this.processEntities(
+      tempEntities,
+      workloadEntities
+    );
 
     // run again to stitch freshly processed data
     workloadEntities = this.addEntityDataToWorkload(entities, workloadEntities);
+
+    console.log(entities, workloadEntities, entityCostTotals);
 
     // !!todo: pricing difference in process entities!!
 
@@ -425,8 +433,7 @@ export class DataProvider extends Component {
       });
 
       this.setState({ accounts, tags, tagSelection }, () => {
-        console.log(entityCostTotals, entities);
-        resolve(entities);
+        resolve({ entities, entityCostTotals });
       });
     });
   };

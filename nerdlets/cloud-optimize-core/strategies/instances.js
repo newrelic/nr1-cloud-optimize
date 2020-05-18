@@ -87,6 +87,12 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
     }
   }
 
+  if (e.cloud) {
+    entityCostTotals.instances.cloudSpend += matchedPrice;
+  } else {
+    entityCostTotals.instances.datacenterSpend += matchedPrice;
+  }
+
   switch (state) {
     case 'skip':
       entityCostTotals.instances.skippedInstances += 1;
@@ -142,7 +148,7 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
       } else {
         if (cheapestOptimizedSpotPrice) {
           const potentialSavingsWithSpot =
-            optimizedResult.onDemandPrice - cheapestOptimizedSpotPrice || 0;
+            matchedPrice - cheapestOptimizedSpotPrice || 0;
 
           entityCostTotals.instances.potentialSavingsWithSpot += potentialSavingsWithSpot;
 
