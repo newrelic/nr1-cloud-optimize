@@ -60,13 +60,13 @@ export const getWorkloadTags = `query ($guids: [EntityGuid]!) {
 
 // multi entity type query
 const infraSystemSampleQuery = `FROM SystemSample SELECT \
-                                      latest(timestamp), \
+                                      latest(timestamp), latest(provider.instanceLifecycle), \
                                       latest(entityGuid), latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(configName), \
                                       latest(awsRegion), latest(regionName), latest(zone), latest(regionId), latest(ec2InstanceId), latest(ec2InstanceType), latest(instanceType),\
                                       latest(coreCount), latest(processorCount), latest(memoryTotalBytes), latest(diskTotalBytes), latest(operatingSystem), \
                                       max(cpuPercent), max(memoryUsedBytes), max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' LIMIT 1`;
 
-const infraNetworkSampleQuery = `SELECT * FROM NetworkSample`;
+const infraNetworkSampleQuery = `FROM NetworkSample SELECT max(receiveBytesPerSecond), max(transmitBytesPerSecond) FACET interfaceName`;
 
 // attributes are renamed to best match SystemSample to make computations simple
 const vSphereVmQuery = `FROM VSphereVmSample SELECT \

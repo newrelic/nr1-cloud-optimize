@@ -26,6 +26,7 @@ import {
   getEntityDataQuery
 } from '../../shared/lib/queries';
 import _ from 'lodash';
+import { addInstanceCostTotal } from '../strategies/instances';
 import pkg from '../../../package.json';
 
 toast.configure();
@@ -43,6 +44,13 @@ const acceptedTypesInWorkload = `AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST'
 
 // current max supported
 const entitySearchChunkValue = 25;
+
+const optimizationCategories = {
+  instance: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
+  workload: ['WORKLOAD'],
+  database: ['APPLICATION'],
+  application: ['APPLICATION']
+};
 
 const optimizationDefaults = {
   enable: false,
@@ -65,7 +73,8 @@ const optimizationDefaults = {
   excludedInstanceTypes: [],
   excludedGuids: [],
   defaultCloud: 'amazon',
-  defaultRegion: 'us-east-1'
+  defaultRegion: 'us-east-1',
+  entityCostTotals: {}
 };
 
 export class DataProvider extends Component {
@@ -247,6 +256,25 @@ export class DataProvider extends Component {
   processEntities = (entities, workloadEntities) => {
     return new Promise(resolve => {
       let { tags, tagSelection } = this.state;
+      let entityCostTotals = {
+        instances: {
+          currentSpend: 0,
+          optimizedSpend: 0,
+          datacenterSpend: 0,
+          cloudSpend: 0,
+          spotSpend: 0,
+          nonSpotSpend: 0,
+          optimizedNonSpotSpend: 0,
+          optimizedSpotSpend: 0,
+          potentialSavings: 0,
+          potentialSavingsWithSpot: 0,
+          staleInstances: 0,
+          excludedInstances: 0,
+          skippedInstances: 0,
+          optimizedInstances: 0
+        }
+      };
+
       const accounts = [];
 
       entities.forEach(async e => {
@@ -291,8 +319,21 @@ export class DataProvider extends Component {
           e.systemSample =
             (((e || {}).systemSample || {}).results || {})[0] || null;
 
-          e.networkSample =
-            (((e || {}).networkSample || {}).results || {})[0] || null;
+          e.networkSamples = ((e || {}).networkSample || {}).results || [];
+          e.networkSample = {
+            'max.receiveBytesPerSecond': 0,
+            'max.transmitBytesPerSecond': 0
+          };
+          e.networkSamples.forEach(s => {
+            e.networkSample['max.receiveBytesPerSecond'] +=
+              s['max.receiveBytesPerSecond'];
+            e.networkSample['max.transmitBytesPerSecond'] +=
+              s['max.transmitBytesPerSecond'];
+          });
+
+          if (e.systemSample['provider.instanceLifecycle'] === 'spot') {
+            e.isSpot = true;
+          }
 
           if (e.systemSample['latest.awsRegion']) {
             e.cloud = 'amazon';
@@ -338,7 +379,7 @@ export class DataProvider extends Component {
             null;
         }
 
-        // if system sample and
+        // if system sample or vsphere get instance pricing
         if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
           if (
             e.cloud &&
@@ -346,7 +387,7 @@ export class DataProvider extends Component {
             e.systemSample['latest.instanceType']
           ) {
             // assess cloud instance
-            e.instanceResult = await this.getCloudPricing(
+            e.instanceResult = await this.getInstanceCloudPricing(
               e.cloud,
               e.cloudRegion,
               e.systemSample['latest.instanceType']
@@ -377,17 +418,21 @@ export class DataProvider extends Component {
               optimizationConfig
             );
           }
+
+          // perform instance calculations
+          entityCostTotals = addInstanceCostTotal(entityCostTotals, e);
         }
       });
 
       this.setState({ accounts, tags, tagSelection }, () => {
+        console.log(entityCostTotals, entities);
         resolve(entities);
       });
     });
   };
 
   getCloudInstances = async (optimizationConfig, cpu, mem) => {
-    const cloudPrices = await this.getCloudPricing(
+    const cloudPrices = await this.getInstanceCloudPricing(
       optimizationConfig.defaultCloud,
       optimizationConfig.defaultRegion
     );
@@ -536,7 +581,7 @@ export class DataProvider extends Component {
 
   // get cloud pricing
   // checks cloud pricing in state, else will fetch and store
-  getCloudPricing = (cloud, region, instanceType) => {
+  getInstanceCloudPricing = (cloud, region, instanceType) => {
     const { cloudPricing } = this.state;
     return new Promise(resolve => {
       const pricingKey = `${cloud}_${region}`;
