@@ -147,12 +147,14 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
         optimizedPrice = cheapestOptimizedSpotPrice || 0;
       } else {
         if (cheapestOptimizedSpotPrice) {
-          const potentialSavingsWithSpot =
-            matchedPrice - cheapestOptimizedSpotPrice || 0;
+          if (matchedPrice > 0) {
+            const potentialSavingsWithSpot =
+              matchedPrice - cheapestOptimizedSpotPrice || 0;
 
-          entityCostTotals.instances.potentialSavingsWithSpot += potentialSavingsWithSpot;
+            entityCostTotals.instances.potentialSavingsWithSpot += potentialSavingsWithSpot;
 
-          e.potentialSavingsWithSpot = potentialSavingsWithSpot;
+            e.potentialSavingsWithSpot = potentialSavingsWithSpot;
+          }
 
           e.spotPrice = cheapestOptimizedSpotPrice;
         } else if (e.spot) {
@@ -170,9 +172,9 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
     }
     // end optimized results
 
-    if (!e.unableToGetOnPremPrice) {
+    if (!e.unableToGetOnPremPrice && matchedPrice > 0) {
       potentialSavings = matchedPrice - optimizedPrice;
-      entityCostTotals.potentialSavings += potentialSavings;
+      entityCostTotals.instances.potentialSavings += potentialSavings;
       e.potentialSavings = potentialSavings;
     }
   }
