@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu } from 'semantic-ui-react';
+import { Menu, Accordion } from 'semantic-ui-react';
 import { DataConsumer } from '../../context/data';
+import Tags from './tags';
 
 export default class LeftMenu extends React.PureComponent {
   state = { activeIndex: 0 };
@@ -15,6 +16,7 @@ export default class LeftMenu extends React.PureComponent {
 
   render() {
     const { height } = this.props;
+    const { activeIndex } = this.state;
 
     return (
       <DataConsumer>
@@ -44,9 +46,40 @@ export default class LeftMenu extends React.PureComponent {
               }}
             >
               <Menu.Item>
-                <Menu.Header>Getting Started</Menu.Header>
+                <Menu.Menu>{menuItem('Home', 'home', 'home')}</Menu.Menu>
                 <Menu.Menu>{menuItem('Setup', 'setup', 'cog')}</Menu.Menu>
+                {/* <Menu.Header>Getting Started</Menu.Header> */}
               </Menu.Item>
+
+              <Menu.Menu>
+                <Accordion
+                  as={Menu}
+                  vertical
+                  style={{
+                    border: 'none',
+                    minHeight: '25px',
+                    paddingTop: '0px',
+                    paddingLeft: '0px',
+                    paddingBottom: '0px',
+                    boxShadow: 'none',
+                    fontSize: '15px'
+                  }}
+                >
+                  <Menu.Item>
+                    <Accordion.Title
+                      active={activeIndex === 1}
+                      content="Tag Filters"
+                      index={1}
+                      onClick={this.handleClick}
+                      style={{ paddingTop: '0px', paddingBottom: '0px' }}
+                    />
+                    <Accordion.Content
+                      active={activeIndex === 1}
+                      content={<Tags height={height} />}
+                    />
+                  </Menu.Item>
+                </Accordion>
+              </Menu.Menu>
             </Menu>
           );
         }}

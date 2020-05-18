@@ -88,7 +88,8 @@ export class DataProvider extends Component {
       accountsObj: {},
       userConfig: null,
       rawEntities: [],
-      rawEntitiesFetched: false,
+      fetchingEntities: true,
+      postProcessing: true,
       processedApps: [],
       processedHosts: [],
       processedWorkloads: [],
@@ -134,7 +135,7 @@ export class DataProvider extends Component {
       entitySearchResult.entities.length === 0
     ) {
       // completed
-      this.setState({ rawEntitiesFetched: true }, () =>
+      this.setState({ fetchingEntities: false, postProcessing: true }, () =>
         this.postProcessEntities()
       );
     }
@@ -179,17 +180,12 @@ export class DataProvider extends Component {
     // run again to stitch freshly processed data
     workloadEntities = this.addEntityDataToWorkload(entities, workloadEntities);
 
-    console.log(entities, workloadEntities, entityCostTotals);
-
-    // !!todo: pricing difference in process entities!!
-
-    // console.log(
-    //   entities,
-    //   workloadEntities,
-    //   this.state.tags,
-    //   this.state.accounts,
-    //   this.state.tagSelection
-    // );
+    this.setState({
+      entities,
+      workloadEntities,
+      entityCostTotals,
+      postProcessing: false
+    });
   };
 
   // calculateDatacenterCost

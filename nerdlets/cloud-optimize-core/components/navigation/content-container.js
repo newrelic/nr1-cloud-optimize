@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataConsumer } from '../../context/data';
 import { Segment } from 'semantic-ui-react';
+import Home from '../home';
 
 export default class ContentContainer extends React.PureComponent {
   render() {
@@ -10,8 +11,8 @@ export default class ContentContainer extends React.PureComponent {
         {({ selectedPage }) => {
           const componentSelect = () => {
             switch (selectedPage) {
-              //   case 'setup':
-              //     return <Setup />;
+              case 'home':
+                return <Home />;
               default:
                 return selectedPage;
             }
