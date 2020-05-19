@@ -15,12 +15,14 @@ export default class MenuBar extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ groupBy, fetchingEntities, postProcessing }) => {
-          const availableMigrations = [].map(wl => ({
-            value: wl.name,
-            label: wl.name,
-            guid: wl.guid
-          }));
+        {({
+          groupBy,
+          groupByOptions,
+          sortBy,
+          fetchingEntities,
+          postProcessing,
+          updateDataState
+        }) => {
           const isLoading = fetchingEntities || postProcessing;
 
           return (
@@ -30,14 +32,8 @@ export default class MenuBar extends React.PureComponent {
                   <label>Group By</label>
                   <Select
                     isDisabled={isLoading}
-                    options={availableMigrations}
-                    // onChange={migration =>
-                    //   this.handleMapMenuChange(
-                    //     migration,
-                    //     updateDataContextState,
-                    //     pluckWorkload
-                    //   )
-                    // }
+                    options={groupByOptions}
+                    onChange={g => updateDataState({ groupBy: g })}
                     value={groupBy}
                     classNamePrefix="react-select"
                   />
@@ -46,7 +42,7 @@ export default class MenuBar extends React.PureComponent {
                   <label>Sort By</label>
                   <Select
                     isDisabled={isLoading}
-                    options={availableMigrations}
+                    // options={availableMigrations}
                     // onChange={migration =>
                     //   this.handleMapMenuChange(
                     //     migration,
@@ -54,7 +50,7 @@ export default class MenuBar extends React.PureComponent {
                     //     pluckWorkload
                     //   )
                     // }
-                    value={groupBy}
+                    value={sortBy}
                     classNamePrefix="react-select"
                   />
                 </div>

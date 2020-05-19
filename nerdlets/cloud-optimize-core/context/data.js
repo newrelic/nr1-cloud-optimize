@@ -11,7 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { NerdGraphQuery } from 'nr1';
 import {
   chunk,
-  getTagValue,
+  buildGroupByOptions,
   getCollection,
   getEntityCollection,
   getAccountCollection,
@@ -96,7 +96,11 @@ export class DataProvider extends Component {
       processedWorkloads: [],
       cloudPricing: {},
       tags: [],
-      tagSelection: {}
+      tagSelection: {},
+      groupBy: null,
+      groupByOptions: [],
+      sortBy: null,
+      sortByOptions: []
     };
   }
 
@@ -181,13 +185,15 @@ export class DataProvider extends Component {
     // run again to stitch freshly processed data
     workloadEntities = this.addEntityDataToWorkload(entities, workloadEntities);
     const groupedEntities = _.groupBy(entities, e => e.type);
+    const groupByOptions = buildGroupByOptions(entities);
 
     this.setState({
       entities,
       groupedEntities,
       workloadEntities,
       entityCostTotals,
-      postProcessing: false
+      postProcessing: false,
+      groupByOptions
     });
   };
 

@@ -29,6 +29,24 @@ export const buildTags = (currentTags, newTags) => {
   return [...new Set(currentTags)].sort();
 };
 
+export const buildGroupByOptions = entities => {
+  const groupByOptions = [
+    ...new Set(
+      entities
+        .map(e => e.tags)
+        .flat()
+        .map(t => t.key)
+    )
+  ]
+    .sort()
+    .map(t => ({
+      value: t,
+      label: t
+    }));
+
+  return groupByOptions;
+};
+
 export const existsInObjArray = (array, key, value) => {
   for (let z = 0; z < (array || []).length; z++) {
     if (array[z][key] === value) {
