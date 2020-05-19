@@ -176,6 +176,8 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
       potentialSavings = matchedPrice - optimizedPrice;
       entityCostTotals.instances.potentialSavings += potentialSavings;
       e.potentialSavings = potentialSavings;
+      e.matchedPrice = matchedPrice;
+      e.optimizedPrice = optimizedPrice;
     }
   }
 

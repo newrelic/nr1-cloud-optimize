@@ -20,7 +20,14 @@ export default class LeftMenu extends React.PureComponent {
 
     return (
       <DataConsumer>
-        {({ selectedPage, updateDataState }) => {
+        {({
+          selectedPage,
+          fetchingEntities,
+          postProcessing,
+          updateDataState
+        }) => {
+          const isLoading = fetchingEntities || postProcessing;
+
           const menuItem = (name, val, icon) => {
             return (
               <Menu.Item
@@ -49,9 +56,10 @@ export default class LeftMenu extends React.PureComponent {
                 <Menu.Menu>{menuItem('Home', 'home', 'home')}</Menu.Menu>
                 <Menu.Menu>{menuItem('Setup', 'setup', 'cog')}</Menu.Menu>
                 {/* <Menu.Header>Getting Started</Menu.Header> */}
+                <Menu.Menu>{menuItem('FAQ', 'faq', 'help')}</Menu.Menu>
               </Menu.Item>
 
-              <Menu.Menu>
+              <Menu.Menu style={{ display: isLoading ? 'none' : '' }}>
                 <Accordion
                   as={Menu}
                   vertical

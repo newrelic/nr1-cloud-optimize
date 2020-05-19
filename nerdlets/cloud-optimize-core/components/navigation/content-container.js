@@ -26,7 +26,13 @@ export default class ContentContainer extends React.PureComponent {
                 overflowX: 'hidden'
               }}
             >
-              <div style={{ paddingLeft: '10px', paddingRight: '10px' }}>
+              <div
+                style={{
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                  paddingTop: '10px'
+                }}
+              >
                 {componentSelect()}
               </div>
             </Segment>

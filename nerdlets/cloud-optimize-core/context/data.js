@@ -45,11 +45,11 @@ const acceptedTypesInWorkload = `AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST'
 // current max supported
 const entitySearchChunkValue = 25;
 
-const optimizationCategories = {
-  instance: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
-  workload: ['WORKLOAD'],
-  database: ['APPLICATION'],
-  application: ['APPLICATION']
+export const categoryTypes = {
+  instance: ['HOST', 'VSPHEREVM', 'VSPHEREHOST']
+  // workload: ['WORKLOAD'],
+  // database: ['APPLICATION'],
+  // application: ['APPLICATION']
 };
 
 const optimizationDefaults = {
@@ -88,6 +88,7 @@ export class DataProvider extends Component {
       accountsObj: {},
       userConfig: null,
       rawEntities: [],
+      groupedEntities: [],
       fetchingEntities: true,
       postProcessing: true,
       processedApps: [],
@@ -179,9 +180,11 @@ export class DataProvider extends Component {
 
     // run again to stitch freshly processed data
     workloadEntities = this.addEntityDataToWorkload(entities, workloadEntities);
+    const groupedEntities = _.groupBy(entities, e => e.type);
 
     this.setState({
       entities,
+      groupedEntities,
       workloadEntities,
       entityCostTotals,
       postProcessing: false

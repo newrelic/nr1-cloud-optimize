@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataConsumer } from '../../context/data';
 import { Loader, Dimmer } from 'semantic-ui-react';
+import Tiles from './tiles';
 
 export default class Home extends React.PureComponent {
   render() {
@@ -20,7 +21,12 @@ export default class Home extends React.PureComponent {
                     : ''}
                 </Loader>
               </Dimmer>
-              'test'
+
+              {!isLoading && rawEntities.length === 0
+                ? 'No entities found'
+                : ''}
+
+              <Tiles />
             </>
           );
         }}
