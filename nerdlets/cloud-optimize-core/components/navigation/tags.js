@@ -10,16 +10,17 @@ export default class Tags extends React.PureComponent {
   };
 
   render() {
+    const { height } = this.props;
     return (
       <DataConsumer>
         {({ tagSelection, updateDataState }) => {
           return (
             <Form
               style={{
-                maxHeight: '400px',
+                maxHeight: `${height - 160}px`,
                 overflowY: 'auto',
                 overflowX: 'hidden',
-                paddingLeft: '10px'
+                paddingLeft: '8px'
               }}
             >
               {Object.keys(tagSelection).map(group => {

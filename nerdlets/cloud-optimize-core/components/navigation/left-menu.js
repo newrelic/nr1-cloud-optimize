@@ -4,7 +4,7 @@ import { DataConsumer } from '../../context/data';
 import Tags from './tags';
 
 export default class LeftMenu extends React.PureComponent {
-  state = { activeIndex: 0 };
+  state = { activeIndex: 1 };
 
   handleClick = (e, titleProps) => {
     const { index } = titleProps;
