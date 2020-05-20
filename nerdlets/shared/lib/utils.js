@@ -6,6 +6,10 @@ import {
   AccountStorageQuery
 } from 'nr1';
 import gql from 'graphql-tag';
+import {
+  categoryTypes,
+  entityCostModel
+} from '../../cloud-optimize-core/context/data';
 
 export const getTagValue = (tags, tag) => {
   if (tags) {
@@ -20,6 +24,23 @@ export const getTagValue = (tags, tag) => {
     }
   }
   return null;
+};
+
+export const calculateGroupedCosts = entities => {
+  const entityCostTotals = JSON.parse(JSON.stringify(entityCostModel));
+
+  entities.forEach(e => {
+    // add instance costs
+    if (categoryTypes.instance.includes(e.type)) {
+      Object.keys(entityCostTotals.instances).forEach(k => {
+        if (e[k]) {
+          entityCostTotals.instances[k] += e[k] || 0;
+        }
+      });
+    }
+  });
+
+  return entityCostTotals;
 };
 
 export const buildTags = (currentTags, newTags) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { DataConsumer } from '../../context/data';
 import { Segment } from 'semantic-ui-react';
 import Home from '../home';
+import InstanceOptimizer from '../optimizers/instances';
 
 export default class ContentContainer extends React.PureComponent {
   render() {
@@ -13,6 +14,8 @@ export default class ContentContainer extends React.PureComponent {
             switch (selectedPage) {
               case 'home':
                 return <Home />;
+              case 'instance-optimizer':
+                return <InstanceOptimizer />;
               default:
                 return selectedPage;
             }

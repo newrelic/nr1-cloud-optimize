@@ -1,16 +1,18 @@
 import React from 'react';
-import { DataConsumer } from '../../context/data';
+import { DataConsumer, categoryTypes } from '../../context/data';
 import { Card, Icon } from 'semantic-ui-react';
 
 export default class Tiles extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ groupedEntities, workloadEntities }) => {
-          const instanceEntities =
-            (groupedEntities.HOST || []).length +
-            (groupedEntities.VSPHEREVM || []).length +
-            (groupedEntities.VSPHEREHOST || []).length;
+        {({ groupedEntities, workloadEntities, updateDataState }) => {
+          let instanceEntities = 0;
+
+          categoryTypes.instance.forEach(type => {
+            instanceEntities += (groupedEntities[type] || []).length;
+          });
+
           const workloadsCount = (workloadEntities || []).length;
 
           return (
@@ -25,7 +27,12 @@ export default class Tiles extends React.PureComponent {
               <Card.Group centered>
                 <Card>
                   <Card.Content>
-                    <Card.Header>
+                    <Card.Header
+                      style={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        updateDataState({ selectedPage: 'instance-optimizer' })
+                      }
+                    >
                       Instances{' '}
                       <Icon style={{ float: 'right' }} name="server" />
                     </Card.Header>

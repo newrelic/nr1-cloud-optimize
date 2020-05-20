@@ -237,6 +237,10 @@
   }
 }
 
+.react-select__menu {
+  z-index: 999;
+}
+
 .react-select__control {
   height: 45px;
   font-size: 13px;

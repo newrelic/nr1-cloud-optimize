@@ -16,8 +16,7 @@ import {
   getEntityCollection,
   getAccountCollection,
   existsInObjArray,
-  roundHalf,
-  buildTags
+  roundHalf
 } from '../../shared/lib/utils';
 import {
   entitySearchQuery,
@@ -28,6 +27,7 @@ import {
 import _ from 'lodash';
 import { addInstanceCostTotal } from '../strategies/instances';
 import pkg from '../../../package.json';
+import { processEntitySamples } from '../strategies/entity-handler';
 
 toast.configure();
 
@@ -50,6 +50,25 @@ export const categoryTypes = {
   // workload: ['WORKLOAD'],
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
+};
+
+export const entityCostModel = {
+  instances: {
+    currentSpend: 0,
+    optimizedSpend: 0,
+    datacenterSpend: 0,
+    cloudSpend: 0,
+    spotSpend: 0,
+    nonSpotSpend: 0,
+    optimizedNonSpotSpend: 0,
+    optimizedSpotSpend: 0,
+    potentialSavings: 0,
+    potentialSavingsWithSpot: 0,
+    staleInstances: 0,
+    excludedInstances: 0,
+    skippedInstances: 0,
+    optimizedInstances: 0
+  }
 };
 
 const optimizationDefaults = {
@@ -97,7 +116,7 @@ export class DataProvider extends Component {
       cloudPricing: {},
       tags: [],
       tagSelection: {},
-      groupBy: null,
+      groupBy: { value: 'account', label: 'account' },
       groupByOptions: [],
       sortBy: null,
       sortByOptions: []
@@ -266,181 +285,131 @@ export class DataProvider extends Component {
   };
 
   // process entity data
-  processEntities = (entities, workloadEntities) => {
-    return new Promise(resolve => {
-      let { tags, tagSelection } = this.state;
-      let entityCostTotals = {
-        instances: {
-          currentSpend: 0,
-          optimizedSpend: 0,
-          datacenterSpend: 0,
-          cloudSpend: 0,
-          spotSpend: 0,
-          nonSpotSpend: 0,
-          optimizedNonSpotSpend: 0,
-          optimizedSpotSpend: 0,
-          potentialSavings: 0,
-          potentialSavingsWithSpot: 0,
-          staleInstances: 0,
-          excludedInstances: 0,
-          skippedInstances: 0,
-          optimizedInstances: 0
-        }
-      };
+  processEntities = async (entities, workloadEntities) => {
+    const entityCostTotals = JSON.parse(JSON.stringify(entityCostModel));
+    const accounts = [];
+    const accountsObj = {};
+    const cloudPricing = {};
+    const tagSelection = {};
 
-      const accounts = [];
-
-      entities.forEach(async e => {
-        // store account
-        if (existsInObjArray(accounts, 'id', e.account.id) === false) {
-          accounts.push({
-            id: e.account.id,
-            name: e.account.name
-          });
-        }
-
-        // store tags
-        tags = buildTags(tags, e.tags);
-        e.tags.forEach(tag => {
-          if (!tag.key.includes('Guid')) {
-            if (tagSelection[tag.key] === undefined) {
-              tagSelection[tag.key] = {};
-            }
-            if (
-              tag.values[0] &&
-              tagSelection[tag.key][tag.values[0]] === undefined
-            ) {
-              tagSelection[tag.key][tag.values[0]] = false;
-            }
+    entities.forEach(e => {
+      processEntitySamples(e);
+      // unpack tags for easy grouping
+      e.tags.forEach(t => {
+        e[`tag.${t.key}`] = t.values[0] || true;
+        if (!t.key.includes('Guid')) {
+          if (tagSelection[t.key] === undefined) {
+            tagSelection[t.key] = {};
           }
-        });
-
-        const {
-          optimizationConfig,
-          optimizedWith,
-          workload
-        } = await this.getOptimizationConfig(e, workloadEntities);
-        e.optimizedWith = optimizedWith;
-
-        let coreCount = null;
-        let memoryGB = null;
-
-        if (e.systemSample) {
-          coreCount = e.systemSample['latest.coreCount'];
-          memoryGB = e.systemSample['latest.memoryTotalBytes'] * 1e-9;
-
-          e.systemSample =
-            (((e || {}).systemSample || {}).results || {})[0] || null;
-
-          e.networkSamples = ((e || {}).networkSample || {}).results || [];
-          e.networkSample = {
-            'max.receiveBytesPerSecond': 0,
-            'max.transmitBytesPerSecond': 0
-          };
-          e.networkSamples.forEach(s => {
-            e.networkSample['max.receiveBytesPerSecond'] +=
-              s['max.receiveBytesPerSecond'];
-            e.networkSample['max.transmitBytesPerSecond'] +=
-              s['max.transmitBytesPerSecond'];
-          });
-
-          if (e.systemSample['provider.instanceLifecycle'] === 'spot') {
-            e.isSpot = true;
+          if (t.values[0] && tagSelection[t.key][t.values[0]] === undefined) {
+            tagSelection[t.key][t.values[0]] = false;
           }
-
-          if (e.systemSample['latest.awsRegion']) {
-            e.cloud = 'amazon';
-            e.cloudRegion = e.systemSample['latest.awsRegion'];
-          } else if (e.systemSample['latest.regionName']) {
-            e.cloud = 'azure';
-            e.cloudRegion = e.systemSample['latest.regionName'];
-          } else if (e.systemSample['latest.zone']) {
-            e.cloud = 'gcp';
-            e.cloudRegion = e.systemSample['latest.zone'];
-          } else if (e.systemSample['latest.regionId']) {
-            e.cloud = 'alibaba';
-            e.cloudRegion = e.systemSample['latest.regionId'];
-          }
-        } else if (e.vsphereHostSample || e.vsphereVmSample) {
-          e.vsphereHostSample =
-            (((e || {}).vsphereHostSample || {}).results || {})[0] || null;
-
-          if (!e.vsphereHostSample['latest.entityGuid']) {
-            delete e.vsphereHostSample;
-          }
-
-          e.vsphereVmSample =
-            (((e || {}).vsphereVmSample || {}).results || {})[0] || null;
-          if (!e.vsphereVmSample['latest.entityGuid']) {
-            delete e.vsphereVmSample;
-          }
-
-          if (e.vsphereHostSample) {
-            coreCount = e.vsphereHostSample['latest.coreCount'];
-            memoryGB = e.vsphereHostSample['latest.memoryTotalBytes'] * 1e-9;
-          } else if (e.vsphereVmSample) {
-            coreCount = e.vsphereVmSample['latest.coreCount'];
-            memoryGB = e.vsphereVmSample['latest.memoryTotalBytes'] * 1e-9;
-          }
-        } else if (e.apmInfraData || e.apmDatabaseSlowQueryData) {
-          e.apmInfraData =
-            (((e || {}).apmDatabaseSlowQueryData || {}).results || {})[0] ||
-            null;
-
-          e.apmDatabaseSlowQueryData =
-            (((e || {}).apmDatabaseSlowQueryData || {}).results || {})[0] ||
-            null;
-        }
-
-        // if system sample or vsphere get instance pricing
-        if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
-          if (
-            e.cloud &&
-            e.cloudRegion &&
-            e.systemSample['latest.instanceType']
-          ) {
-            // assess cloud instance
-            e.instanceResult = await this.getInstanceCloudPricing(
-              e.cloud,
-              e.cloudRegion,
-              e.systemSample['latest.instanceType']
-            );
-          } else if (!e.cloud) {
-            if (!isNaN(coreCount) && !isNaN(memoryGB)) {
-              e.matchedInstances = await this.getCloudInstances(
-                optimizationConfig,
-                coreCount,
-                Math.round(memoryGB)
-              );
-            }
-
-            // check if exists in workload and if DC costing is available
-            if (workload && workload.costPerCU) {
-              const instanceCU = Math.round(memoryGB + coreCount);
-              e.DatacenterCUCost = instanceCU * workload.costPerCU;
-            }
-          }
-
-          // get optimized matches
-          if (!optimizationConfig) {
-            e.optimizedData = null;
-          } else {
-            e.optimizedData = await this.getOptimizedMatches(
-              e.instanceResult,
-              e.systemSample || e.vsphereHostSample || e.vsphereVmSample,
-              optimizationConfig
-            );
-          }
-
-          // perform instance calculations
-          entityCostTotals = addInstanceCostTotal(entityCostTotals, e);
         }
       });
 
-      this.setState({ accounts, tags, tagSelection }, () => {
-        resolve({ entities, entityCostTotals });
+      accountsObj[e.account.id] = { name: e.account.name };
+      if (e.cloud) cloudPricing[`${e.cloud}_${e.cloudRegion}`] = [];
+    });
+
+    // fetch account optimization configs
+    const accountConfigPromises = Object.keys(accountsObj).map(a =>
+      getAccountCollection(a, 'optimizationConfig', 'main')
+    );
+
+    await Promise.all(accountConfigPromises).then(values => {
+      values.forEach((v, i) => {
+        const key = Object.keys(accountsObj)[i];
+        accountsObj[key].optimizationConfig = v;
+        accountsObj[key].id = key;
+        accounts.push(accountsObj[key]);
       });
     });
+
+    // get cloud pricing
+    const cloudPricingPromises = Object.keys(cloudPricing).map(cp => {
+      const cloudRegion = cp.split('_');
+      return this.getCloudPricing(cloudRegion[0], cloudRegion[1]);
+    });
+
+    await Promise.all(cloudPricingPromises).then(values => {
+      values.forEach((v, i) => {
+        const key = Object.keys(cloudPricing)[i];
+        cloudPricing[key] = v;
+      });
+    });
+
+    await this.storeState({
+      accountsObj,
+      accounts,
+      cloudPricing,
+      tagSelection
+    });
+
+    entities.forEach(e => {
+      const {
+        optimizationConfig,
+        optimizedWith,
+        workload
+      } = this.getOptimizationConfig(e, workloadEntities);
+      if (workload && workload.costPerCU) {
+        e.costPerCU = workload.costPerCU;
+      }
+      e.optimizedWith = optimizedWith;
+      this.processEntity(e, optimizationConfig, entityCostTotals);
+    });
+
+    console.log(accountsObj, accounts, cloudPricing);
+    return { entities, entityCostTotals };
+  };
+
+  storeState = newState => {
+    return new Promise(resolve => {
+      this.setState(newState, () => {
+        resolve(true);
+      });
+    });
+  };
+
+  processEntity = async (e, optimizationConfig, entityCostTotals) => {
+    // if system sample or vsphere get instance pricing
+    if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
+      if (e.cloud && e.cloudRegion && e.systemSample['latest.instanceType']) {
+        // assess cloud instance
+        e.instanceResult = await this.getInstanceCloudPricing(
+          e.cloud,
+          e.cloudRegion,
+          e.systemSample['latest.instanceType']
+        );
+      } else if (!e.cloud) {
+        if (!isNaN(e.coreCount) && !isNaN(e.memoryGB)) {
+          e.matchedInstances = await this.getCloudInstances(
+            optimizationConfig,
+            e.coreCount,
+            Math.round(e.memoryGB)
+          );
+        }
+
+        // check if exists in workload and if DC costing is available
+        if (e.costPerCU) {
+          const instanceCU = Math.round(e.memoryGB + e.coreCount);
+          e.DatacenterCUCost = instanceCU * e.costPerCU;
+        }
+      }
+
+      // get optimized matches
+      if (!optimizationConfig) {
+        e.optimizedData = null;
+      } else {
+        e.optimizedData = await this.getOptimizedMatches(
+          e.instanceResult,
+          e.systemSample || e.vsphereHostSample || e.vsphereVmSample,
+          optimizationConfig
+        );
+      }
+
+      // perform instance calculations
+      addInstanceCostTotal(entityCostTotals, e);
+    }
   };
 
   getCloudInstances = async (optimizationConfig, cpu, mem) => {
@@ -529,7 +498,8 @@ export class DataProvider extends Component {
     return false;
   };
 
-  getOptimizationConfig = async (e, workloadEntities) => {
+  getOptimizationConfig = (e, workloadEntities) => {
+    const { accountsObj } = this.state;
     let optimizationConfig = null;
     let optimizedWith = null;
 
@@ -542,17 +512,15 @@ export class DataProvider extends Component {
 
     // if no workload config, check account storage
     if (!optimizationConfig) {
-      const accountOptimizationConfig = await this.getAccountOptimizationConfig(
-        e.account.id,
-        e.account.name
-      );
-      if (accountOptimizationConfig) {
-        optimizationConfig = accountOptimizationConfig;
+      if (accountsObj[e.account.id].optimizationConfig) {
+        optimizationConfig = accountsObj[e.account.id].optimizationConfig;
         optimizedWith = 'accountConfig';
       }
     }
 
     // if no workload config, user settings
+    // revist later
+    // separate config and pricing calls to perform upfront
     if (!optimizationConfig) {
       optimizationConfig = this.state.userConfig;
       optimizedWith = 'userConfig';
@@ -591,6 +559,22 @@ export class DataProvider extends Component {
     });
   };
 
+  getCloudPricing = (cloud, region) => {
+    return new Promise(resolve => {
+      fetch(`${pricingURL}/${cloud}/compute/pricing/${region}.json`)
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+          if (json && json.products) {
+            resolve(json.products);
+          } else {
+            resolve(null);
+          }
+        });
+    });
+  };
+
   // get cloud pricing
   // checks cloud pricing in state, else will fetch and store
   getInstanceCloudPricing = (cloud, region, instanceType) => {
@@ -610,25 +594,21 @@ export class DataProvider extends Component {
           resolve(cloudPricing[pricingKey]);
         }
       } else {
-        fetch(`${pricingURL}/${cloud}/compute/pricing/${region}.json`)
-          .then(response => {
-            return response.json();
-          })
-          .then(json => {
-            cloudPricing[pricingKey] = json.products;
-            this.setState({ cloudPricing }, () => {
-              if (instanceType) {
-                for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
-                  if (cloudPricing[pricingKey][z].type === instanceType) {
-                    resolve(cloudPricing[pricingKey][z]);
-                  }
+        this.getCloudPricing(cloud, region).then(value => {
+          cloudPricing[pricingKey] = value;
+          this.setState({ cloudPricing }, () => {
+            if (instanceType) {
+              for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
+                if (cloudPricing[pricingKey][z].type === instanceType) {
+                  resolve(cloudPricing[pricingKey][z]);
                 }
-                resolve(null);
-              } else {
-                resolve(json.products);
               }
-            });
+              resolve(null);
+            } else {
+              resolve(value);
+            }
           });
+        });
       }
     });
   };
