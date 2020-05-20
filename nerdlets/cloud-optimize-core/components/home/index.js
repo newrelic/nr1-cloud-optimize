@@ -1,6 +1,6 @@
 import React from 'react';
 import { DataConsumer } from '../../context/data';
-import { Loader, Dimmer } from 'semantic-ui-react';
+import { Loader, Dimmer, Header } from 'semantic-ui-react';
 import Tiles from './tiles';
 
 export default class Home extends React.PureComponent {
@@ -22,9 +22,15 @@ export default class Home extends React.PureComponent {
                 </Loader>
               </Dimmer>
 
-              {!isLoading && rawEntities.length === 0
-                ? 'No entities found'
-                : ''}
+              {!isLoading && rawEntities.length === 0 ? (
+                'No entities found'
+              ) : (
+                <Header
+                  as="h3"
+                  content="Optimizers"
+                  style={{ paddingTop: 0, marginTop: 0 }}
+                />
+              )}
 
               <Tiles />
             </>

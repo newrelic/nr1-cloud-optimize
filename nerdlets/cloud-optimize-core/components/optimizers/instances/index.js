@@ -1,5 +1,5 @@
 import React from 'react';
-// import { Form } from 'semantic-ui-react';
+import InstanceCards from './cards';
 import { DataConsumer, categoryTypes } from '../../../context/data';
 import { calculateGroupedCosts } from '../../../../shared/lib/utils';
 import _ from 'lodash';
@@ -15,7 +15,6 @@ export default class InstanceOptimizer extends React.PureComponent {
     return (
       <DataConsumer>
         {({ groupBy, sortBy, orderBy, groupedEntities, workloadEntities }) => {
-          console.log(groupedEntities, workloadEntities);
           let entities = [];
           categoryTypes.instances.forEach(type => {
             entities = [...entities, ...(groupedEntities[type] || [])];
@@ -46,9 +45,11 @@ export default class InstanceOptimizer extends React.PureComponent {
             );
           }
 
-          console.log(menuGroupedCosts);
-
-          return <></>;
+          return (
+            <>
+              <InstanceCards groups={menuGroupedCosts} />
+            </>
+          );
         }}
       </DataConsumer>
     );
