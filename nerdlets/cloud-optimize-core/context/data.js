@@ -46,7 +46,7 @@ const acceptedTypesInWorkload = `AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST'
 const entitySearchChunkValue = 25;
 
 export const categoryTypes = {
-  instance: ['HOST', 'VSPHEREVM', 'VSPHEREHOST']
+  instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST']
   // workload: ['WORKLOAD'],
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
@@ -117,8 +117,9 @@ export class DataProvider extends Component {
       tags: [],
       tagSelection: {},
       groupBy: { value: 'account', label: 'account' },
+      sortBy: { value: 'currentSpend', label: 'Current Spend' },
+      orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
-      sortBy: null,
       sortByOptions: []
     };
   }

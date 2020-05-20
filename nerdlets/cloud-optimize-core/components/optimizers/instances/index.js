@@ -14,9 +14,9 @@ export default class InstanceOptimizer extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ groupBy, groupedEntities }) => {
+        {({ groupBy, sortBy, orderBy, groupedEntities }) => {
           let entities = [];
-          categoryTypes.instance.forEach(type => {
+          categoryTypes.instances.forEach(type => {
             entities = [...entities, ...(groupedEntities[type] || [])];
           });
 
@@ -25,12 +25,27 @@ export default class InstanceOptimizer extends React.PureComponent {
             e => e[`tag.${groupBy.value}`]
           );
 
-          const menuGroupedCosts = {};
+          let menuGroupedCosts = [];
           Object.keys(menuGroupedEntities).forEach(k => {
-            menuGroupedCosts[k] = calculateGroupedCosts(menuGroupedEntities[k]);
+            const group = {
+              costs: calculateGroupedCosts(menuGroupedEntities[k]),
+              entities: menuGroupedEntities[k],
+              name: k
+            };
+            menuGroupedCosts.push(group);
           });
 
-          // console.log(menuGroupedCosts);
+          if (sortBy) {
+            const order =
+              orderBy.value === 'desc' ? ['desc', 'asc'] : ['asc', 'desc'];
+            menuGroupedCosts = _.orderBy(
+              menuGroupedCosts,
+              d => d.costs.instances[sortBy.value],
+              order
+            );
+          }
+
+          console.log(menuGroupedCosts);
 
           return <></>;
         }}

@@ -31,7 +31,7 @@ export const calculateGroupedCosts = entities => {
 
   entities.forEach(e => {
     // add instance costs
-    if (categoryTypes.instance.includes(e.type)) {
+    if (categoryTypes.instances.includes(e.type)) {
       Object.keys(entityCostTotals.instances).forEach(k => {
         if (e[k]) {
           entityCostTotals.instances[k] += e[k] || 0;

@@ -19,11 +19,30 @@ export default class MenuBar extends React.PureComponent {
           groupBy,
           groupByOptions,
           sortBy,
+          orderBy,
           fetchingEntities,
           postProcessing,
-          updateDataState
+          updateDataState,
+          selectedPage
         }) => {
           const isLoading = fetchingEntities || postProcessing;
+
+          let sortByOptions = [];
+
+          if (selectedPage === 'instance-optimizer') {
+            sortByOptions = [
+              { value: 'currentSpend', label: 'Current Spend' },
+              { value: 'cloudSpend', label: 'Cloud Spend' },
+              { value: 'spotSpend', label: 'Spot Spend' },
+              { value: 'nonSpotSpend', label: 'Non Spot Spend' },
+              { value: 'datacenterSpend', label: 'Datacenter Spend' },
+              { value: 'potentialSavings', label: 'Potential Savings' },
+              {
+                value: 'potentialSavingsWithSpot',
+                label: 'Potential Savings w/Spot'
+              }
+            ];
+          }
 
           return (
             <div>
@@ -31,26 +50,40 @@ export default class MenuBar extends React.PureComponent {
                 <div className="react-select-input-group">
                   <label>Group By</label>
                   <Select
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || selectedPage === 'home'}
                     options={groupByOptions}
                     onChange={g => updateDataState({ groupBy: g })}
                     value={groupBy}
                     classNamePrefix="react-select"
                   />
                 </div>
-                <div className="react-select-input-group">
+                <div
+                  className="react-select-input-group"
+                  style={{ width: '200px' }}
+                >
                   <label>Sort By</label>
                   <Select
-                    isDisabled={isLoading}
-                    // options={availableMigrations}
-                    // onChange={migration =>
-                    //   this.handleMapMenuChange(
-                    //     migration,
-                    //     updateDataContextState,
-                    //     pluckWorkload
-                    //   )
-                    // }
+                    options={sortByOptions}
+                    isDisabled={isLoading || selectedPage === 'home'}
+                    onChange={s => updateDataState({ sortBy: s })}
                     value={sortBy}
+                    classNamePrefix="react-select"
+                  />
+                </div>
+
+                <div
+                  className="react-select-input-group"
+                  style={{ width: '150px' }}
+                >
+                  <label>Order</label>
+                  <Select
+                    options={[
+                      { value: 'desc', label: 'Descending' },
+                      { value: 'asc', label: 'Ascending' }
+                    ]}
+                    isDisabled={isLoading || selectedPage === 'home'}
+                    onChange={s => updateDataState({ orderBy: s })}
+                    value={orderBy}
                     classNamePrefix="react-select"
                   />
                 </div>

@@ -9,7 +9,7 @@ export default class Tiles extends React.PureComponent {
         {({ groupedEntities, workloadEntities, updateDataState }) => {
           let instanceEntities = 0;
 
-          categoryTypes.instance.forEach(type => {
+          categoryTypes.instances.forEach(type => {
             instanceEntities += (groupedEntities[type] || []).length;
           });
 
