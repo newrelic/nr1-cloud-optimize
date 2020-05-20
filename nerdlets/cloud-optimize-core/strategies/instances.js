@@ -27,12 +27,11 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
 
   // check if dc pricing
   if (!e.cloud) {
-    if (e.DatacenterCUCost) {
-      entityCostTotals.instances.currentSpend += e.DatacenterCUCost;
-      entityCostTotals.instances.datacenterSpend += e.DatacenterCUCost;
+    if (e.datacenterSpend) {
+      entityCostTotals.instances.currentSpend += e.datacenterSpend;
+      entityCostTotals.instances.datacenterSpend += e.datacenterSpend;
 
-      e.currentSpend = e.DatacenterCUCost;
-      e.datacenterSpend = e.DatacenterCUCost;
+      e.currentSpend = e.datacenterSpend;
     } else {
       e.unableToGetOnPremPrice = true;
       matchedPrice = 0;

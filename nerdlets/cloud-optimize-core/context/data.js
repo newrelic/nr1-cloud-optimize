@@ -294,9 +294,11 @@ export class DataProvider extends Component {
 
     entities.forEach(e => {
       processEntitySamples(e);
-      // unpack tags for easy grouping
       e.tags.forEach(t => {
+        // unpack tags for easy grouping
         e[`tag.${t.key}`] = t.values[0] || true;
+
+        // make tags available for selection
         if (!t.key.includes('Guid')) {
           if (tagSelection[t.key] === undefined) {
             tagSelection[t.key] = {};
@@ -358,7 +360,6 @@ export class DataProvider extends Component {
       this.processEntity(e, optimizationConfig, entityCostTotals);
     });
 
-    console.log(accountsObj, accounts, cloudPricing);
     return { entities, entityCostTotals };
   };
 
@@ -392,7 +393,7 @@ export class DataProvider extends Component {
         // check if exists in workload and if DC costing is available
         if (e.costPerCU) {
           const instanceCU = Math.round(e.memoryGB + e.coreCount);
-          e.DatacenterCUCost = instanceCU * e.costPerCU;
+          e.datacenterSpend = instanceCU * e.costPerCU;
         }
       }
 
