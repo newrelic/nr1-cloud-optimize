@@ -16,7 +16,8 @@ import {
   getEntityCollection,
   getAccountCollection,
   existsInObjArray,
-  roundHalf
+  roundHalf,
+  tagFilterEntities
 } from '../../shared/lib/utils';
 import {
   entitySearchQuery,
@@ -106,6 +107,7 @@ export class DataProvider extends Component {
       accounts: [],
       accountsObj: {},
       userConfig: null,
+      entities: [],
       rawEntities: [],
       groupedEntities: [],
       fetchingEntities: true,
@@ -168,6 +170,7 @@ export class DataProvider extends Component {
   };
 
   postProcessEntities = async guids => {
+    const tagSelection = {};
     let { rawEntities } = this.state;
     rawEntities = [...rawEntities, ...(guids || [])];
 
@@ -185,7 +188,10 @@ export class DataProvider extends Component {
     // get workload guid datacenter docs & entities first
     // this way pricing can be retrieved and used for non public cloud entities
     if (workloadEntities.length > 0) {
-      workloadEntities = await this.processWorkloads(workloadEntities);
+      workloadEntities = await this.processWorkloads(
+        workloadEntities,
+        tagSelection
+      );
     }
 
     const tempEntities = await this.getEntityData(nonWorkloadEntities);
@@ -200,7 +206,8 @@ export class DataProvider extends Component {
     // get pricing, matches and optimized matches and perform any decoration if required
     const { entities, entityCostTotals } = await this.processEntities(
       tempEntities,
-      workloadEntities
+      workloadEntities,
+      tagSelection
     );
 
     // run again to stitch freshly processed data
@@ -212,6 +219,7 @@ export class DataProvider extends Component {
       entities,
       groupedEntities,
       workloadEntities,
+      originalWorkloadEntities: workloadEntities,
       entityCostTotals,
       postProcessing: false,
       groupByOptions
@@ -287,15 +295,21 @@ export class DataProvider extends Component {
   };
 
   // process entity data
-  processEntities = async (entities, workloadEntities) => {
+  processEntities = async (entities, workloadEntities, tagSelection) => {
     const entityCostTotals = JSON.parse(JSON.stringify(entityCostModel));
     const accounts = [];
     const accountsObj = {};
     const cloudPricing = {};
-    const tagSelection = {};
 
     entities.forEach(e => {
       processEntitySamples(e);
+      accountsObj[e.account.id] = { name: e.account.name };
+      if (e.cloud) {
+        cloudPricing[`${e.cloud}_${e.cloudRegion}`] = [];
+        e.tags.push({ key: 'cloud', values: [e.cloud] });
+        e.tags.push({ key: 'region', values: [e.cloudRegion] });
+      }
+
       e.tags.forEach(t => {
         // unpack tags for easy grouping
         e[`tag.${t.key}`] = t.values[0] || true;
@@ -310,9 +324,6 @@ export class DataProvider extends Component {
           }
         }
       });
-
-      accountsObj[e.account.id] = { name: e.account.name };
-      if (e.cloud) cloudPricing[`${e.cloud}_${e.cloudRegion}`] = [];
     });
 
     // fetch account optimization configs
@@ -666,7 +677,7 @@ export class DataProvider extends Component {
     return null;
   };
 
-  processWorkloads = async workloadGuids => {
+  processWorkloads = async (workloadGuids, tagSelection) => {
     // get docs
     // // get dcDoc
     const workloadDocPromises = workloadGuids.map(wl =>
@@ -749,6 +760,24 @@ export class DataProvider extends Component {
           const checkIndex = existsInObjArray(workloadGuids, 'guid', r.guid);
           if (checkIndex !== false) {
             workloadGuids[checkIndex].tags = r.tags;
+
+            workloadGuids[checkIndex].tags.forEach(t => {
+              // unpack tags for easy grouping
+              workloadGuids[checkIndex][`tag.${t.key}`] = t.values[0] || true;
+
+              // make tags available for selection
+              if (!t.key.includes('Guid')) {
+                if (tagSelection[t.key] === undefined) {
+                  tagSelection[t.key] = {};
+                }
+                if (
+                  t.values[0] &&
+                  tagSelection[t.key][t.values[0]] === undefined
+                ) {
+                  tagSelection[t.key][t.values[0]] = false;
+                }
+              }
+            });
           }
         });
       });
@@ -843,6 +872,21 @@ export class DataProvider extends Component {
 
       this.setState(newState, () => {
         // do stuff with updated state if required
+        if (newState.tagSelection) {
+          const { entities, originalWorkloadEntities } = this.state;
+          const groupedEntities = _.groupBy(
+            tagFilterEntities(entities, newState.tagSelection),
+            e => e.type
+          );
+          const workloadEntities = tagFilterEntities(
+            originalWorkloadEntities,
+            newState.tagSelection
+          );
+          this.setState({
+            groupedEntities,
+            workloadEntities
+          });
+        }
 
         // completed update
         this.setState({ updatingContext: false }, () => {
