@@ -17,15 +17,12 @@ export default class CostPeriod extends React.PureComponent {
 
     return (
       <DataConsumer>
-        {({ costPeriod, updateDataContextState, dataFetcher }) => (
+        {({ costPeriod, updateDataState }) => (
           <div className="react-select-input-group" style={{ width: '125px' }}>
             <label>COST PERIOD</label>
             <Select
               options={timeBucketOptions}
-              onChange={async data => {
-                await updateDataContextState({ costPeriod: data });
-                dataFetcher(['migrationProjects']);
-              }}
+              onChange={data => updateDataState({ costPeriod: data })}
               value={costPeriod}
               classNamePrefix="react-select"
             />

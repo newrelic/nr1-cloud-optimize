@@ -120,7 +120,8 @@ export class DataProvider extends Component {
       sortBy: { value: 'currentSpend', label: 'Current Spend' },
       orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
-      sortByOptions: []
+      sortByOptions: [],
+      costPeriod: { key: 3, label: 'MONTHLY', value: 'M' }
     };
   }
 

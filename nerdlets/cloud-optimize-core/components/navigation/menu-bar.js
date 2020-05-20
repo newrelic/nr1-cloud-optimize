@@ -4,7 +4,7 @@ no-console: 0
 import React from 'react';
 import Select from 'react-select';
 import { DataConsumer } from '../../context/data';
-// import CostPeriod from './cost-period';
+import CostPeriod from './cost-period';
 // import { Popup, Icon } from 'semantic-ui-react';
 
 export default class MenuBar extends React.PureComponent {
@@ -47,7 +47,10 @@ export default class MenuBar extends React.PureComponent {
           return (
             <div>
               <div className="utility-bar">
-                <div className="react-select-input-group">
+                <div
+                  className="react-select-input-group"
+                  style={{ width: '200px' }}
+                >
                   <label>Group By</label>
                   <Select
                     isDisabled={isLoading || selectedPage === 'home'}
@@ -105,10 +108,9 @@ export default class MenuBar extends React.PureComponent {
                 )} */}
 
                 <div className="flex-push" />
+                <CostPeriod />
 
-                {/* <CostPeriod />
-
-                <RefreshSelector /> */}
+                {/*  <RefreshSelector /> */}
               </div>
             </div>
           );
