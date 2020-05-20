@@ -29,6 +29,7 @@ import _ from 'lodash';
 import { addInstanceCostTotal } from '../strategies/instances';
 import pkg from '../../../package.json';
 import { processEntitySamples } from '../strategies/entity-handler';
+import queue from 'async/queue';
 
 toast.configure();
 
@@ -45,6 +46,9 @@ const acceptedTypesInWorkload = `AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST'
 
 // current max supported
 const entitySearchChunkValue = 25;
+
+// how many elements to queue
+const queueConcurrency = 5;
 
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST']
@@ -112,6 +116,7 @@ export class DataProvider extends Component {
       groupedEntities: [],
       fetchingEntities: true,
       postProcessing: true,
+      entityDataProgress: 0,
       processedApps: [],
       processedHosts: [],
       processedWorkloads: [],
@@ -595,6 +600,7 @@ export class DataProvider extends Component {
     const { cloudPricing } = this.state;
     return new Promise(resolve => {
       const pricingKey = `${cloud}_${region}`;
+      console.log(cloudPricing[pricingKey]);
       if (cloudPricing[pricingKey]) {
         if (instanceType) {
           // provide direct instance type price
@@ -635,23 +641,32 @@ export class DataProvider extends Component {
       entitySearchChunkValue
     );
 
-    const guidPromises = guidChunks.map(chunk =>
+    let completeEntities = [];
+    let chunksCompleted = 0;
+
+    const q = queue((task, cb) => {
+      chunksCompleted++;
+
       NerdGraphQuery.query({
         query: getEntityDataQuery,
-        variables: { guids: chunk }
-      })
-    );
-
-    let completeEntities = [];
-
-    await Promise.all(guidPromises).then(values => {
-      values.forEach(v => {
+        variables: { guids: task.chunk }
+      }).then(v => {
         const entities = (((v || {}).data || {}).actor || {}).entities || [];
         if (entities.length > 0) {
           completeEntities = [...completeEntities, ...entities];
         }
+        this.setState(
+          { entityDataProgress: (chunksCompleted / guidChunks.length) * 100 },
+          () => {
+            cb();
+          }
+        );
       });
-    });
+    }, queueConcurrency);
+
+    guidChunks.forEach(chunk => q.push({ chunk }));
+
+    await q.drain();
 
     return completeEntities;
   };

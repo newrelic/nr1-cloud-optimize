@@ -7,15 +7,23 @@ export default class Home extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ fetchingEntities, postProcessing, rawEntities }) => {
+        {({
+          fetchingEntities,
+          postProcessing,
+          rawEntities,
+          entityDataProgress
+        }) => {
           const isLoading = fetchingEntities || postProcessing;
           return (
             <>
               <Dimmer active={isLoading}>
                 <Loader>
                   {fetchingEntities
-                    ? `Fetching entities -  ${rawEntities.length}`
+                    ? `Fetching entities - ${rawEntities.length}`
                     : ''}
+                  <br />
+                  {`Fetching entity data ${entityDataProgress}%`}
+                  <br />
                   {!fetchingEntities && postProcessing
                     ? `Post processing ${rawEntities.length} entities`
                     : ''}

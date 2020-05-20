@@ -14,7 +14,7 @@ export default class InstanceOptimizer extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ groupBy, sortBy, orderBy, groupedEntities, workloadEntities }) => {
+        {({ groupBy, sortBy, orderBy, groupedEntities }) => {
           let entities = [];
           categoryTypes.instances.forEach(type => {
             entities = [...entities, ...(groupedEntities[type] || [])];
