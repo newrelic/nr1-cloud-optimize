@@ -14,11 +14,13 @@ export default class InstanceCards extends React.PureComponent {
               {groups.map((g, i) => {
                 console.log(g);
                 return (
-                  <Card key={i}>
+                  <Card key={i} color="green">
                     <Card.Content>
-                      <Card.Header>
-                        {g.name === 'undefined' ? 'Uncategorized' : g.name}
-                      </Card.Header>
+                      <Card.Content>
+                        <span style={{ fontSize: '13px' }}>
+                          {g.name === 'undefined' ? 'Uncategorized' : g.name}
+                        </span>
+                      </Card.Content>
                       {/* <Card.Description>
                       Matthew is a musician living in Nashville.
                     </Card.Description> */}
@@ -29,13 +31,13 @@ export default class InstanceCards extends React.PureComponent {
                       <Table celled inverted={false} basic="very">
                         <Table.Header>
                           <Table.Row>
-                            <Table.HeaderCell />
+                            <Table.HeaderCell style={{ textAlign: 'right' }} />
                             <Table.HeaderCell style={{ textAlign: 'right' }}>
                               Price {costPeriod.label}
                             </Table.HeaderCell>
                           </Table.Row>
                         </Table.Header>
-                        <Table.Body>
+                        <Table.Body style={{ fontSize: '12px' }}>
                           <Table.Row>
                             <Table.Cell>Current Spend</Table.Cell>
                             <Table.Cell style={{ textAlign: 'right' }}>
@@ -82,7 +84,8 @@ export default class InstanceCards extends React.PureComponent {
                     <Card.Content extra>
                       <a>
                         <Icon name="cubes" />
-                        {g.entities.length} Entities
+                        {g.entities.length}{' '}
+                        {g.entities.length === 1 ? 'Entity' : 'Entities'}
                       </a>{' '}
                     </Card.Content>
                   </Card>

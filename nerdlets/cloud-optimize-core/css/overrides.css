@@ -3,6 +3,11 @@ NR1 styling clashes with semantic
 This file reimplements semantic css with !important to allow Semantic components to be styled correctly
 */
 
+td:not(.u-unstyledTd),
+th:not(.u-unstyledTh) {
+  height: 30px !important;
+}
+
 .ui.search.selection.dropdown > input.search {
   line-height: 1.21428571em !important;
   padding: 0.67857143em 2.1em 0.67857143em 1em !important;
