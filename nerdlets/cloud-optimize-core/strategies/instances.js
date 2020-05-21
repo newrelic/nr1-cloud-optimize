@@ -1,22 +1,3 @@
-// const entityCostTotals = {
-//     instances: {
-//       currentSpend: 0,
-//       optimizedSpend: 0,
-//       datacenterSpend: 0,
-//       cloudSpend: 0,
-//       spotSpend:0,
-//       nonSpotSpend: 0,
-//       optimizedNonSpotSpend: 0,
-//       optimizedSpotSpend: 0,
-//       potentialSavings: 0,
-//       potentialSavingsWithSpot: 0,
-//       staleInstances: 0,
-//       excludedInstances: 0,
-//       skippedInstances: 0,
-//       optimizedInstances: 0
-//     }
-//   };
-
 export const addInstanceCostTotal = (entityCostTotals, e) => {
   const state = ((e || {}).optimizedData || {}).state || null;
   let matchedResult = null;
@@ -133,7 +114,9 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
       }
     }
 
-    if (optimizedResult) {
+    // do not add pricing if the current spend is not more than 0
+    // having the optimizedResult is okay for suggestions
+    if (optimizedResult && e.currentSpend > 0) {
       entityCostTotals.instances.optimizedInstances += 1;
 
       e.optimizedResult = optimizedResult;

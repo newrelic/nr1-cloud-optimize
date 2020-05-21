@@ -446,7 +446,7 @@ export class DataProvider extends Component {
     }
   };
 
-  getCloudInstances = async (optimizationConfig, cpu, mem) => {
+  getCloudInstances = async (optimizationConfig, cpu, mem, basePrice) => {
     const cloudPrices = await this.getInstanceCloudPricing(
       optimizationConfig.defaultCloud,
       optimizationConfig[`${optimizationConfig.defaultCloud}Region`]
@@ -465,7 +465,8 @@ export class DataProvider extends Component {
 
         if (
           cloudPrices[z].cpusPerVm === cpu &&
-          cloudPrices[z].memPerVm === mem
+          cloudPrices[z].memPerVm === mem &&
+          basePrice >= cloudPrices[z].onDemandPrice
         ) {
           exactMatchedProducts[cloudPrices[z].category] = cloudPrices[z];
         }
@@ -484,7 +485,8 @@ export class DataProvider extends Component {
             if (
               cloudPrices[z].category === category &&
               cloudPrices[z].cpusPerVm >= cpu &&
-              cloudPrices[z].memPerVm >= mem
+              cloudPrices[z].memPerVm >= mem &&
+              basePrice >= cloudPrices[z].onDemandPrice
             ) {
               nextMatchedProducts[category] = cloudPrices[z];
               break;
@@ -994,7 +996,8 @@ export class DataProvider extends Component {
       optimizationData.matchedInstances = await this.getCloudInstances(
         optimizationConfig,
         cpuCount,
-        memGb
+        memGb,
+        instanceResult.onDemandPrice
       );
 
       if (optimizationData.matchedInstances) {

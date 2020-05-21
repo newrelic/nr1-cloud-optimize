@@ -1,10 +1,9 @@
 // massage the nrdb data
 export const processEntitySamples = e => {
   if (e.systemSample) {
+    e.systemSample = (((e || {}).systemSample || {}).results || {})[0] || null;
     e.coreCount = e.systemSample['latest.coreCount'];
     e.memoryGB = e.systemSample['latest.memoryTotalBytes'] * 1e-9;
-
-    e.systemSample = (((e || {}).systemSample || {}).results || {})[0] || null;
 
     e.networkSamples = ((e || {}).networkSample || {}).results || [];
     e.networkSample = {

@@ -113,6 +113,28 @@ export const roundHalf = num => {
   return num < 0.5 ? 0.5 : Math.round(num * 2) / 2;
 };
 
+export const adjustCost = (period, value) => {
+  switch (period.value) {
+    case 'D':
+      value = value * 24;
+      break;
+    case 'M':
+      value = value * 24 * 30;
+      break;
+    case 'Y':
+      value = value * 24 * 30 * 12;
+      break;
+  }
+  return parseFloat(value);
+};
+
+export const formatValue = (cost, decimals) => {
+  if (decimals) {
+    return cost.toFixed(decimals).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  }
+  return cost.toString().replace(/\d(?=(\d{3})+\.)/g, '$&,');
+};
+
 // chunking for batching nerdgraph calls
 export const chunk = (arr, size) =>
   Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
