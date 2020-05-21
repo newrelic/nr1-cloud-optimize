@@ -6,6 +6,8 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
   let optimizedPrice = null;
   let potentialSavings = null;
 
+  entityCostTotals.instances[e.cloud || 'unknown'] += 1;
+
   // check if dc pricing
   if (!e.cloud) {
     if (e.datacenterSpend) {

@@ -72,7 +72,12 @@ export const entityCostModel = {
     staleInstances: 0,
     excludedInstances: 0,
     skippedInstances: 0,
-    optimizedInstances: 0
+    optimizedInstances: 0,
+    amazon: 0,
+    azure: 0,
+    google: 0,
+    alibaba: 0,
+    unknown: 0
   }
 };
 
