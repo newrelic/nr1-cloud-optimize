@@ -96,9 +96,12 @@ const optimizationDefaults = {
   includedInstanceTypes: [],
   excludedInstanceTypes: [],
   excludedGuids: [],
+  entityCostTotals: {},
   defaultCloud: 'amazon',
-  defaultRegion: 'us-east-1',
-  entityCostTotals: {}
+  amazonRegion: 'us-east-1',
+  azureRegion: 'westus',
+  googleRegion: 'us-west1',
+  alibabaRegion: 'us-east-1'
 };
 
 export class DataProvider extends Component {
@@ -342,10 +345,22 @@ export class DataProvider extends Component {
         accountsObj[key].optimizationConfig = v;
         accountsObj[key].id = key;
         accounts.push(accountsObj[key]);
+        if (v) {
+          if (v.amazonRegion) cloudPricing[`amazon_${v.amazonRegion}`] = [];
+          if (v.googleRegion) cloudPricing[`google_${v.googleRegion}`] = [];
+          if (v.azureRegion) cloudPricing[`azure_${v.azureRegion}`] = [];
+          if (v.alibabaRegion) cloudPricing[`alibaba_${v.alibabaRegion}`] = [];
+        }
       });
     });
 
     // get cloud pricing
+    const uc = this.state.userConfig;
+    if (uc.amazonRegion) cloudPricing[`amazon_${uc.amazonRegion}`] = [];
+    if (uc.googleRegion) cloudPricing[`google_${uc.googleRegion}`] = [];
+    if (uc.azureRegion) cloudPricing[`azure_${uc.azureRegion}`] = [];
+    if (uc.alibabaRegion) cloudPricing[`alibaba_${uc.alibabaRegion}`] = [];
+
     const cloudPricingPromises = Object.keys(cloudPricing).map(cp => {
       const cloudRegion = cp.split('_');
       return this.getCloudPricing(cloudRegion[0], cloudRegion[1]);
@@ -434,7 +449,7 @@ export class DataProvider extends Component {
   getCloudInstances = async (optimizationConfig, cpu, mem) => {
     const cloudPrices = await this.getInstanceCloudPricing(
       optimizationConfig.defaultCloud,
-      optimizationConfig.defaultRegion
+      optimizationConfig[`${optimizationConfig.defaultCloud}Region`]
     );
 
     if (cloudPrices) {
@@ -600,7 +615,6 @@ export class DataProvider extends Component {
     const { cloudPricing } = this.state;
     return new Promise(resolve => {
       const pricingKey = `${cloud}_${region}`;
-      console.log(cloudPricing[pricingKey]);
       if (cloudPricing[pricingKey]) {
         if (instanceType) {
           // provide direct instance type price

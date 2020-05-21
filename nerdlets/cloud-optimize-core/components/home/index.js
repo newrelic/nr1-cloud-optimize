@@ -17,7 +17,7 @@ export default class Home extends React.PureComponent {
           return (
             <>
               <Dimmer active={isLoading}>
-                <Loader>
+                <Loader size="large">
                   {fetchingEntities
                     ? `Fetching entities - ${rawEntities.length}`
                     : ''}
