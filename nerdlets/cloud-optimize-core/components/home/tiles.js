@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataConsumer, categoryTypes } from '../../context/data';
 import { Card, Icon } from 'semantic-ui-react';
+import workloadsIcon from '../../../shared/images/workloads.png';
 
 export default class Tiles extends React.PureComponent {
   render() {
@@ -57,7 +58,12 @@ export default class Tiles extends React.PureComponent {
                   <Card.Content>
                     <Card.Header>
                       Workloads{' '}
-                      <Icon style={{ float: 'right' }} name="circle" />
+                      <img
+                        src={workloadsIcon}
+                        height="25x"
+                        style={{ float: 'right' }}
+                      />
+                      {/* <Icon style={{ float: 'right' }} name="circle" /> */}
                     </Card.Header>
                     <Card.Meta>
                       <span className="date">
