@@ -345,37 +345,27 @@ export class DataProvider extends Component {
     let accountCfgCompleted = 0;
     const accountCfgQueue = queue((task, cb) => {
       accountCfgCompleted++;
-      getAccountCollection(task.accountId, 'optimizationConfig', 'main').then(
-        v => {
-          accountsObj[task.accountId].optimizationConfig = v;
-          accountsObj[task.accountId].id = task.accountId;
-          accounts.push(accountsObj[task.accountId]);
-          if (v) {
-            if (v.amazonRegion) cloudPricing[`amazon_${v.amazonRegion}`] = [];
-            if (v.googleRegion) cloudPricing[`google_${v.googleRegion}`] = [];
-            if (v.azureRegion) cloudPricing[`azure_${v.azureRegion}`] = [];
-            if (v.alibabaRegion)
-              cloudPricing[`alibaba_${v.alibabaRegion}`] = [];
-          }
-          this.setState(
-            {
-              accountConfigProgress:
-                (accountCfgCompleted / Object.keys(accountsObj).length) * 100
-            },
-            () => {
-              cb();
-            }
-          );
+      getAccountCollection(task.id, 'optimizationConfig', 'main').then(v => {
+        accountsObj[task.id].optimizationConfig = v;
+        accountsObj[task.id].id = task.id;
+        accounts.push(accountsObj[task.id]);
+        if (v) {
+          if (v.amazonRegion) cloudPricing[`amazon_${v.amazonRegion}`] = [];
+          if (v.googleRegion) cloudPricing[`google_${v.googleRegion}`] = [];
+          if (v.azureRegion) cloudPricing[`azure_${v.azureRegion}`] = [];
+          if (v.alibabaRegion) cloudPricing[`alibaba_${v.alibabaRegion}`] = [];
         }
-      );
+        this.setState(
+          {
+            accountConfigProgress:
+              (accountCfgCompleted / Object.keys(accountsObj).length) * 100
+          },
+          () => {
+            cb();
+          }
+        );
+      });
     }, queueConcurrency);
-
-    // fetch account optimization configs
-    Object.keys(accountsObj).forEach(a =>
-      accountCfgQueue.push({ accountId: a })
-    );
-
-    await accountCfgQueue.drain();
 
     // get cloud pricing
     const uc = this.state.userConfig;
@@ -405,8 +395,10 @@ export class DataProvider extends Component {
 
     // fetch account optimization configs
     Object.keys(cloudPricing).forEach(cp => cloudPricingQueue.push({ cp }));
+    // fetch account optimization configs
+    Object.keys(accountsObj).forEach(id => accountCfgQueue.push({ id }));
 
-    await cloudPricingQueue.drain();
+    await Promise.all([cloudPricingQueue.drain(), accountCfgQueue.drain()]);
 
     await this.storeState({
       accountsObj,
