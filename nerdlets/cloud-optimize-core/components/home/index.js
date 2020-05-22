@@ -11,22 +11,38 @@ export default class Home extends React.PureComponent {
           fetchingEntities,
           postProcessing,
           rawEntities,
-          entityDataProgress
+          entityDataProgress,
+          accountConfigProgress,
+          cloudPricingProgress
         }) => {
           const isLoading = fetchingEntities || postProcessing;
           return (
             <>
               <Dimmer active={isLoading}>
                 <Loader size="large">
-                  {fetchingEntities
-                    ? `Fetching entities - ${rawEntities.length}`
-                    : ''}
+                  {fetchingEntities ? (
+                    <>
+                      Fetching {rawEntities.length} entities
+                      <br />
+                      <br />
+                    </>
+                  ) : (
+                    ''
+                  )}
+                  {!fetchingEntities && postProcessing ? (
+                    <>
+                      Processing {rawEntities.length} entities
+                      <br />
+                      <br />
+                    </>
+                  ) : (
+                    ''
+                  )}
+                  {`Fetching entity data ${entityDataProgress}%`} <br />
                   <br />
-                  {`Fetching entity data ${entityDataProgress}%`}
+                  {`Fetching account configs ${accountConfigProgress}%`} <br />
                   <br />
-                  {!fetchingEntities && postProcessing
-                    ? `Post processing ${rawEntities.length} entities`
-                    : ''}
+                  {`Fetching cloud pricing ${cloudPricingProgress}%`}
                 </Loader>
               </Dimmer>
 

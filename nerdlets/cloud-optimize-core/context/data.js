@@ -125,6 +125,8 @@ export class DataProvider extends Component {
       fetchingEntities: true,
       postProcessing: true,
       entityDataProgress: 0,
+      accountConfigProgress: 0,
+      cloudPricingProgress: 0,
       processedApps: [],
       processedHosts: [],
       processedWorkloads: [],
@@ -136,7 +138,8 @@ export class DataProvider extends Component {
       orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
       sortByOptions: [],
-      costPeriod: { key: 3, label: 'MONTHLY', value: 'M' }
+      costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
+      selectedGroup: null
     };
   }
 
@@ -339,25 +342,40 @@ export class DataProvider extends Component {
       });
     });
 
+    let accountCfgCompleted = 0;
+    const accountCfgQueue = queue((task, cb) => {
+      accountCfgCompleted++;
+      getAccountCollection(task.accountId, 'optimizationConfig', 'main').then(
+        v => {
+          accountsObj[task.accountId].optimizationConfig = v;
+          accountsObj[task.accountId].id = task.accountId;
+          accounts.push(accountsObj[task.accountId]);
+          if (v) {
+            if (v.amazonRegion) cloudPricing[`amazon_${v.amazonRegion}`] = [];
+            if (v.googleRegion) cloudPricing[`google_${v.googleRegion}`] = [];
+            if (v.azureRegion) cloudPricing[`azure_${v.azureRegion}`] = [];
+            if (v.alibabaRegion)
+              cloudPricing[`alibaba_${v.alibabaRegion}`] = [];
+          }
+          this.setState(
+            {
+              accountConfigProgress:
+                (accountCfgCompleted / Object.keys(accountsObj).length) * 100
+            },
+            () => {
+              cb();
+            }
+          );
+        }
+      );
+    }, queueConcurrency);
+
     // fetch account optimization configs
-    const accountConfigPromises = Object.keys(accountsObj).map(a =>
-      getAccountCollection(a, 'optimizationConfig', 'main')
+    Object.keys(accountsObj).forEach(a =>
+      accountCfgQueue.push({ accountId: a })
     );
 
-    await Promise.all(accountConfigPromises).then(values => {
-      values.forEach((v, i) => {
-        const key = Object.keys(accountsObj)[i];
-        accountsObj[key].optimizationConfig = v;
-        accountsObj[key].id = key;
-        accounts.push(accountsObj[key]);
-        if (v) {
-          if (v.amazonRegion) cloudPricing[`amazon_${v.amazonRegion}`] = [];
-          if (v.googleRegion) cloudPricing[`google_${v.googleRegion}`] = [];
-          if (v.azureRegion) cloudPricing[`azure_${v.azureRegion}`] = [];
-          if (v.alibabaRegion) cloudPricing[`alibaba_${v.alibabaRegion}`] = [];
-        }
-      });
-    });
+    await accountCfgQueue.drain();
 
     // get cloud pricing
     const uc = this.state.userConfig;
@@ -366,17 +384,29 @@ export class DataProvider extends Component {
     if (uc.azureRegion) cloudPricing[`azure_${uc.azureRegion}`] = [];
     if (uc.alibabaRegion) cloudPricing[`alibaba_${uc.alibabaRegion}`] = [];
 
-    const cloudPricingPromises = Object.keys(cloudPricing).map(cp => {
-      const cloudRegion = cp.split('_');
-      return this.getCloudPricing(cloudRegion[0], cloudRegion[1]);
-    });
+    let cloudPricingCompleted = 0;
+    const cloudPricingQueue = queue((task, cb) => {
+      cloudPricingCompleted++;
+      const cloudRegion = task.cp.split('_');
 
-    await Promise.all(cloudPricingPromises).then(values => {
-      values.forEach((v, i) => {
-        const key = Object.keys(cloudPricing)[i];
-        cloudPricing[key] = v;
+      this.getCloudPricing(cloudRegion[0], cloudRegion[1]).then(v => {
+        cloudPricing[task.cp] = v;
+        this.setState(
+          {
+            cloudPricingProgress:
+              (cloudPricingCompleted / Object.keys(cloudPricing).length) * 100
+          },
+          () => {
+            cb();
+          }
+        );
       });
-    });
+    }, queueConcurrency);
+
+    // fetch account optimization configs
+    Object.keys(cloudPricing).forEach(cp => cloudPricingQueue.push({ cp }));
+
+    await cloudPricingQueue.drain();
 
     await this.storeState({
       accountsObj,

@@ -21,6 +21,12 @@ export default class InstanceCards extends React.PureComponent {
                 const azure = g.costs.instances.azure > 0;
                 const ali = g.costs.instances.alibaba > 0;
                 const unknown = g.costs.instances.unknown > 0;
+                const savingPerc = formatValue(
+                  (g.costs.instances.potentialSavings /
+                    g.costs.instances.currentSpend) *
+                    100,
+                  2
+                );
 
                 return (
                   <Card key={i} color="green">
@@ -30,9 +36,6 @@ export default class InstanceCards extends React.PureComponent {
                           {g.name === 'undefined' ? 'Uncategorized' : g.name}
                         </span>
                       </Card.Content>
-                      {/* <Card.Description>
-                      Matthew is a musician living in Nashville.
-                    </Card.Description> */}
                     </Card.Content>
                     <Card.Content
                       style={{ paddingTop: '5px', paddingBottom: '5px' }}
@@ -103,13 +106,21 @@ export default class InstanceCards extends React.PureComponent {
                         </Table.Body>
                       </Table>
                     </Card.Content>
-
                     <Card.Content extra>
-                      <a>
+                      <span>
                         <Icon name="cubes" />
                         {g.entities.length}{' '}
                         {g.entities.length === 1 ? 'Entity' : 'Entities'}
-                      </a>{' '}
+                      </span>{' '}
+                      <span style={{ float: 'right' }}>
+                        {' '}
+                        {savingPerc}% Saving
+                      </span>
+                    </Card.Content>
+                    <Card.Content
+                      style={{ fontSize: '11px', textAlign: 'right' }}
+                    >
+                      Show Optimization Candidates
                     </Card.Content>
                   </Card>
                 );
