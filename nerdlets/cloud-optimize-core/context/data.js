@@ -1002,7 +1002,7 @@ export class DataProvider extends Component {
         optimizationConfig,
         cpuCount,
         memGb,
-        instanceResult.onDemandPrice
+        (instanceResult || {}).onDemandPrice || 0
       );
 
       if (optimizationData.matchedInstances) {

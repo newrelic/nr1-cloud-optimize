@@ -2,6 +2,10 @@ import React from 'react';
 import { Card, Icon, Table } from 'semantic-ui-react';
 import { DataConsumer } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
+import awsIcon from '../../../../shared/images/awsIcon.png';
+import aliIcon from '../../../../shared/images/alibabaIcon.png';
+import gcpIcon from '../../../../shared/images/googleIcon.png';
+import azIcon from '../../../../shared/images/azureIcon.png';
 
 export default class InstanceCards extends React.PureComponent {
   render() {
@@ -12,7 +16,12 @@ export default class InstanceCards extends React.PureComponent {
           return (
             <Card.Group centered>
               {groups.map((g, i) => {
-                console.log(g);
+                const aws = g.costs.instances.amazon > 0;
+                const gcp = g.costs.instances.google > 0;
+                const azure = g.costs.instances.azure > 0;
+                const ali = g.costs.instances.alibaba > 0;
+                const unknown = g.costs.instances.unknown > 0;
+
                 return (
                   <Card key={i} color="green">
                     <Card.Content>
@@ -31,13 +40,27 @@ export default class InstanceCards extends React.PureComponent {
                       <Table celled inverted={false} basic="very">
                         <Table.Header>
                           <Table.Row>
-                            <Table.HeaderCell style={{ textAlign: 'right' }} />
+                            <Table.HeaderCell style={{ textAlign: 'left' }}>
+                              {aws ? <img src={awsIcon} height="25px" /> : ''}
+                              &nbsp;
+                              {azure ? <img src={azIcon} height="25px" /> : ''}
+                              &nbsp;
+                              {ali ? <img src={aliIcon} height="25px" /> : ''}
+                              &nbsp;
+                              {gcp ? <img src={gcpIcon} height="25px" /> : ''}
+                              &nbsp;
+                              {unknown ? (
+                                <Icon name="server" size="large" />
+                              ) : (
+                                ''
+                              )}
+                            </Table.HeaderCell>
                             <Table.HeaderCell style={{ textAlign: 'right' }}>
                               Price {costPeriod.label}
                             </Table.HeaderCell>
                           </Table.Row>
                         </Table.Header>
-                        <Table.Body style={{ fontSize: '12px' }}>
+                        <Table.Body style={{ fontSize: '13px' }}>
                           <Table.Row>
                             <Table.Cell>Current Spend</Table.Cell>
                             <Table.Cell style={{ textAlign: 'right' }}>
