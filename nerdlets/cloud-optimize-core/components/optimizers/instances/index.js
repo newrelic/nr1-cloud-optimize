@@ -1,7 +1,7 @@
 import React from 'react';
 import InstanceCards from './cards';
 import { DataConsumer, categoryTypes } from '../../../context/data';
-import { calculateGroupedCosts } from '../../../../shared/lib/utils';
+import { calculateGroupedMetrics } from '../../../../shared/lib/utils';
 import _ from 'lodash';
 
 export default class InstanceOptimizer extends React.PureComponent {
@@ -25,29 +25,29 @@ export default class InstanceOptimizer extends React.PureComponent {
             e => e[`tag.${groupBy.value}`]
           );
 
-          let menuGroupedCosts = [];
+          let menuGroupedMetrics = [];
           Object.keys(menuGroupedEntities).forEach(k => {
             const group = {
-              costs: calculateGroupedCosts(menuGroupedEntities[k]),
+              metrics: calculateGroupedMetrics(menuGroupedEntities[k]),
               entities: menuGroupedEntities[k],
               name: k
             };
-            menuGroupedCosts.push(group);
+            menuGroupedMetrics.push(group);
           });
 
           if (sortBy) {
             const order =
               orderBy.value === 'desc' ? ['desc', 'asc'] : ['asc', 'desc'];
-            menuGroupedCosts = _.orderBy(
-              menuGroupedCosts,
-              d => d.costs.instances[sortBy.value],
+            menuGroupedMetrics = _.orderBy(
+              menuGroupedMetrics,
+              d => d.metrics.instances[sortBy.value],
               order
             );
           }
 
           return (
             <>
-              <InstanceCards groups={menuGroupedCosts} />
+              <InstanceCards groups={menuGroupedMetrics} />
             </>
           );
         }}

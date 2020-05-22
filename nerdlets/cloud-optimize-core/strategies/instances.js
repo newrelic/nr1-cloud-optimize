@@ -1,4 +1,4 @@
-export const addInstanceCostTotal = (entityCostTotals, e) => {
+export const addInstanceCostTotal = (entityMetricTotals, e) => {
   const state = ((e || {}).optimizedData || {}).state || null;
   let matchedResult = null;
   let matchedPrice = null;
@@ -6,14 +6,16 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
   let optimizedPrice = null;
   let potentialSavings = null;
 
-  entityCostTotals.instances[e.cloud || 'unknown'] += 1;
+  entityMetricTotals.instances[e.cloud || 'unknown'] += 1;
   e[e.cloud || 'unknown'] = 1;
+
+  if (e.vmware) entityMetricTotals.instances.vmware += 1;
 
   // check if dc pricing
   if (!e.cloud) {
     if (e.datacenterSpend) {
-      entityCostTotals.instances.currentSpend += e.datacenterSpend;
-      entityCostTotals.instances.datacenterSpend += e.datacenterSpend;
+      entityMetricTotals.instances.currentSpend += e.datacenterSpend;
+      entityMetricTotals.instances.datacenterSpend += e.datacenterSpend;
 
       e.currentSpend = e.datacenterSpend;
     } else {
@@ -59,17 +61,17 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
           }
         }
         if (cheapestSpotPrice) {
-          entityCostTotals.instances.currentSpend += cheapestSpotPrice || 0;
-          entityCostTotals.instances.spotSpend += cheapestSpotPrice || 0;
+          entityMetricTotals.instances.currentSpend += cheapestSpotPrice || 0;
+          entityMetricTotals.instances.spotSpend += cheapestSpotPrice || 0;
           matchedPrice = cheapestSpotPrice || 0;
 
           e.currentSpend = cheapestSpotPrice;
           e.spotSpend = cheapestSpotPrice;
         }
       } else {
-        entityCostTotals.instances.currentSpend +=
+        entityMetricTotals.instances.currentSpend +=
           matchedResult.onDemandPrice || 0;
-        entityCostTotals.instances.nonSpotSpend +=
+        entityMetricTotals.instances.nonSpotSpend +=
           matchedResult.onDemandPrice || 0;
         matchedPrice = matchedResult.onDemandPrice || 0;
 
@@ -80,20 +82,20 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
   }
 
   if (e.cloud) {
-    entityCostTotals.instances.cloudSpend += matchedPrice;
+    entityMetricTotals.instances.cloudSpend += matchedPrice;
     e.cloudSpend = matchedPrice;
   } else {
-    entityCostTotals.instances.datacenterSpend += matchedPrice;
+    entityMetricTotals.instances.datacenterSpend += matchedPrice;
     e.datacenterSpend = matchedPrice;
   }
 
   switch (state) {
     case 'skip':
-      entityCostTotals.instances.skippedInstances += 1;
+      entityMetricTotals.instances.skippedInstances += 1;
       e.skippedInstances = 1;
       break;
     case 'excluded':
-      entityCostTotals.instances.excludedInstances += 1;
+      entityMetricTotals.instances.excludedInstances += 1;
       e.excludedInstances = 1;
       break;
   }
@@ -120,7 +122,7 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
     // do not add pricing if the current spend is not more than 0
     // having the optimizedResult is okay for suggestions
     if (optimizedResult && e.currentSpend > 0) {
-      entityCostTotals.instances.optimizedInstances += 1;
+      entityMetricTotals.instances.optimizedInstances += 1;
 
       e.optimizedResult = optimizedResult;
 
@@ -136,10 +138,10 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
 
       if (e.spot && cheapestOptimizedSpotPrice) {
         // use spot pricing
-        entityCostTotals.instances.optimizedSpend +=
+        entityMetricTotals.instances.optimizedSpend +=
           optimizedResult.cheapestOptimizedSpotPrice;
 
-        entityCostTotals.instances.optimizedSpotSpend +=
+        entityMetricTotals.instances.optimizedSpotSpend +=
           cheapestOptimizedSpotPrice || 0;
 
         optimizedPrice = cheapestOptimizedSpotPrice || 0;
@@ -152,7 +154,7 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
             const potentialSavingsWithSpot =
               matchedPrice - cheapestOptimizedSpotPrice || 0;
 
-            entityCostTotals.instances.potentialSavingsWithSpot += potentialSavingsWithSpot;
+            entityMetricTotals.instances.potentialSavingsWithSpot += potentialSavingsWithSpot;
 
             e.potentialSavingsWithSpot = potentialSavingsWithSpot;
           }
@@ -162,10 +164,10 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
           e.unableToGetSpotPriceUsingOnDemand = true;
         }
 
-        entityCostTotals.instances.optimizedSpend +=
+        entityMetricTotals.instances.optimizedSpend +=
           optimizedResult.onDemandPrice;
 
-        entityCostTotals.instances.optimizedNonSpotSpend +=
+        entityMetricTotals.instances.optimizedNonSpotSpend +=
           optimizedResult.onDemandPrice;
 
         optimizedPrice = optimizedResult.onDemandPrice;
@@ -178,7 +180,7 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
 
     if (!e.unableToGetOnPremPrice && matchedPrice > 0) {
       potentialSavings = matchedPrice - optimizedPrice;
-      entityCostTotals.instances.potentialSavings += potentialSavings;
+      entityMetricTotals.instances.potentialSavings += potentialSavings;
       e.potentialSavings = potentialSavings;
       e.matchedPrice = matchedPrice;
       e.optimizedPrice = optimizedPrice;
@@ -188,9 +190,9 @@ export const addInstanceCostTotal = (entityCostTotals, e) => {
     }
   }
 
-  //   console.log(entityCostTotals, e);
+  //   console.log(entityMetricTotals, e);
 
-  //   return entityCostTotals;
+  //   return entityMetricTotals;
 };
 
 const getCheapestInstanceMatch = matches => {

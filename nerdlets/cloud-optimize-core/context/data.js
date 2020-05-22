@@ -57,7 +57,7 @@ export const categoryTypes = {
   // application: ['APPLICATION']
 };
 
-export const entityCostModel = {
+export const entityMetricModel = {
   instances: {
     currentSpend: 0,
     optimizedSpend: 0,
@@ -77,7 +77,8 @@ export const entityCostModel = {
     azure: 0,
     google: 0,
     alibaba: 0,
-    unknown: 0
+    unknown: 0,
+    vmware: 0
   }
 };
 
@@ -101,7 +102,7 @@ const optimizationDefaults = {
   includedInstanceTypes: [],
   excludedInstanceTypes: [],
   excludedGuids: [],
-  entityCostTotals: {},
+  entityMetricTotals: {},
   defaultCloud: 'amazon',
   amazonRegion: 'us-east-1',
   azureRegion: 'westus',
@@ -220,7 +221,7 @@ export class DataProvider extends Component {
     workloadEntities = this.calculateWorkloadDatacenterCost(workloadEntities);
 
     // get pricing, matches and optimized matches and perform any decoration if required
-    const { entities, entityCostTotals } = await this.processEntities(
+    const { entities, entityMetricTotals } = await this.processEntities(
       tempEntities,
       workloadEntities,
       tagSelection
@@ -236,7 +237,7 @@ export class DataProvider extends Component {
       groupedEntities,
       workloadEntities,
       originalWorkloadEntities: workloadEntities,
-      entityCostTotals,
+      entityMetricTotals,
       postProcessing: false,
       groupByOptions
     });
@@ -312,7 +313,7 @@ export class DataProvider extends Component {
 
   // process entity data
   processEntities = async (entities, workloadEntities, tagSelection) => {
-    const entityCostTotals = JSON.parse(JSON.stringify(entityCostModel));
+    const entityMetricTotals = JSON.parse(JSON.stringify(entityMetricModel));
     const accounts = [];
     const accountsObj = {};
     const cloudPricing = {};
@@ -417,10 +418,10 @@ export class DataProvider extends Component {
         e.costPerCU = workload.costPerCU;
       }
       e.optimizedWith = optimizedWith;
-      this.processEntity(e, optimizationConfig, entityCostTotals);
+      this.processEntity(e, optimizationConfig, entityMetricTotals);
     });
 
-    return { entities, entityCostTotals };
+    return { entities, entityMetricTotals };
   };
 
   storeState = newState => {
@@ -431,7 +432,7 @@ export class DataProvider extends Component {
     });
   };
 
-  processEntity = async (e, optimizationConfig, entityCostTotals) => {
+  processEntity = async (e, optimizationConfig, entityMetricTotals) => {
     // if system sample or vsphere get instance pricing
     if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
       if (e.cloud && e.cloudRegion && e.systemSample['latest.instanceType']) {
@@ -469,7 +470,7 @@ export class DataProvider extends Component {
       }
 
       // perform instance calculations
-      addInstanceCostTotal(entityCostTotals, e);
+      addInstanceCostTotal(entityMetricTotals, e);
     }
   };
 

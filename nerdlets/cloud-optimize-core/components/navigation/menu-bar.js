@@ -55,7 +55,9 @@ export default class MenuBar extends React.PureComponent {
                   <Select
                     isDisabled={isLoading || selectedPage === 'home'}
                     options={groupByOptions}
-                    onChange={g => updateDataState({ groupBy: g })}
+                    onChange={g =>
+                      updateDataState({ groupBy: g, selectedGroup: null })
+                    }
                     value={groupBy}
                     classNamePrefix="react-select"
                   />

@@ -35,6 +35,7 @@ export const processEntitySamples = e => {
       e.cloudRegion = e.systemSample['latest.regionId'];
     }
   } else if (e.vsphereHostSample || e.vsphereVmSample) {
+    e.vmware = 1;
     e.vsphereHostSample =
       (((e || {}).vsphereHostSample || {}).results || {})[0] || null;
 

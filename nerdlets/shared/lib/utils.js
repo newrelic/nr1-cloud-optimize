@@ -8,7 +8,7 @@ import {
 import gql from 'graphql-tag';
 import {
   categoryTypes,
-  entityCostModel
+  entityMetricModel
 } from '../../cloud-optimize-core/context/data';
 
 export const getTagValue = (tags, tag) => {
@@ -58,21 +58,21 @@ export const tagFilterEntities = (entities, tags) => {
   });
 };
 
-export const calculateGroupedCosts = entities => {
-  const entityCostTotals = JSON.parse(JSON.stringify(entityCostModel));
+export const calculateGroupedMetrics = entities => {
+  const entityMetricTotals = JSON.parse(JSON.stringify(entityMetricModel));
 
   entities.forEach(e => {
     // add instance costs
     if (categoryTypes.instances.includes(e.type)) {
-      Object.keys(entityCostTotals.instances).forEach(k => {
+      Object.keys(entityMetricTotals.instances).forEach(k => {
         if (e[k]) {
-          entityCostTotals.instances[k] += e[k] || 0;
+          entityMetricTotals.instances[k] += e[k] || 0;
         }
       });
     }
   });
 
-  return entityCostTotals;
+  return entityMetricTotals;
 };
 
 export const buildTags = (currentTags, newTags) => {

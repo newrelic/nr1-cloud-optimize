@@ -1,131 +1,165 @@
 import React from 'react';
-import { Card, Icon, Table } from 'semantic-ui-react';
+import { Card, Icon, Table, Button } from 'semantic-ui-react';
 import { DataConsumer } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
 import awsIcon from '../../../../shared/images/awsIcon.png';
 import aliIcon from '../../../../shared/images/alibabaIcon.png';
 import gcpIcon from '../../../../shared/images/googleIcon.png';
 import azIcon from '../../../../shared/images/azureIcon.png';
+import vmwIcon from '../../../../shared/images/vmwareIcon.png';
+
+import InstanceCandidates from './candidates';
 
 export default class InstanceCards extends React.PureComponent {
   render() {
-    const { groups } = this.props;
+    let { groups } = this.props;
     return (
       <DataConsumer>
-        {({ costPeriod }) => {
+        {({ costPeriod, selectedGroup, updateDataState }) => {
+          groups = groups.filter(g =>
+            selectedGroup ? g.name === selectedGroup : true
+          );
+          let groupData = null;
           return (
-            <Card.Group centered>
-              {groups.map((g, i) => {
-                const aws = g.costs.instances.amazon > 0;
-                const gcp = g.costs.instances.google > 0;
-                const azure = g.costs.instances.azure > 0;
-                const ali = g.costs.instances.alibaba > 0;
-                const unknown = g.costs.instances.unknown > 0;
-                const savingPerc = formatValue(
-                  (g.costs.instances.potentialSavings /
-                    g.costs.instances.currentSpend) *
-                    100,
-                  2
-                );
+            <>
+              <Card.Group centered>
+                {groups.map((g, i) => {
+                  const aws = g.metrics.instances.amazon > 0;
+                  const gcp = g.metrics.instances.google > 0;
+                  const azu = g.metrics.instances.azure > 0;
+                  const ali = g.metrics.instances.alibaba > 0;
+                  const vmw = g.metrics.instances.vmware > 0;
+                  const unknown = g.metrics.instances.unknown > 0;
+                  const savingPerc = formatValue(
+                    (g.metrics.instances.potentialSavings /
+                      g.metrics.instances.currentSpend) *
+                      100,
+                    2
+                  );
 
-                return (
-                  <Card key={i} color="green">
-                    <Card.Content>
+                  groupData = selectedGroup === g.name ? g : null;
+
+                  const renderIcon = icon => (
+                    <>
+                      <img src={icon} height="25px" /> &nbsp;
+                    </>
+                  );
+
+                  return (
+                    <Card key={i} color="green">
                       <Card.Content>
-                        <span style={{ fontSize: '13px' }}>
-                          {g.name === 'undefined' ? 'Uncategorized' : g.name}
+                        <Card.Content>
+                          <span style={{ fontSize: '13px' }}>
+                            {g.name === 'undefined' ? 'Uncategorized' : g.name}
+                          </span>
+                        </Card.Content>
+                      </Card.Content>
+                      <Card.Content
+                        style={{ paddingTop: '5px', paddingBottom: '5px' }}
+                      >
+                        <Table celled inverted={false} basic="very">
+                          <Table.Header>
+                            <Table.Row>
+                              <Table.HeaderCell style={{ textAlign: 'left' }}>
+                                {aws ? renderIcon(awsIcon) : ''}
+                                {azu ? renderIcon(azIcon) : ''}
+                                {gcp ? renderIcon(gcpIcon) : ''}
+                                {ali ? renderIcon(aliIcon) : ''}
+                                {vmw ? renderIcon(vmwIcon) : ''}
+                                {unknown ? (
+                                  <Icon name="server" size="large" />
+                                ) : (
+                                  ''
+                                )}
+                              </Table.HeaderCell>
+                              <Table.HeaderCell style={{ textAlign: 'right' }}>
+                                Price {costPeriod.label}
+                              </Table.HeaderCell>
+                            </Table.Row>
+                          </Table.Header>
+                          <Table.Body style={{ fontSize: '13px' }}>
+                            <Table.Row>
+                              <Table.Cell>Current Spend</Table.Cell>
+                              <Table.Cell style={{ textAlign: 'right' }}>
+                                $
+                                {formatValue(
+                                  adjustCost(
+                                    costPeriod,
+                                    g.metrics.instances.currentSpend
+                                  ),
+                                  2
+                                )}
+                              </Table.Cell>
+                            </Table.Row>
+                            <Table.Row>
+                              <Table.Cell>Optimized Spend</Table.Cell>
+                              <Table.Cell style={{ textAlign: 'right' }}>
+                                $
+                                {formatValue(
+                                  adjustCost(
+                                    costPeriod,
+                                    g.metrics.instances.optimizedSpend
+                                  ),
+                                  2
+                                )}
+                              </Table.Cell>
+                            </Table.Row>
+                            <Table.Row positive>
+                              <Table.Cell positive>
+                                Potential Savings
+                              </Table.Cell>
+                              <Table.Cell
+                                positive
+                                style={{ textAlign: 'right' }}
+                              >
+                                $
+                                {formatValue(
+                                  adjustCost(
+                                    costPeriod,
+                                    g.metrics.instances.potentialSavings
+                                  ),
+                                  2
+                                )}
+                              </Table.Cell>
+                            </Table.Row>
+                          </Table.Body>
+                        </Table>
+                      </Card.Content>
+                      <Card.Content extra>
+                        <span>
+                          <Icon name="cubes" />
+                          {g.entities.length}{' '}
+                          {g.entities.length === 1 ? 'Entity' : 'Entities'}
+                        </span>{' '}
+                        <span style={{ float: 'right' }}>
+                          {isNaN(savingPerc) ? 0 : savingPerc}% Saving
                         </span>
                       </Card.Content>
-                    </Card.Content>
-                    <Card.Content
-                      style={{ paddingTop: '5px', paddingBottom: '5px' }}
-                    >
-                      <Table celled inverted={false} basic="very">
-                        <Table.Header>
-                          <Table.Row>
-                            <Table.HeaderCell style={{ textAlign: 'left' }}>
-                              {aws ? <img src={awsIcon} height="25px" /> : ''}
-                              &nbsp;
-                              {azure ? <img src={azIcon} height="25px" /> : ''}
-                              &nbsp;
-                              {ali ? <img src={aliIcon} height="25px" /> : ''}
-                              &nbsp;
-                              {gcp ? <img src={gcpIcon} height="25px" /> : ''}
-                              &nbsp;
-                              {unknown ? (
-                                <Icon name="server" size="large" />
-                              ) : (
-                                ''
-                              )}
-                            </Table.HeaderCell>
-                            <Table.HeaderCell style={{ textAlign: 'right' }}>
-                              Price {costPeriod.label}
-                            </Table.HeaderCell>
-                          </Table.Row>
-                        </Table.Header>
-                        <Table.Body style={{ fontSize: '13px' }}>
-                          <Table.Row>
-                            <Table.Cell>Current Spend</Table.Cell>
-                            <Table.Cell style={{ textAlign: 'right' }}>
-                              $
-                              {formatValue(
-                                adjustCost(
-                                  costPeriod,
-                                  g.costs.instances.currentSpend
-                                ),
-                                2
-                              )}
-                            </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell>Optimized Spend</Table.Cell>
-                            <Table.Cell style={{ textAlign: 'right' }}>
-                              $
-                              {formatValue(
-                                adjustCost(
-                                  costPeriod,
-                                  g.costs.instances.optimizedSpend
-                                ),
-                                2
-                              )}
-                            </Table.Cell>
-                          </Table.Row>
-                          <Table.Row positive>
-                            <Table.Cell positive>Potential Savings</Table.Cell>
-                            <Table.Cell positive style={{ textAlign: 'right' }}>
-                              $
-                              {formatValue(
-                                adjustCost(
-                                  costPeriod,
-                                  g.costs.instances.potentialSavings
-                                ),
-                                2
-                              )}
-                            </Table.Cell>
-                          </Table.Row>
-                        </Table.Body>
-                      </Table>
-                    </Card.Content>
-                    <Card.Content extra>
-                      <span>
-                        <Icon name="cubes" />
-                        {g.entities.length}{' '}
-                        {g.entities.length === 1 ? 'Entity' : 'Entities'}
-                      </span>{' '}
-                      <span style={{ float: 'right' }}>
-                        {' '}
-                        {savingPerc}% Saving
-                      </span>
-                    </Card.Content>
-                    <Card.Content
-                      style={{ fontSize: '11px', textAlign: 'right' }}
-                    >
-                      Show Optimization Candidates
-                    </Card.Content>
-                  </Card>
-                );
-              })}
-            </Card.Group>
+                      <Card.Content
+                        style={{ fontSize: '11px', textAlign: 'center' }}
+                      >
+                        <Button
+                          size="mini"
+                          color={
+                            g.name === selectedGroup ? 'instagram' : 'twitter'
+                          }
+                          content={`${
+                            g.name === selectedGroup ? 'Hide' : 'Show'
+                          } Optimization Candidates`}
+                          onClick={() =>
+                            updateDataState({
+                              selectedGroup:
+                                g.name === selectedGroup ? null : g.name
+                            })
+                          }
+                        />
+                      </Card.Content>
+                    </Card>
+                  );
+                })}
+              </Card.Group>
+              {selectedGroup ? <InstanceCandidates group={groupData} /> : ''}
+            </>
           );
         }}
       </DataConsumer>
