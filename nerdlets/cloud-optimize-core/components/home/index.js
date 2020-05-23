@@ -20,6 +20,9 @@ export default class Home extends React.PureComponent {
             <>
               <Dimmer active={isLoading}>
                 <Loader size="large">
+                  Please be patient while we analyze your entities...
+                  <br />
+                  <br />
                   {fetchingEntities ? (
                     <>
                       Fetching {rawEntities.length} entities

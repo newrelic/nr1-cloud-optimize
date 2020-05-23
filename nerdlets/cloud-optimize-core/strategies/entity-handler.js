@@ -3,17 +3,16 @@ export const processEntitySamples = e => {
   if (e.systemSample) {
     e.systemSample = (((e || {}).systemSample || {}).results || {})[0] || null;
     e.coreCount = e.systemSample['latest.coreCount'];
-    e.memoryGB = e.systemSample['latest.memoryTotalBytes'] * 1e-9;
+    e.memoryGb = e.systemSample['latest.memoryTotalBytes'] * 1e-9;
 
     e.networkSamples = ((e || {}).networkSample || {}).results || [];
-    e.networkSample = {
-      'max.receiveBytesPerSecond': 0,
-      'max.transmitBytesPerSecond': 0
-    };
+    e.systemSample['max.receiveBytesPerSecond'] = 0;
+    e.systemSample['max.transmitBytesPerSecond'] = 0;
+
     e.networkSamples.forEach(s => {
-      e.networkSample['max.receiveBytesPerSecond'] +=
+      e.systemSample['max.receiveBytesPerSecond'] +=
         s['max.receiveBytesPerSecond'];
-      e.networkSample['max.transmitBytesPerSecond'] +=
+      e.systemSample['max.transmitBytesPerSecond'] +=
         s['max.transmitBytesPerSecond'];
     });
 
@@ -51,10 +50,10 @@ export const processEntitySamples = e => {
 
     if (e.vsphereHostSample) {
       e.coreCount = e.vsphereHostSample['latest.coreCount'];
-      e.memoryGB = e.vsphereHostSample['latest.memoryTotalBytes'] * 1e-9;
+      e.memoryGb = e.vsphereHostSample['latest.memoryTotalBytes'] * 1e-9;
     } else if (e.vsphereVmSample) {
       e.coreCount = e.vsphereVmSample['latest.coreCount'];
-      e.memoryGB = e.vsphereVmSample['latest.memoryTotalBytes'] * 1e-9;
+      e.memoryGb = e.vsphereVmSample['latest.memoryTotalBytes'] * 1e-9;
     }
   } else if (e.apmInfraData || e.apmDatabaseSlowQueryData) {
     e.apmInfraData =

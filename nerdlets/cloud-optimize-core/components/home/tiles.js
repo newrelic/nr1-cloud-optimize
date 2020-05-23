@@ -3,19 +3,28 @@ import { DataConsumer, categoryTypes } from '../../context/data';
 import { Card, Icon } from 'semantic-ui-react';
 import workloadsIcon from '../../../shared/images/workloads.png';
 
+const optimizers = [
+  {
+    name: 'Instances',
+    optimizer: 'instance',
+    desc: 'Optimize your instances and hosts.',
+    cat: 'instances',
+    icon: 'server'
+  },
+  {
+    name: 'Workloads',
+    optimizer: 'workload',
+    desc: 'Optimize the entities within your workloads.',
+    cat: 'workloads',
+    img: workloadsIcon
+  }
+];
+
 export default class Tiles extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
         {({ groupedEntities, workloadEntities, updateDataState }) => {
-          let instanceEntities = 0;
-
-          categoryTypes.instances.forEach(type => {
-            instanceEntities += (groupedEntities[type] || []).length;
-          });
-
-          const workloadsCount = (workloadEntities || []).length;
-
           return (
             <>
               {/* <Message floating style={{ borderRadius: 0 }}>
@@ -26,62 +35,53 @@ export default class Tiles extends React.PureComponent {
                 </Message.List>
               </Message> */}
               <Card.Group centered>
-                <Card>
-                  <Card.Content>
-                    <Card.Header
-                      style={{ cursor: 'pointer' }}
-                      onClick={() =>
-                        updateDataState({ selectedPage: 'instance-optimizer' })
-                      }
-                    >
-                      Instances{' '}
-                      <Icon style={{ float: 'right' }} name="server" />
-                    </Card.Header>
-                    <Card.Meta>
-                      <span className="date">
-                        Optimize your instances and hosts.
-                      </span>
-                    </Card.Meta>
+                {optimizers.map((o, i) => {
+                  groupedEntities.WORKLOAD = workloadEntities;
+                  let count = 0;
+                  categoryTypes[o.cat].forEach(type => {
+                    count += (groupedEntities[type] || []).length;
+                  });
 
-                    {/* <Card.Description>
-                      Matthew is a musician living in Nashville.
-                    </Card.Description> */}
-                  </Card.Content>
-                  <Card.Content extra>
-                    <a>
-                      <Icon name="cubes" />
-                      {instanceEntities} Entities
-                    </a>{' '}
-                  </Card.Content>
-                </Card>
-                <Card>
-                  <Card.Content>
-                    <Card.Header>
-                      Workloads{' '}
-                      <img
-                        src={workloadsIcon}
-                        height="25x"
-                        style={{ float: 'right' }}
-                      />
-                      {/* <Icon style={{ float: 'right' }} name="circle" /> */}
-                    </Card.Header>
-                    <Card.Meta>
-                      <span className="date">
-                        Optimize the entities within your workloads.
-                      </span>
-                    </Card.Meta>
+                  return (
+                    <Card key={i}>
+                      <Card.Content>
+                        <Card.Header
+                          style={{ cursor: 'pointer' }}
+                          onClick={() =>
+                            updateDataState({
+                              selectedPage: `${o.optimizer}-optimizer`
+                            })
+                          }
+                        >
+                          {o.name}&nbsp;
+                          {o.icon ? (
+                            <Icon style={{ float: 'right' }} name={o.icon} />
+                          ) : (
+                            ''
+                          )}
+                          {o.img ? (
+                            <img
+                              style={{ float: 'right', height: '25px' }}
+                              src={o.img}
+                            />
+                          ) : (
+                            ''
+                          )}
+                        </Card.Header>
 
-                    {/* <Card.Description>
-                      Matthew is a musician living in Nashville.
-                    </Card.Description> */}
-                  </Card.Content>
-                  <Card.Content extra>
-                    <a>
-                      <Icon name="cubes" />
-                      {workloadsCount} Workloads
-                    </a>{' '}
-                  </Card.Content>
-                </Card>
+                        <Card.Meta>
+                          <span className="date">{o.desc}</span>
+                        </Card.Meta>
+                      </Card.Content>
+
+                      <Card.Content extra>
+                        <Icon name="cubes" />
+                        {count}&nbsp;
+                        {count.length === 1 ? 'Entity' : 'Entities'}
+                      </Card.Content>
+                    </Card>
+                  );
+                })}
               </Card.Group>
             </>
           );

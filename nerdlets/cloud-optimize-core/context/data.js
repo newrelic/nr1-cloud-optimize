@@ -51,8 +51,8 @@ const entitySearchChunkValue = 25;
 const queueConcurrency = 5;
 
 export const categoryTypes = {
-  instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST']
-  // workload: ['WORKLOAD'],
+  instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
+  workloads: ['WORKLOAD']
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
 };
@@ -443,17 +443,17 @@ export class DataProvider extends Component {
           e.systemSample['latest.instanceType']
         );
       } else if (!e.cloud) {
-        if (!isNaN(e.coreCount) && !isNaN(e.memoryGB)) {
+        if (!isNaN(e.coreCount) && !isNaN(e.memoryGb)) {
           e.matchedInstances = await this.getCloudInstances(
             optimizationConfig,
             e.coreCount,
-            Math.round(e.memoryGB)
+            Math.round(e.memoryGb)
           );
         }
 
         // check if exists in workload and if DC costing is available
         if (e.costPerCU) {
-          const instanceCU = Math.round(e.memoryGB + e.coreCount);
+          const instanceCU = Math.round(e.memoryGb + e.coreCount);
           e.datacenterSpend = instanceCU * e.costPerCU;
         }
       }
