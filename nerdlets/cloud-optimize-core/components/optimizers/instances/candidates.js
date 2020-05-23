@@ -2,16 +2,14 @@ import React from 'react';
 import { Card, Icon, Button, Segment } from 'semantic-ui-react';
 import { DataConsumer } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
-import awsIcon from '../../../../shared/images/awsIcon.png';
-import aliIcon from '../../../../shared/images/alibabaIcon.png';
-import gcpIcon from '../../../../shared/images/googleIcon.png';
-import azIcon from '../../../../shared/images/azureIcon.png';
+import { getIcon } from '../../../strategies/entity-handler';
 import {
   Table,
   TableHeader,
   TableHeaderCell,
   TableRow,
-  TableRowCell
+  TableRowCell,
+  navigation
 } from 'nr1';
 
 export default class InstanceCandidates extends React.PureComponent {
@@ -29,27 +27,34 @@ export default class InstanceCandidates extends React.PureComponent {
     return (
       <DataConsumer>
         {({ costPeriod, selectedGroup, updateDataState }) => {
-          const getSample = (type, item) => {
+          const getData = (type, item, attr) => {
+            let data = null;
             switch (type) {
               case 'system': {
-                const sample =
+                data =
                   item.systemSample ||
                   item.vsphereVmSample ||
                   item.vsphereHostSample;
-                return sample;
+                break;
               }
-              default: {
-                if (type) {
-                  return item[type];
-                }
-                return item;
+              default:
+                data = type ? item[type] : item;
+            }
+
+            if (data) {
+              if (attr) {
+                return data[attr] || '-';
+              } else {
+                return data;
               }
             }
+
+            return null;
           };
 
-          const renderTableHeaderCell = (name, type, attr, order) => (
+          const tableHdrCell = (name, type, attr, order) => (
             <TableHeaderCell
-              value={({ item }) => getSample(type, item)[attr]}
+              value={({ item }) => getData(type, item, attr)}
               sortable
               sortingType={this.state[attr]}
               sortingOrder={order}
@@ -59,8 +64,17 @@ export default class InstanceCandidates extends React.PureComponent {
             </TableHeaderCell>
           );
 
-          const renderRowCell = text => (
-            <TableRowCell style={{ fontSize: '12px' }}>{text}</TableRowCell>
+          const renderRowCell = (v, guid, cost) => (
+            <TableRowCell
+              onClick={guid ? () => navigation.openStackedEntity(guid) : null}
+              style={{
+                fontSize: '12px',
+                cursor: guid ? 'pointer' : '',
+                color: guid ? 'rgb(0, 121, 191)' : ''
+              }}
+            >
+              {cost && !isNaN(v) ? adjustCost(costPeriod, v) : v}
+            </TableRowCell>
           );
 
           console.log(group);
@@ -73,10 +87,21 @@ export default class InstanceCandidates extends React.PureComponent {
               >
                 <TableHeader>
                   <TableHeaderCell
+                    value={({ item }) => item.cloud}
+                    sortable
+                    sortingType={this.state.cloud}
+                    sortingOrder={0}
+                    onClick={(e, d) =>
+                      this.onClickTableHeaderCell('cloud', e, d)
+                    }
+                    width="50px"
+                  />
+
+                  <TableHeaderCell
                     value={({ item }) => item.name}
                     sortable
                     sortingType={this.state.name}
-                    sortingOrder={0}
+                    sortingOrder={1}
                     onClick={(e, d) =>
                       this.onClickTableHeaderCell('name', e, d)
                     }
@@ -84,46 +109,67 @@ export default class InstanceCandidates extends React.PureComponent {
                   >
                     Name
                   </TableHeaderCell>
-                  {renderTableHeaderCell(
-                    'Max cpu %',
-                    'system',
-                    'max.cpuPercent',
-                    1
-                  )}
-                  {renderTableHeaderCell(
-                    'Max mem %',
-                    'system',
-                    'max.memoryPercent',
-                    2
-                  )}
-                  {renderTableHeaderCell(
-                    'Max tx',
+                  {tableHdrCell('Max Cpu %', 'system', 'max.cpuPercent', 2)}
+                  {tableHdrCell('Max Mem %', 'system', 'max.memoryPercent', 3)}
+                  {tableHdrCell(
+                    'Max Tx',
                     'system',
                     'max.transmitBytesPerSecond',
-                    3
-                  )}
-                  {renderTableHeaderCell(
-                    'Max rx',
-                    'system',
-                    'max.receiveBytesPerSecond',
                     4
                   )}
-                  {renderTableHeaderCell('num cpu', null, 'coreCount', 5)}
-                  {renderTableHeaderCell('mem gb', null, 'memoryGb', 6)}
+                  {tableHdrCell(
+                    'Max Rx',
+                    'system',
+                    'max.receiveBytesPerSecond',
+                    5
+                  )}
+                  {tableHdrCell('Num Cpu', null, 'coreCount', 6)}
+                  {tableHdrCell('Mem Gb', null, 'memoryGb', 7)}
+                  {tableHdrCell(
+                    'Instance Type',
+                    'instanceResult',
+                    'instanceType',
+                    8
+                  )}
+                  {tableHdrCell('Price', 'instanceResult', 'onDemandPrice', 9)}
                 </TableHeader>
 
                 {({ item }) => {
-                  const s = getSample('system', item);
+                  const s = getData('system', item);
                   const metric = attr => (s[attr] ? s[attr].toFixed(2) : '-');
+                  const instance = attr =>
+                    item.instanceResult ? item.instanceResult[attr] : '-';
+                  const icon = getIcon(item);
                   return (
                     <TableRow>
-                      {renderRowCell(item.name)}
+                      {renderRowCell(
+                        icon ? (
+                          <img src={icon} height="25px" />
+                        ) : (
+                          <>
+                            &nbsp;
+                            <Icon name="server" size="large" />
+                          </>
+                        )
+                      )}
+                      {renderRowCell(
+                        // <a
+                        //   onClick={() =>
+                        //     navigation.openStackedEntity(item.guid)
+                        //   }
+                        // >
+                        item.name,
+                        item.guid
+                        // </a>
+                      )}
                       {renderRowCell(metric('max.cpuPercent'))}
                       {renderRowCell(metric('max.memoryPercent'))}
                       {renderRowCell(metric('max.transmitBytesPerSecond'))}
                       {renderRowCell(metric('max.receiveBytesPerSecond'))}
                       {renderRowCell(item.coreCount)}
                       {renderRowCell(item.memoryGb.toFixed(2))}
+                      {renderRowCell(instance('type'))}
+                      {renderRowCell(instance('onDemandPrice'), null, true)}
                     </TableRow>
                   );
                 }}

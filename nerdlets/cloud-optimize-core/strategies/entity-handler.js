@@ -1,3 +1,22 @@
+import awsIcon from '../../shared/images/awsIcon.png';
+import aliIcon from '../../shared/images/alibabaIcon.png';
+import gcpIcon from '../../shared/images/googleIcon.png';
+import azuIcon from '../../shared/images/azureIcon.png';
+import vmwIcon from '../../shared/images/vmwareIcon.png';
+
+export const getIcon = e => {
+  if (e.cloud) {
+    if (e.cloud === 'amazon') return awsIcon;
+    if (e.cloud === 'google') return gcpIcon;
+    if (e.cloud === 'azure') return azuIcon;
+    if (e.cloud === 'alibaba') return aliIcon;
+  }
+  if (e.vmware) {
+    return vmwIcon;
+  }
+  return null;
+};
+
 // massage the nrdb data
 export const processEntitySamples = e => {
   if (e.systemSample) {

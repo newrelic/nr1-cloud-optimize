@@ -464,8 +464,10 @@ export class DataProvider extends Component {
       } else {
         e.optimizedData = await this.getOptimizedMatches(
           e.instanceResult,
-          e.systemSample || e.vsphereHostSample || e.vsphereVmSample,
-          optimizationConfig
+          e.systemSample || e.vsphereVmSample || e.vsphereHostSample,
+          optimizationConfig,
+          e.cloud,
+          e.costPerCU
         );
       }
 
@@ -958,7 +960,9 @@ export class DataProvider extends Component {
   getOptimizedMatches = async (
     instanceResult,
     systemSample,
-    optimizationConfig
+    optimizationConfig,
+    cloud,
+    costPerCU
   ) => {
     // if (!optimizationConfig || !optimizationConfig.enable) return null;
 
@@ -1020,6 +1024,16 @@ export class DataProvider extends Component {
 
       cpuCount = roundHalf(cpuCount * optimizationConfig.cpuRightSize);
       memGb = roundHalf(memGb * optimizationConfig.cpuRightSize);
+
+      // provided an onprem/dc estimation
+      if (!cloud) {
+        optimizationData.dcResult = {
+          cpusPerVm: cpuCount,
+          memPerVm: memGb,
+          onDemandPrice: Math.round(cpuCount + memGb) * (costPerCU || 0),
+          type: 'dc'
+        };
+      }
 
       optimizationData.matchedInstances = await this.getCloudInstances(
         optimizationConfig,

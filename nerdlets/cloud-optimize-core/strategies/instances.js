@@ -208,12 +208,3 @@ const getCheapestInstanceMatch = matches => {
 
   return matches[cheapestCategory];
 };
-
-// const fakeInstance = (state, cost) => ({
-//   category: state,
-//   type: state,
-//   onDemandPrice: cost || 0,
-//   cpusPerVm: 0,
-//   memPerVm: 0,
-//   attributes: { cpu: '0', instanceTypeCategory: state, memory: '0' }
-// });

@@ -5,12 +5,6 @@ import { calculateGroupedMetrics } from '../../../../shared/lib/utils';
 import _ from 'lodash';
 
 export default class InstanceOptimizer extends React.PureComponent {
-  checkTag = (tagSelection, group, item, updateDataState) => {
-    const newTagSelection = { ...tagSelection };
-    newTagSelection[group][item] = !tagSelection[group][item];
-    updateDataState({ tagSelection: newTagSelection });
-  };
-
   render() {
     return (
       <DataConsumer>
