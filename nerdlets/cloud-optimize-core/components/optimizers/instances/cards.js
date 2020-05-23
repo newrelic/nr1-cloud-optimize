@@ -7,8 +7,8 @@ import aliIcon from '../../../../shared/images/alibabaIcon.png';
 import gcpIcon from '../../../../shared/images/googleIcon.png';
 import azIcon from '../../../../shared/images/azureIcon.png';
 import vmwIcon from '../../../../shared/images/vmwareIcon.png';
-
 import InstanceCandidates from './candidates';
+import InstancePerformanceCard from './perf-card';
 
 export default class InstanceCards extends React.PureComponent {
   render() {
@@ -19,10 +19,11 @@ export default class InstanceCards extends React.PureComponent {
           groups = groups.filter(g =>
             selectedGroup ? g.name === selectedGroup : true
           );
+
           let groupData = null;
           return (
             <>
-              <Card.Group centered>
+              <Card.Group centered={!selectedGroup}>
                 {groups.map((g, i) => {
                   const aws = g.metrics.instances.amazon > 0;
                   const gcp = g.metrics.instances.google > 0;
@@ -46,7 +47,11 @@ export default class InstanceCards extends React.PureComponent {
                   );
 
                   return (
-                    <Card key={i} color="green">
+                    <Card
+                      key={i}
+                      color="green"
+                      style={{ width: g.name === selectedGroup ? '30%' : '' }}
+                    >
                       <Card.Content>
                         <Card.Content>
                           <span style={{ fontSize: '13px' }}>
@@ -157,6 +162,11 @@ export default class InstanceCards extends React.PureComponent {
                     </Card>
                   );
                 })}
+                {selectedGroup && groups.length === 1 ? (
+                  <InstancePerformanceCard entities={groups[0].entities} />
+                ) : (
+                  ''
+                )}
               </Card.Group>
               {selectedGroup && groupData ? (
                 <InstanceCandidates group={groupData} />

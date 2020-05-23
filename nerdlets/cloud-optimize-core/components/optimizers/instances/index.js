@@ -3,6 +3,7 @@ import InstanceCards from './cards';
 import { DataConsumer, categoryTypes } from '../../../context/data';
 import { calculateGroupedMetrics } from '../../../../shared/lib/utils';
 import _ from 'lodash';
+import InstanceSummary from './summary';
 
 export default class InstanceOptimizer extends React.PureComponent {
   render() {
@@ -39,9 +40,13 @@ export default class InstanceOptimizer extends React.PureComponent {
             );
           }
 
+          const groups = menuGroupedMetrics || [];
+
           return (
             <>
-              <InstanceCards groups={menuGroupedMetrics || []} />
+              <InstanceSummary groups={groups} />
+              <br />
+              <InstanceCards groups={groups} />
             </>
           );
         }}

@@ -58,8 +58,9 @@ export const tagFilterEntities = (entities, tags) => {
   });
 };
 
-export const calculateGroupedMetrics = entities => {
-  const entityMetricTotals = JSON.parse(JSON.stringify(entityMetricModel));
+export const calculateGroupedMetrics = (entities, existingData) => {
+  const entityMetricTotals =
+    existingData || JSON.parse(JSON.stringify(entityMetricModel));
 
   entities.forEach(e => {
     // add instance costs
