@@ -50,7 +50,7 @@ export default class InstanceCards extends React.PureComponent {
                     <Card
                       key={i}
                       color="green"
-                      style={{ width: g.name === selectedGroup ? '30%' : '' }}
+                      // style={{ width: g.name === selectedGroup ? '31%' : '' }}
                     >
                       <Card.Content>
                         <Card.Content>

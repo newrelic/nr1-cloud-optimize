@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 const systemSampleCpu = `FROM SystemSample SELECT max(cpuPercent) TIMESERIES FACET entityName`;
 const systemSampleMem = `FROM SystemSample SELECT max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' TIMESERIES FACET entityName`;
+const networkSample = `FROM NetworkSample SELECT max(receiveBytesPerSecond+transmitBytesPerSecond) as 'networkBytesPerSecond' TIMESERIES FACET entityName`;
 
 const vSphereVmCpu = `FROM VSphereVmSample SELECT max(cpu.hostUsagePercent) as 'max.cpuPercent' TIMESERIES FACET entityName`;
 const vSphereVmMem = `FROM VSphereVmSample SELECT max(mem.usage/mem.size) *100 as 'max.memoryPercent' TIMESERIES FACET entityName`;
@@ -17,7 +18,8 @@ export default class InstancePerformanceCard extends React.PureComponent {
     super(props);
     this.state = {
       cpuChartData: null,
-      memChartData: null
+      memChartData: null,
+      nwChartData: null
     };
   }
 
@@ -30,6 +32,7 @@ export default class InstancePerformanceCard extends React.PureComponent {
 
     const cpuQueryPromises = [];
     const memQueryPromises = [];
+    const nwQueryPromises = [];
 
     Object.keys(accountGroups).forEach(id => {
       Object.keys(accountGroups[id]).forEach(type => {
@@ -61,15 +64,23 @@ export default class InstancePerformanceCard extends React.PureComponent {
         memQueryPromises.push(
           NrqlQuery.query({ accountId: id, query: memQuery })
         );
+        if (type === 'HOST') {
+          const networkQuery = `${networkSample} WHERE entityGuid IN (${guids})`;
+          nwQueryPromises.push(
+            NrqlQuery.query({ accountId: id, query: networkQuery })
+          );
+        }
       });
     });
 
     let cpuChartData = [];
     let memChartData = [];
+    let nwChartData = [];
 
     const allDataPromises = [
       Promise.all(cpuQueryPromises),
-      Promise.all(memQueryPromises)
+      Promise.all(memQueryPromises),
+      Promise.all(nwQueryPromises)
     ];
 
     await Promise.all(allDataPromises).then(d => {
@@ -86,18 +97,24 @@ export default class InstancePerformanceCard extends React.PureComponent {
               memChartData = [...memChartData, ...v.data.chart];
             }
           });
+        } else if (i === 2) {
+          arr.forEach(v => {
+            if (v.data) {
+              nwChartData = [...nwChartData, ...v.data.chart];
+            }
+          });
         }
       });
     });
 
-    this.setState({ cpuChartData, memChartData });
+    this.setState({ cpuChartData, memChartData, nwChartData });
   }
 
   render() {
-    const { cpuChartData, memChartData } = this.state;
+    const { cpuChartData, memChartData, nwChartData } = this.state;
     return (
       <>
-        <Card color="black" style={{ width: '33%' }}>
+        <Card color="black">
           <Card.Content>
             <span style={{ fontSize: '13px' }}>Max CPU Percent</span>
           </Card.Content>
@@ -106,13 +123,24 @@ export default class InstancePerformanceCard extends React.PureComponent {
             <LineChart data={cpuChartData || []} fullWidth fullHeight />
           </div>
         </Card>
-        <Card color="black" style={{ width: '33%' }}>
+        <Card color="black">
           <Card.Content>
             <span style={{ fontSize: '13px' }}>Max Memory Percent</span>
           </Card.Content>
           <div style={{ padding: '10px', height: '100%', width: '100%' }}>
             <Loader active={memChartData === null} />
             <LineChart data={memChartData || []} fullWidth fullHeight />
+          </div>
+        </Card>
+        <Card color="black">
+          <Card.Content>
+            <span style={{ fontSize: '13px' }}>
+              Max Transmit + Receive Bytes Per Second
+            </span>
+          </Card.Content>
+          <div style={{ padding: '10px', height: '100%', width: '100%' }}>
+            <Loader active={nwChartData === null} />
+            <LineChart data={nwChartData || []} fullWidth fullHeight />
           </div>
         </Card>
       </>
