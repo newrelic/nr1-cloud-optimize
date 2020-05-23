@@ -23,7 +23,7 @@ export default class InstanceOptimizer extends React.PureComponent {
           Object.keys(menuGroupedEntities).forEach(k => {
             const group = {
               metrics: calculateGroupedMetrics(menuGroupedEntities[k]),
-              entities: menuGroupedEntities[k],
+              entities: menuGroupedEntities[k] || [],
               name: k
             };
             menuGroupedMetrics.push(group);
@@ -41,7 +41,7 @@ export default class InstanceOptimizer extends React.PureComponent {
 
           return (
             <>
-              <InstanceCards groups={menuGroupedMetrics} />
+              <InstanceCards groups={menuGroupedMetrics || []} />
             </>
           );
         }}

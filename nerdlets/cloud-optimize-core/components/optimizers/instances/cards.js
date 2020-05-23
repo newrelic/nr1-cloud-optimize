@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Icon, Table, Button } from 'semantic-ui-react';
+import { Card, Icon, Table, Button, Header } from 'semantic-ui-react';
 import { DataConsumer } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
 import awsIcon from '../../../../shared/images/awsIcon.png';
@@ -158,7 +158,18 @@ export default class InstanceCards extends React.PureComponent {
                   );
                 })}
               </Card.Group>
-              {selectedGroup ? <InstanceCandidates group={groupData} /> : ''}
+              {selectedGroup && groupData ? (
+                <InstanceCandidates group={groupData} />
+              ) : (
+                ''
+              )}
+              {selectedGroup && !groupData ? (
+                <Header as="h3" style={{ paddingTop: '10px' }}>
+                  No data, check your tag filters.
+                </Header>
+              ) : (
+                ''
+              )}
             </>
           );
         }}
