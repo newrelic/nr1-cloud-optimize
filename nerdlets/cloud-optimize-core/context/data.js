@@ -53,6 +53,16 @@ const queueConcurrency = 5;
 // supported clouds
 const supportedClouds = ['amazon', 'azure', 'google', 'alibaba'];
 
+// ignore tags
+const ignoreTags = [
+  'guid',
+  'hostname',
+  'memorybytes',
+  'instanceid',
+  'instance_id',
+  'private'
+];
+
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
   workloads: ['WORKLOAD']
@@ -448,7 +458,15 @@ export class DataProvider extends Component {
         e[`tag.${t.key}`] = t.values[0] || true;
 
         // make tags available for selection
-        if (!t.key.includes('Guid')) {
+        let ignoreTag = false;
+        for (let z = 0; z < ignoreTags.length; z++) {
+          if (t.key.toLowerCase().includes(ignoreTags[z])) {
+            ignoreTag = true;
+            break;
+          }
+        }
+
+        if (!ignoreTag) {
           if (tagSelection[t.key] === undefined) {
             tagSelection[t.key] = {};
           }

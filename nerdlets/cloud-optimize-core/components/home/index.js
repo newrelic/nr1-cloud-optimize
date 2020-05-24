@@ -41,11 +41,15 @@ export default class Home extends React.PureComponent {
                   ) : (
                     ''
                   )}
-                  {`Fetching entity data ${entityDataProgress}%`} <br />
+                  {`Fetching entity data ${entityDataProgress.toFixed(2)}%`}
                   <br />
-                  {`Fetching account configs ${accountConfigProgress}%`} <br />
                   <br />
-                  {`Fetching cloud pricing ${cloudPricingProgress}%`}
+                  {`Fetching account configs ${accountConfigProgress.toFixed(
+                    2
+                  )}%`}
+                  <br />
+                  <br />
+                  {`Fetching cloud pricing ${cloudPricingProgress.toFixed(2)}%`}
                 </Loader>
               </Dimmer>
 
