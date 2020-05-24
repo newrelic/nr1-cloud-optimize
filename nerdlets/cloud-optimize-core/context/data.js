@@ -126,6 +126,7 @@ export class DataProvider extends Component {
       entities: [],
       rawEntities: [],
       groupedEntities: [],
+      workloadEntities: [],
       fetchingEntities: true,
       postProcessing: true,
       entityDataProgress: 0,
@@ -272,51 +273,133 @@ export class DataProvider extends Component {
     });
   };
 
+  // refresh workloads
+  getWorkloadDocs = async guid => {
+    let { originalWorkloadEntities, workloadEntities } = this.state;
+
+    if (!guid) {
+      const workloadDocPromises = originalWorkloadEntities.map(wl =>
+        getEntityCollection('dcDoc', wl.guid, 'dcDoc')
+      );
+
+      await Promise.all(workloadDocPromises).then(values => {
+        values.forEach((v, i) => {
+          if (!originalWorkloadEntities[i].dcDoc) {
+            originalWorkloadEntities[i].dcDoc = v;
+            for (let z = 0; z < workloadEntities.length; z++) {
+              if (
+                originalWorkloadEntities[i].guid === workloadEntities[z].guid
+              ) {
+                workloadEntities[z].dcDoc = v;
+                break;
+              }
+            }
+          }
+        });
+      });
+    } else {
+      const dcDoc = await getEntityCollection('dcDoc', guid, 'dcDoc');
+      for (let z = 0; z < workloadEntities.length; z++) {
+        if (guid === workloadEntities[z].guid) {
+          workloadEntities[z].dcDoc = dcDoc;
+          break;
+        }
+      }
+      for (let z = 0; z < originalWorkloadEntities.length; z++) {
+        if (guid === originalWorkloadEntities[z].guid) {
+          originalWorkloadEntities[z].dcDoc = dcDoc;
+          break;
+        }
+      }
+    }
+
+    originalWorkloadEntities = this.calculateWorkloadDatacenterCost(
+      originalWorkloadEntities
+    );
+    workloadEntities = this.calculateWorkloadDatacenterCost(workloadEntities);
+
+    const { entities, entityMetricTotals } = await this.processEntities(
+      this.state.entities,
+      workloadEntities,
+      this.state.tagSelection
+    );
+
+    const groupedEntities = _.groupBy(entities, e => e.type);
+    const groupByOptions = buildGroupByOptions(entities);
+
+    this.setState({
+      originalWorkloadEntities,
+      workloadEntities,
+      groupedEntities,
+      groupByOptions,
+      entityMetricTotals
+    });
+  };
+
   // calculateDatacenterCost
   calculateWorkloadDatacenterCost = workloadEntities => {
     for (let z = 0; z < workloadEntities.length; z++) {
       const doc = workloadEntities[z].dcDoc;
-      const costTotal = { value: 0 };
+      if (doc) {
+        const costTotal = { value: 0 };
 
-      if (doc && doc.costs) {
-        Object.keys(doc.costs).forEach(key => {
-          if (!costTotal[key]) costTotal[key] = 0;
-          doc.costs[key].forEach(cost => {
-            const finalCost =
-              cost.units * cost.rate * (12 / cost.recurringMonths);
-            costTotal.value += finalCost;
-            costTotal[key] += finalCost;
+        if (doc && doc.costs) {
+          Object.keys(doc.costs).forEach(key => {
+            if (!costTotal[key]) costTotal[key] = 0;
+            doc.costs[key].forEach(cost => {
+              const finalCost =
+                cost.units * cost.rate * (12 / cost.recurringMonths);
+              costTotal.value += finalCost;
+              costTotal[key] += finalCost;
+            });
           });
-        });
+        }
+
+        let totalCU = 0;
+
+        if (workloadEntities[z].entityData) {
+          workloadEntities[z].entityData.forEach(entity => {
+            let systemSample = null;
+
+            // do this transformation earlier
+            if (entity.systemSample) {
+              if (entity.systemSample.results) {
+                systemSample = entity.systemSample.results[0];
+              } else {
+                systemSample = entity.systemSample;
+              }
+            }
+
+            if (entity.vsphereVmSample) {
+              if (entity.vsphereVmSample.results) {
+                systemSample = entity.vsphereVmSample.results[0];
+              } else {
+                systemSample = entity.vsphereVmSample;
+              }
+            }
+
+            if (entity.vsphereHostSample) {
+              if (entity.vsphereHostSample.results) {
+                entity.vsphereHostSample = entity.vsphereHostSample.results[0];
+              }
+            }
+
+            if (systemSample && systemSample['latest.entityGuid']) {
+              totalCU +=
+                systemSample['latest.coreCount'] +
+                systemSample['latest.memoryTotalBytes'] * 1e-9; // BYTES TO GB
+            }
+          });
+        }
+
+        workloadEntities[z].costPerCU =
+          totalCU === 0 || costTotal === 0
+            ? 0
+            : costTotal.value / 8760 / totalCU;
+
+        workloadEntities[z].costTotal = costTotal;
+        workloadEntities[z].totalCU = totalCU;
       }
-
-      let totalCU = 0;
-
-      if (workloadEntities[z].entityData) {
-        workloadEntities[z].entityData.forEach(entity => {
-          let systemSample = null;
-
-          if (entity.systemSample) {
-            systemSample = entity.systemSample.results[0];
-          }
-
-          if (entity.vsphereVmSample) {
-            systemSample = entity.vsphereVmSample.results[0];
-          }
-
-          if (systemSample && systemSample['latest.entityGuid']) {
-            totalCU +=
-              systemSample['latest.coreCount'] +
-              systemSample['latest.memoryTotalBytes'] * 1e-9; // BYTES TO GB
-          }
-        });
-      }
-
-      workloadEntities[z].costPerCU =
-        totalCU === 0 || costTotal === 0 ? 0 : costTotal.value / 8760 / totalCU;
-
-      workloadEntities[z].costTotal = costTotal;
-      workloadEntities[z].totalCU = totalCU;
     }
 
     return workloadEntities;
@@ -373,6 +456,7 @@ export class DataProvider extends Component {
     });
 
     let accountCfgCompleted = 0;
+    let accountsToCheck = 0;
     const accountCfgQueue = queue((task, cb) => {
       accountCfgCompleted++;
       getAccountCollection(task.id, 'optimizationConfig', 'main').then(v => {
@@ -399,8 +483,7 @@ export class DataProvider extends Component {
         }
         this.setState(
           {
-            accountConfigProgress:
-              (accountCfgCompleted / Object.keys(accountsObj).length) * 100
+            accountConfigProgress: (accountCfgCompleted / accountsToCheck) * 100
           },
           () => {
             cb();
@@ -446,7 +529,12 @@ export class DataProvider extends Component {
     // fetch account optimization configs
     Object.keys(cloudPricing).forEach(cp => cloudPricingQueue.push({ cp }));
     // fetch account optimization configs
-    Object.keys(accountsObj).forEach(id => accountCfgQueue.push({ id }));
+    Object.keys(accountsObj).forEach(id => {
+      if (!accountsObj[id].optimizationConfig) {
+        accountsToCheck++;
+        accountCfgQueue.push({ id });
+      }
+    });
 
     await Promise.all([cloudPricingQueue.drain(), accountCfgQueue.drain()]);
 
@@ -1085,7 +1173,7 @@ export class DataProvider extends Component {
           cpusPerVm: cpuCount,
           memPerVm: memGb,
           onDemandPrice: Math.round(cpuCount + memGb) * (costPerCU || 0),
-          type: 'dc'
+          type: `cpu: ${cpuCount}, memGb: ${memGb}`
         };
       }
 
@@ -1156,7 +1244,8 @@ export class DataProvider extends Component {
         value={{
           ...this.state,
           updateDataState: this.updateDataState,
-          postProcessEntities: this.postProcessEntities
+          postProcessEntities: this.postProcessEntities,
+          getWorkloadDocs: this.getWorkloadDocs
         }}
       >
         <ToastContainer

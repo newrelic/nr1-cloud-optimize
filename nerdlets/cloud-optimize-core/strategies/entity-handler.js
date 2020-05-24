@@ -20,7 +20,10 @@ export const getIcon = e => {
 // massage the nrdb data
 export const processEntitySamples = e => {
   if (e.systemSample) {
-    e.systemSample = (((e || {}).systemSample || {}).results || {})[0] || null;
+    if (e.systemSample.results) {
+      e.systemSample = (e.systemSample.results || {})[0] || null;
+    }
+
     e.coreCount = e.systemSample['latest.coreCount'];
     e.memoryGb = e.systemSample['latest.memoryTotalBytes'] * 1e-9;
 
@@ -54,16 +57,20 @@ export const processEntitySamples = e => {
     }
   } else if (e.vsphereHostSample || e.vsphereVmSample) {
     e.vmware = 1;
-    e.vsphereHostSample =
-      (((e || {}).vsphereHostSample || {}).results || {})[0] || null;
 
-    if (!e.vsphereHostSample['latest.entityGuid']) {
+    if (e.vsphereHostSample && e.vsphereHostSample.results) {
+      e.vsphereHostSample = e.vsphereHostSample.results[0] || null;
+    }
+
+    if (e.vsphereHostSample && !e.vsphereHostSample['latest.entityGuid']) {
       delete e.vsphereHostSample;
     }
 
-    e.vsphereVmSample =
-      (((e || {}).vsphereVmSample || {}).results || {})[0] || null;
-    if (!e.vsphereVmSample['latest.entityGuid']) {
+    if (e.vsphereVmSample && e.vsphereVmSample.results) {
+      e.vsphereVmSample = e.vsphereVmSample.results[0] || null;
+    }
+
+    if (e.vsphereVmSample && !e.vsphereVmSample['latest.entityGuid']) {
       delete e.vsphereVmSample;
     }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Icon, Button, Segment } from 'semantic-ui-react';
+import { Icon, Segment } from 'semantic-ui-react';
 import { DataConsumer } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
 import { getIcon } from '../../../strategies/entity-handler';
@@ -230,7 +230,13 @@ export default class InstanceCandidates extends React.PureComponent {
                         {renderRowCell(item.coreCount)}
                         {renderRowCell(item.memoryGb.toFixed(2))}
                         {renderRowCell(instance('type'))}
-                        {renderRowCell(instance('onDemandPrice'), null, true)}
+                        {renderRowCell(
+                          item.cloud
+                            ? instance('onDemandPrice')
+                            : item.currentSpend || '-',
+                          null,
+                          true
+                        )}
                         {renderRowCell(
                           getOptimizedData(item, 'type'),
                           null,
