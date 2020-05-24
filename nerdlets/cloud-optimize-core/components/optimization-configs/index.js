@@ -14,7 +14,10 @@ import {
 import {
   writeDocument,
   writeAccountDocument,
-  writeEntityDocument
+  writeEntityDocument,
+  deleteDocument,
+  deleteAccountDocument,
+  deleteEntityDocument
 } from '../../../shared/lib/utils';
 
 export default class OptimizationConfigs extends React.PureComponent {
@@ -23,6 +26,7 @@ export default class OptimizationConfigs extends React.PureComponent {
     this.state = {
       activeItem: 'user',
       updating: false,
+      deleting: false,
       selectedAccount: null,
       selectedWorkload: null
     };
@@ -150,10 +154,41 @@ export default class OptimizationConfigs extends React.PureComponent {
     this.setState({ [d.id]: temp });
   };
 
+  deleteDoc = (updateDataState, postProcessEntities) => {
+    const { activeItem, selectedAccount, selectedWorkload } = this.state;
+    this.setState({ deleting: true }, async () => {
+      if (activeItem === 'user') {
+        await deleteDocument('optimizationConfig', 'main');
+      } else if (activeItem === 'account' && selectedAccount) {
+        await deleteAccountDocument(
+          selectedAccount.value,
+          'optimizationConfig',
+          'main'
+        );
+      } else if (activeItem === 'workload' && selectedWorkload) {
+        await deleteEntityDocument(
+          selectedWorkload.value,
+          'optimizationConfig',
+          'main'
+        );
+      }
+
+      const reset = {};
+      Object.keys(optimizationDefaults).forEach(key => {
+        reset[key] = null;
+      });
+
+      this.setState({ ...reset, deleting: false }, () => {
+        postProcessEntities();
+      });
+    });
+  };
+
   render() {
     const {
       activeItem,
       updating,
+      deleting,
       selectedAccount,
       selectedWorkload
     } = this.state;
@@ -293,6 +328,7 @@ export default class OptimizationConfigs extends React.PureComponent {
                     <Form.Field>
                       <label>Select Account</label>
                       <Dropdown
+                        style={{ width: '400px' }}
                         className="singledrop"
                         placeholder="Select Account"
                         search
@@ -310,6 +346,7 @@ export default class OptimizationConfigs extends React.PureComponent {
                     <Form.Field>
                       <label>Select Workload</label>
                       <Dropdown
+                        style={{ width: '400px' }}
                         className="singledrop"
                         placeholder="Select Workload"
                         search
@@ -317,6 +354,21 @@ export default class OptimizationConfigs extends React.PureComponent {
                         options={workloadOptions}
                         onChange={(e, d) =>
                           this.setState({ selectedWorkload: d })
+                        }
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <label>&nbsp;</label>
+                      <Button
+                        disabled={!selectedWorkload}
+                        content="View Workload"
+                        icon="external"
+                        color="blue"
+                        onClick={() =>
+                          window.open(
+                            ` https://one.newrelic.com/redirect/entity/${selectedWorkload.value}`,
+                            '_blank'
+                          )
                         }
                       />
                     </Form.Field>
@@ -484,6 +536,18 @@ export default class OptimizationConfigs extends React.PureComponent {
                     label="Enable configuration"
                     checked={enable}
                     onChange={() => this.setState({ enable: !enable })}
+                  />
+                  <Button
+                    compact
+                    style={{ float: 'right' }}
+                    content="Delete Configuration"
+                    icon="delete"
+                    color="red"
+                    loading={deleting}
+                    disabled={saveDisabled}
+                    onClick={() =>
+                      this.deleteDoc(updateDataState, postProcessEntities)
+                    }
                   />
                   <Button
                     compact
