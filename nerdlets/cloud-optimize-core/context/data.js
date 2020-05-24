@@ -77,9 +77,13 @@ export const entityMetricModel = {
     skippedInstances: 0,
     optimizedInstances: 0,
     amazon: 0,
+    amazonSpend: 0,
     azure: 0,
+    azureSpend: 0,
     google: 0,
+    googleSpend: 0,
     alibaba: 0,
+    alibabaSpend: 0,
     unknown: 0,
     vmware: 0
   }

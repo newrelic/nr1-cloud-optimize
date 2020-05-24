@@ -85,8 +85,9 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     entityMetricTotals.instances.cloudSpend += matchedPrice;
     e.cloudSpend = matchedPrice;
   } else {
-    entityMetricTotals.instances.datacenterSpend += matchedPrice;
-    e.datacenterSpend = matchedPrice;
+    // this is done further up
+    // entityMetricTotals.instances.datacenterSpend += matchedPrice;
+    // e.datacenterSpend = matchedPrice;
   }
 
   switch (state) {
@@ -97,6 +98,10 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     case 'excluded':
       entityMetricTotals.instances.excludedInstances += 1;
       e.excludedInstances = 1;
+      break;
+    case 'stale':
+      entityMetricTotals.instances.staleInstances += 1;
+      e.staleInstances = 1;
       break;
   }
 
@@ -122,6 +127,11 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     // do not add pricing if the current spend is not more than 0
     // having the optimizedResult is okay for suggestions
     if (optimizedResult && e.currentSpend > 0) {
+      if (e.cloud) {
+        e[`${e.cloud}Spend`] = e.currentSpend;
+        entityMetricTotals.instances[`${e.cloud}Spend`] = e.currentSpend;
+      }
+
       entityMetricTotals.instances.optimizedInstances += 1;
 
       e.optimizedResult = optimizedResult;

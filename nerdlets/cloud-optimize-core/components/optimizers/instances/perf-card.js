@@ -114,7 +114,7 @@ export default class InstancePerformanceCard extends React.PureComponent {
     const { cpuChartData, memChartData, nwChartData } = this.state;
     return (
       <>
-        <Card color="black">
+        <Card color="black" style={{ height: '270px', width: '31%' }}>
           <Card.Content>
             <span style={{ fontSize: '13px' }}>Max CPU Percent</span>
           </Card.Content>
@@ -123,7 +123,7 @@ export default class InstancePerformanceCard extends React.PureComponent {
             <LineChart data={cpuChartData || []} fullWidth fullHeight />
           </div>
         </Card>
-        <Card color="black">
+        <Card color="black" style={{ height: '270px', width: '31%' }}>
           <Card.Content>
             <span style={{ fontSize: '13px' }}>Max Memory Percent</span>
           </Card.Content>
@@ -132,7 +132,7 @@ export default class InstancePerformanceCard extends React.PureComponent {
             <LineChart data={memChartData || []} fullWidth fullHeight />
           </div>
         </Card>
-        <Card color="black">
+        <Card color="black" style={{ height: '270px', width: '31%' }}>
           <Card.Content>
             <span style={{ fontSize: '13px' }}>
               Max Transmit + Receive Bytes Per Second

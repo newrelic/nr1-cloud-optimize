@@ -9,6 +9,7 @@ import azIcon from '../../../../shared/images/azureIcon.png';
 import vmwIcon from '../../../../shared/images/vmwareIcon.png';
 import InstanceCandidates from './candidates';
 import InstancePerformanceCard from './perf-card';
+import ExtendedMetrics from './extended-metrics';
 
 export default class InstanceCards extends React.PureComponent {
   render() {
@@ -23,7 +24,7 @@ export default class InstanceCards extends React.PureComponent {
           let groupData = null;
           return (
             <>
-              <Card.Group centered={!selectedGroup}>
+              <Card.Group centered>
                 {groups.map((g, i) => {
                   const aws = g.metrics.instances.amazon > 0;
                   const gcp = g.metrics.instances.google > 0;
@@ -50,7 +51,7 @@ export default class InstanceCards extends React.PureComponent {
                     <Card
                       key={i}
                       color="green"
-                      // style={{ width: g.name === selectedGroup ? '31%' : '' }}
+                      style={{ width: g.name === selectedGroup ? '31%' : '' }}
                     >
                       <Card.Content>
                         <Card.Content>
@@ -163,11 +164,20 @@ export default class InstanceCards extends React.PureComponent {
                   );
                 })}
                 {selectedGroup && groups.length === 1 ? (
-                  <InstancePerformanceCard entities={groups[0].entities} />
+                  <>
+                    <ExtendedMetrics metrics={groupData.metrics.instances} />
+                  </>
                 ) : (
                   ''
                 )}
               </Card.Group>
+              {selectedGroup && groups.length === 1 ? (
+                <Card.Group centered>
+                  <InstancePerformanceCard entities={groups[0].entities} />
+                </Card.Group>
+              ) : (
+                ''
+              )}
               {selectedGroup && groupData ? (
                 <InstanceCandidates group={groupData} />
               ) : (
