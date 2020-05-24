@@ -4,6 +4,7 @@ import { Segment } from 'semantic-ui-react';
 import Home from '../home';
 import InstanceOptimizer from '../optimizers/instances';
 import OptimizationConfigs from '../optimization-configs';
+import Setup from '../setup';
 
 export default class ContentContainer extends React.PureComponent {
   render() {
@@ -19,6 +20,8 @@ export default class ContentContainer extends React.PureComponent {
                 return <InstanceOptimizer />;
               case 'optimization-configs':
                 return <OptimizationConfigs />;
+              case 'setup':
+                return <Setup />;
               default:
                 return selectedPage;
             }
