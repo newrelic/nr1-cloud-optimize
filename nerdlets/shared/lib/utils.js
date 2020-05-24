@@ -1,6 +1,8 @@
 import {
   UserStorageQuery,
   UserStorageMutation,
+  EntityStorageMutation,
+  AccountStorageMutation,
   NerdGraphQuery,
   EntityStorageQuery,
   AccountStorageQuery
@@ -180,6 +182,37 @@ export const getDocument = async (collection, documentId) => {
   return result.data;
 };
 
+export const writeEntityDocument = async (
+  guid,
+  collection,
+  documentId,
+  payload
+) => {
+  const result = await EntityStorageMutation.mutate({
+    entityGuid: guid,
+    actionType: EntityStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+    collection,
+    documentId,
+    document: payload
+  });
+  return result;
+};
+
+export const writeAccountDocument = async (
+  accountId,
+  collection,
+  documentId,
+  payload
+) => {
+  const result = await AccountStorageMutation.mutate({
+    accountId,
+    actionType: AccountStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+    collection,
+    documentId,
+    document: payload
+  });
+  return result;
+};
 export const writeDocument = async (collection, documentId, payload) => {
   const result = await UserStorageMutation.mutate({
     actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,

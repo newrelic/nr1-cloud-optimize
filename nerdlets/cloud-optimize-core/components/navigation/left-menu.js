@@ -55,6 +55,16 @@ export default class LeftMenu extends React.PureComponent {
               <Menu.Item>
                 <Menu.Menu>{menuItem('Home', 'home', 'home')}</Menu.Menu>
                 <Menu.Menu>{menuItem('Setup', 'setup', 'cog')}</Menu.Menu>
+                <Menu.Menu>
+                  {menuItem(
+                    'Optimization Configs',
+                    'optimization-configs',
+                    'configure'
+                  )}
+                </Menu.Menu>
+                <Menu.Menu>
+                  {menuItem('Workload Costs', 'workload-costs')}
+                </Menu.Menu>
                 {/* <Menu.Header>Getting Started</Menu.Header> */}
                 <Menu.Menu>{menuItem('FAQ', 'faq', 'help')}</Menu.Menu>
               </Menu.Item>

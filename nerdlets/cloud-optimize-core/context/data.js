@@ -82,7 +82,7 @@ export const entityMetricModel = {
   }
 };
 
-const optimizationDefaults = {
+export const optimizationDefaults = {
   enable: false,
   inclusionPeriodHours: 24,
   cpuUpper: 50,
@@ -180,13 +180,20 @@ export class DataProvider extends Component {
       entitySearchResult.entities.length === 0
     ) {
       // completed
-      this.setState({ fetchingEntities: false, postProcessing: true }, () =>
+      this.setState({ fetchingEntities: false }, () =>
         this.postProcessEntities()
       );
     }
   };
 
   postProcessEntities = async guids => {
+    this.setState({
+      postProcessing: true,
+      entityDataProgress: 0,
+      accountConfigProgress: 0,
+      cloudPricingProgress: 0
+    });
+
     const tagSelection = {};
     let { rawEntities } = this.state;
     rawEntities = [...rawEntities, ...(guids || [])];
@@ -351,10 +358,22 @@ export class DataProvider extends Component {
         accountsObj[task.id].id = task.id;
         accounts.push(accountsObj[task.id]);
         if (v) {
-          if (v.amazonRegion) cloudPricing[`amazon_${v.amazonRegion}`] = [];
-          if (v.googleRegion) cloudPricing[`google_${v.googleRegion}`] = [];
-          if (v.azureRegion) cloudPricing[`azure_${v.azureRegion}`] = [];
-          if (v.alibabaRegion) cloudPricing[`alibaba_${v.alibabaRegion}`] = [];
+          if (v.amazonRegion)
+            cloudPricing[
+              `amazon_${v.amazonRegion || optimizationDefaults.amazonRegion}`
+            ] = [];
+          if (v.googleRegion)
+            cloudPricing[
+              `google_${v.googleRegion || optimizationDefaults.googleRegion}`
+            ] = [];
+          if (v.azureRegion)
+            cloudPricing[
+              `azure_${v.azureRegion || optimizationDefaults.azureRegion}`
+            ] = [];
+          if (v.alibabaRegion)
+            cloudPricing[
+              `alibaba_${v.alibabaRegion || optimizationDefaults.alibabaRegion}`
+            ] = [];
         }
         this.setState(
           {
@@ -370,10 +389,18 @@ export class DataProvider extends Component {
 
     // get cloud pricing
     const uc = this.state.userConfig;
-    if (uc.amazonRegion) cloudPricing[`amazon_${uc.amazonRegion}`] = [];
-    if (uc.googleRegion) cloudPricing[`google_${uc.googleRegion}`] = [];
-    if (uc.azureRegion) cloudPricing[`azure_${uc.azureRegion}`] = [];
-    if (uc.alibabaRegion) cloudPricing[`alibaba_${uc.alibabaRegion}`] = [];
+    cloudPricing[
+      `amazon_${uc.amazonRegion || optimizationDefaults.amazonRegion}`
+    ] = [];
+    cloudPricing[
+      `google_${uc.googleRegion || optimizationDefaults.googleRegion}`
+    ] = [];
+    cloudPricing[
+      `azure_${uc.azureRegion || optimizationDefaults.azureRegion}`
+    ] = [];
+    cloudPricing[
+      `alibaba_${uc.alibabaRegion || optimizationDefaults.alibabaRegion}`
+    ] = [];
 
     let cloudPricingCompleted = 0;
     const cloudPricingQueue = queue((task, cb) => {
@@ -477,9 +504,14 @@ export class DataProvider extends Component {
   };
 
   getCloudInstances = async (optimizationConfig, cpu, mem, basePrice) => {
+    const defaultCloud =
+      optimizationConfig.defaultCloud || optimizationDefaults.defaultCloud;
+    const defaultRegion =
+      optimizationConfig[`${defaultCloud}Region`] ||
+      optimizationDefaults[`${defaultCloud}Region`];
     const cloudPrices = await this.getInstanceCloudPricing(
-      optimizationConfig.defaultCloud,
-      optimizationConfig[`${optimizationConfig.defaultCloud}Region`]
+      defaultCloud,
+      defaultRegion
     );
 
     if (cloudPrices) {
@@ -777,20 +809,20 @@ export class DataProvider extends Component {
 
     await Promise.all(entityWorkloadQueryPromises).then(values => {
       values.forEach(async (v, i) => {
-        if (!workloadGuids[i].entitySearchQuery) {
-          const workload =
-            ((((v || {}).data || {}).actor || {}).account || {}).workload ||
-            null;
+        const workload =
+          ((((v || {}).data || {}).actor || {}).account || {}).workload || null;
 
-          const collection = workload.collection || null;
+        const collection = workload.collection || null;
 
-          if (collection) {
-            workloadGuids[i].entitySearchQuery = collection.entitySearchQuery; // <- evaluate this query
-            workloadGuids[i].entities = collection.entities;
-            workloadGuids[i].permalink = collection.permalink;
-            workloadGuids[i].name = workload.name;
-          }
+        if (collection) {
+          workloadGuids[i].name = collection.name;
+          workloadGuids[i].entitySearchQuery = collection.entitySearchQuery; // <- evaluate this query
+          workloadGuids[i].entities = collection.entities;
+          workloadGuids[i].permalink = collection.permalink;
         }
+
+        // if (!workloadGuids[i].entitySearchQuery) {
+        // }
       });
     });
 
@@ -1101,7 +1133,8 @@ export class DataProvider extends Component {
       <DataContext.Provider
         value={{
           ...this.state,
-          updateDataState: this.updateDataState
+          updateDataState: this.updateDataState,
+          postProcessEntities: this.postProcessEntities
         }}
       >
         <ToastContainer
