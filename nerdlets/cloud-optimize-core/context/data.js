@@ -50,6 +50,9 @@ const entitySearchChunkValue = 25;
 // how many elements to queue
 const queueConcurrency = 5;
 
+// supported clouds
+const supportedClouds = ['amazon', 'azure', 'google', 'alibaba'];
+
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
   workloads: ['WORKLOAD']
@@ -140,7 +143,8 @@ export class DataProvider extends Component {
       groupByOptions: [],
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
-      selectedGroup: null
+      selectedGroup: null,
+      cloudRegions: {}
     };
   }
 
@@ -152,11 +156,29 @@ export class DataProvider extends Component {
       userConfig = { ...optimizationDefaults };
     }
 
+    this.fetchCloudRegions();
+
     this.setState({ userConfig }, () => {
       // handle incoming props with postProcessEntities, else run fetchEntities for default view
       this.fetchEntities();
     });
   }
+
+  fetchCloudRegions = () => {
+    const { cloudRegions } = this.state;
+    const cloudRegionPromises = supportedClouds.map(cloud =>
+      fetch(`${pricingURL}/${cloud}/regions.json`).then(response =>
+        response.json()
+      )
+    );
+
+    Promise.all(cloudRegionPromises).then(values => {
+      values.forEach((v, i) => {
+        cloudRegions[supportedClouds[i]] = v;
+      });
+      this.setState({ cloudRegions });
+    });
+  };
 
   fetchEntities = async nextCursor => {
     // intentionally do not query tags now, so that we can support incoming entities that only contain a guid and type

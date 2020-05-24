@@ -198,6 +198,21 @@ export const writeEntityDocument = async (
   return result;
 };
 
+export const deleteEntityDocument = async (guid, collection, documentId) => {
+  const deletePayload = {
+    entityGuid: guid,
+    actionType: EntityStorageMutation.ACTION_TYPE.DELETE_COLLECTION,
+    collection
+  };
+  if (documentId) {
+    deletePayload.documentId = documentId;
+    deletePayload.actionType =
+      EntityStorageMutation.ACTION_TYPE.DELETE_DOCUMENT;
+  }
+  const result = await EntityStorageMutation.mutate(deletePayload);
+  return result;
+};
+
 export const writeAccountDocument = async (
   accountId,
   collection,
@@ -228,6 +243,20 @@ export const deleteDocument = async (collection, documentId) => {
     actionType: UserStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
     collection: collection,
     documentId: documentId
+  });
+  return result;
+};
+
+export const deleteAccountDocument = async (
+  accountId,
+  collection,
+  documentId
+) => {
+  const result = await AccountStorageMutation.mutate({
+    accountId,
+    actionType: AccountStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
+    collection,
+    documentId
   });
   return result;
 };
