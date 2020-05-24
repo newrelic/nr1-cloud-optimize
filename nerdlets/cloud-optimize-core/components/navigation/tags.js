@@ -11,13 +11,16 @@ export default class Tags extends React.PureComponent {
 
   render() {
     const { height } = this.props;
+    const reduceHeight = 230;
+    const tagFilterHeight = height - reduceHeight;
+    const maxHeight = tagFilterHeight < 0 ? reduceHeight : tagFilterHeight;
     return (
       <DataConsumer>
         {({ tagSelection, updateDataState }) => {
           return (
             <Form
               style={{
-                maxHeight: `${height - 160}px`,
+                maxHeight: `${maxHeight}px`,
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 paddingLeft: '8px'
