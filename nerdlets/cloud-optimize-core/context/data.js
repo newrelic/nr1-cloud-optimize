@@ -146,6 +146,8 @@ export class DataProvider extends Component {
       entityDataProgress: 0,
       accountConfigProgress: 0,
       cloudPricingProgress: 0,
+      workloadCostProgress: 0,
+      workloadConfigProgress: 0,
       processedApps: [],
       processedHosts: [],
       processedWorkloads: [],
@@ -905,31 +907,47 @@ export class DataProvider extends Component {
   processWorkloads = async (workloadGuids, tagSelection) => {
     // get docs
     // // get dcDoc
-    const workloadDocPromises = workloadGuids.map(wl =>
-      getEntityCollection('dcDoc', wl.guid, 'dcDoc')
-    );
 
-    await Promise.all(workloadDocPromises).then(values => {
-      values.forEach((v, i) => {
-        // do not replace dcDoc if an incoming guid had a doc supplied
-        if (!workloadGuids[i].dcDoc) {
-          workloadGuids[i].dcDoc = v;
-        }
+    let workloadCostCompleted = 0;
+    const workloadCostQueue = queue((task, cb) => {
+      workloadCostCompleted++;
+      getEntityCollection('dcDoc', task.guid, 'dcDoc').then(v => {
+        workloadGuids[task.i].dcDoc = v;
+        this.setState(
+          {
+            workloadCostProgress:
+              (workloadCostCompleted / workloadGuids.length) * 100
+          },
+          () => {
+            cb();
+          }
+        );
       });
-    });
-    // // get optimizationConfig
-    const workloadOptimizationCfgPromises = workloadGuids.map(wl =>
-      getEntityCollection('optimizationConfig', wl.guid, 'main')
-    );
+    }, queueConcurrency);
 
-    await Promise.all(workloadOptimizationCfgPromises).then(values => {
-      values.forEach((v, i) => {
-        // do not replace optimizationConfig if an incoming guid had a optimizationConfig supplied
-        if (!workloadGuids[i].optimizationConfig) {
-          workloadGuids[i].optimizationConfig = v;
-        }
+    let workloadCfgCompleted = 0;
+    const workloadCfgQueue = queue((task, cb) => {
+      workloadCfgCompleted++;
+      getEntityCollection('optimizationConfig', task.guid, 'main').then(v => {
+        workloadGuids[task.i].optimizationConfig = v;
+        this.setState(
+          {
+            workloadConfigProgress:
+              (workloadCfgCompleted / workloadGuids.length) * 100
+          },
+          () => {
+            cb();
+          }
+        );
       });
+    }, queueConcurrency);
+
+    workloadGuids.forEach((w, i) => {
+      workloadCostQueue.push({ guid: w.guid, i });
+      workloadCfgQueue.push({ guid: w.guid, i });
     });
+
+    await Promise.all([workloadCostQueue.drain(), workloadCfgQueue.drain()]);
 
     // get queries
     const entityWorkloadQueryPromises = workloadGuids.map(wl =>

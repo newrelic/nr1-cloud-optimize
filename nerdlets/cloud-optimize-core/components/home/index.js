@@ -13,7 +13,9 @@ export default class Home extends React.PureComponent {
           rawEntities,
           entityDataProgress,
           accountConfigProgress,
-          cloudPricingProgress
+          cloudPricingProgress,
+          workloadCostProgress,
+          workloadConfigProgress
         }) => {
           const isLoading = fetchingEntities || postProcessing;
           return (
@@ -41,15 +43,19 @@ export default class Home extends React.PureComponent {
                   ) : (
                     ''
                   )}
-                  {`Fetching entity data ${entityDataProgress.toFixed(2)}%`}
+                  {`Entity data ${entityDataProgress.toFixed(2)}%`}
                   <br />
                   <br />
-                  {`Fetching cloud pricing ${cloudPricingProgress.toFixed(2)}%`}
+                  {`Cloud pricing ${cloudPricingProgress.toFixed(2)}%`}
                   <br />
                   <br />
-                  {`Fetching account configs ${accountConfigProgress.toFixed(
-                    2
-                  )}%`}
+                  {`Account configs ${accountConfigProgress.toFixed(2)}%`}
+                  <br />
+                  <br />
+                  {`Workload configs ${workloadConfigProgress.toFixed(2)}%`}
+                  <br />
+                  <br />
+                  {`Workload costs ${workloadCostProgress.toFixed(2)}%`}
                 </Loader>
               </Dimmer>
 
