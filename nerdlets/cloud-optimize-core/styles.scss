@@ -355,7 +355,7 @@
 
 .filters-container {
   margin-top: 0;
-  padding: 8px 0 8px;
+  padding: 3px 0 3px;
 }
 
 .ui.input > input {
@@ -372,7 +372,7 @@
   font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
   padding: 0.67857143em 1em !important;
   background: #fff !important;
-  border: 1px solid rgba(34, 36, 38, 0.15) !important;
+  border: 1px solid rgba(34, 36, 38, 0.15);
   color: rgba(0, 0, 0, 0.87) !important;
   // border-radius: 0.28571429rem !important;
   border-radius: 0 !important;
@@ -601,4 +601,20 @@ input[type='range']:focus::-ms-fill-lower {
 }
 input[type='range']:focus::-ms-fill-upper {
   background: rgba(128, 128, 128, 0);
+}
+
+a.ui.label {
+  background-color: #edffff;
+  border: 0 !important;
+  color: #005054;
+  border-radius: 0 !important;
+  font-weight: normal;
+}
+
+a.ui.label:hover {
+  background-color: #70ccd3;
+}
+
+div.item {
+  font-size: 12px !important;
 }

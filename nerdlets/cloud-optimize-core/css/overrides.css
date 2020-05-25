@@ -2,6 +2,9 @@
 NR1 styling clashes with semantic
 This file reimplements semantic css with !important to allow Semantic components to be styled correctly
 */
+a {
+  text-decoration: none !important;
+}
 
 td:not(.u-unstyledTd),
 th:not(.u-unstyledTh) {
@@ -68,7 +71,7 @@ th:not(.u-unstyledTh) {
 
 i.small.icon,
 i.small.icons {
-  line-height: 1;
+  line-height: 1 !important;
   font-size: 0.75em !important;
 }
 
@@ -91,8 +94,8 @@ table {
 
 .ui.menu .dropdown.item .menu {
   min-width: calc(100% - 1px) !important;
-  border-radius: 0 0 0.28571429rem 0.28571429rem !important;
-  background: #fff !important;
+  /* border-radius: 0 0 0.28571429rem 0.28571429rem !important; */
+  /* background: #fff !important; */
   margin: 0 0 0 !important;
   -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
@@ -100,4 +103,51 @@ table {
   -webkit-box-direction: normal !important;
   -ms-flex-direction: column !important;
   flex-direction: column !important;
+}
+
+.ui.multiple.search.dropdown > input.search {
+  position: static !important;
+  padding: 0 !important;
+  max-width: 100% !important;
+  margin: 0.45238095em 0 0.45238095em 0.64285714em !important;
+  width: 15em !important;
+  line-height: 1.21428571em !important;
+}
+
+.ui.selection.dropdown {
+  cursor: pointer !important;
+  word-wrap: break-word !important;
+  line-height: 1em !important;
+  white-space: normal !important;
+  outline: 0 !important;
+  -webkit-transform: rotateZ(0) !important;
+  transform: rotateZ(0) !important;
+  min-width: 14em !important;
+  min-height: 2.71428571em !important;
+  /* background: #fff !important; */
+  display: inline-block !important;
+  /* padding: 0.78571429em 2.1em 0.78571429em 1em !important; */
+  color: rgba(0, 0, 0, 0.87) !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  /* border: 1px solid rgba(34, 36, 38, 0.15) !important; */
+  /* border-radius: 0.28571429rem !important; */
+  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease !important;
+  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease !important;
+  transition: box-shadow 0.1s ease, width 0.1s ease !important;
+  transition: box-shadow 0.1s ease, width 0.1s ease,
+    -webkit-box-shadow 0.1s ease !important;
+}
+.ui.dropdown {
+  cursor: pointer !important;
+  position: relative !important;
+  display: inline-block !important;
+  outline: 0 !important;
+  text-align: left !important;
+  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease !important;
+  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease !important;
+  transition: box-shadow 0.1s ease, width 0.1s ease !important;
+  transition: box-shadow 0.1s ease, width 0.1s ease,
+    -webkit-box-shadow 0.1s ease !important;
+  -webkit-tap-highlight-color: transparent !important;
 }

@@ -148,12 +148,13 @@ export class DataProvider extends Component {
       cloudPricingProgress: 0,
       workloadCostProgress: 0,
       workloadConfigProgress: 0,
+      workloadQueryProgress: 0,
       processedApps: [],
       processedHosts: [],
       processedWorkloads: [],
       cloudPricing: {},
       tags: [],
-      tagSelection: {},
+      selectedTags: [],
       groupBy: { value: 'account', label: 'account' },
       sortBy: { value: 'currentSpend', label: 'Current Spend' },
       orderBy: { value: 'desc', label: 'Descending' },
@@ -206,7 +207,7 @@ export class DataProvider extends Component {
       ((((result || {}).data || {}).actor || {}).entitySearch || {}).results ||
       {};
 
-    if (entitySearchResult.entities.length > 0) {
+    if ((entitySearchResult.entities || []).length > 0) {
       let { rawEntities } = this.state;
       rawEntities = [...rawEntities, ...entitySearchResult.entities];
       this.setState({ rawEntities });
@@ -233,7 +234,6 @@ export class DataProvider extends Component {
       cloudPricingProgress: 0
     });
 
-    const tagSelection = {};
     let { rawEntities } = this.state;
     rawEntities = [...rawEntities, ...(guids || [])];
 
@@ -251,10 +251,7 @@ export class DataProvider extends Component {
     // get workload guid datacenter docs & entities first
     // this way pricing can be retrieved and used for non public cloud entities
     if (workloadEntities.length > 0) {
-      workloadEntities = await this.processWorkloads(
-        workloadEntities,
-        tagSelection
-      );
+      workloadEntities = await this.processWorkloads(workloadEntities);
     }
 
     const tempEntities = await this.getEntityData(nonWorkloadEntities);
@@ -269,8 +266,7 @@ export class DataProvider extends Component {
     // get pricing, matches and optimized matches and perform any decoration if required
     const { entities, entityMetricTotals } = await this.processEntities(
       tempEntities,
-      workloadEntities,
-      tagSelection
+      workloadEntities
     );
 
     // run again to stitch freshly processed data
@@ -336,8 +332,7 @@ export class DataProvider extends Component {
 
     const { entities, entityMetricTotals } = await this.processEntities(
       this.state.entities,
-      workloadEntities,
-      this.state.tagSelection
+      workloadEntities
     );
 
     const groupedEntities = _.groupBy(entities, e => e.type);
@@ -440,11 +435,12 @@ export class DataProvider extends Component {
   };
 
   // process entity data
-  processEntities = async (entities, workloadEntities, tagSelection) => {
+  processEntities = async (entities, workloadEntities) => {
     const entityMetricTotals = JSON.parse(JSON.stringify(entityMetricModel));
     const accounts = [];
     const accountsObj = {};
     const cloudPricing = {};
+    let tags = [...this.state.tags];
 
     entities.forEach(e => {
       processEntitySamples(e);
@@ -469,12 +465,8 @@ export class DataProvider extends Component {
         }
 
         if (!ignoreTag) {
-          if (tagSelection[t.key] === undefined) {
-            tagSelection[t.key] = {};
-          }
-          if (t.values[0] && tagSelection[t.key][t.values[0]] === undefined) {
-            tagSelection[t.key][t.values[0]] = false;
-          }
+          const tag = `${t.key}: ${t.values[0]}`;
+          tags.push({ key: tag, value: tag, text: tag });
         }
       });
     });
@@ -562,11 +554,16 @@ export class DataProvider extends Component {
 
     await Promise.all([cloudPricingQueue.drain(), accountCfgQueue.drain()]);
 
+    tags = _.chain(tags)
+      .uniqBy(t => t.key)
+      .sortBy('key')
+      .value();
+
     await this.storeState({
       accountsObj,
       accounts,
       cloudPricing,
-      tagSelection
+      tags
     });
 
     entities.forEach(e => {
@@ -904,7 +901,7 @@ export class DataProvider extends Component {
     return null;
   };
 
-  processWorkloads = async (workloadGuids, tagSelection) => {
+  processWorkloads = async workloadGuids => {
     // get docs
     // // get dcDoc
 
@@ -997,6 +994,9 @@ export class DataProvider extends Component {
     );
 
     await Promise.all(entityWorkloadTagPromises).then(values => {
+      const currentTags = this.state.tags;
+      let tags = [...currentTags];
+
       values.forEach(v => {
         const results = (((v || {}).data || {}).actor || {}).entities || [];
         results.forEach(r => {
@@ -1009,21 +1009,27 @@ export class DataProvider extends Component {
               workloadGuids[checkIndex][`tag.${t.key}`] = t.values[0] || true;
 
               // make tags available for selection
-              if (!t.key.includes('Guid')) {
-                if (tagSelection[t.key] === undefined) {
-                  tagSelection[t.key] = {};
+              let ignoreTag = false;
+              for (let z = 0; z < ignoreTags.length; z++) {
+                if (t.key.toLowerCase().includes(ignoreTags[z])) {
+                  ignoreTag = true;
+                  break;
                 }
-                if (
-                  t.values[0] &&
-                  tagSelection[t.key][t.values[0]] === undefined
-                ) {
-                  tagSelection[t.key][t.values[0]] = false;
-                }
+              }
+
+              if (!ignoreTag) {
+                const tag = `${t.key}: ${t.values[0]}`;
+                tags.push({ key: tag, value: tag, text: tag });
               }
             });
           }
         });
       });
+      tags = _.chain(tags)
+        .uniqBy(t => t.key)
+        .sortBy('key')
+        .value();
+      this.setState({ tags });
     });
 
     return workloadGuids;
@@ -1115,15 +1121,15 @@ export class DataProvider extends Component {
 
       this.setState(newState, () => {
         // do stuff with updated state if required
-        if (newState.tagSelection) {
+        if (newState.selectedTags) {
           const { entities, originalWorkloadEntities } = this.state;
           const groupedEntities = _.groupBy(
-            tagFilterEntities(entities, newState.tagSelection),
+            tagFilterEntities(entities, newState.selectedTags),
             e => e.type
           );
           const workloadEntities = tagFilterEntities(
             originalWorkloadEntities,
-            newState.tagSelection
+            newState.selectedTags
           );
           this.setState({
             groupedEntities,

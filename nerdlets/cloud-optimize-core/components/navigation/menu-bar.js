@@ -5,6 +5,7 @@ import React from 'react';
 import Select from 'react-select';
 import { DataConsumer } from '../../context/data';
 import CostPeriod from './cost-period';
+import FilterBar from './filter-bar';
 // import { Popup, Icon } from 'semantic-ui-react';
 
 export default class MenuBar extends React.PureComponent {
@@ -114,6 +115,7 @@ export default class MenuBar extends React.PureComponent {
 
                 {/*  <RefreshSelector /> */}
               </div>
+              <FilterBar />
             </div>
           );
         }}

@@ -29,33 +29,15 @@ export const getTagValue = (tags, tag) => {
 };
 
 export const tagFilterEntities = (entities, tags) => {
-  // if all tags false, return all entities
-  let noTags = 0;
-  let falseTags = 0;
-  Object.keys(tags).forEach(group => {
-    Object.keys(tags[group]).forEach(item => {
-      noTags++;
-      if (tags[group][item] === false) falseTags++;
-    });
-  });
+  if (tags.length === 0) return entities;
 
-  if (noTags === falseTags) return entities;
-
-  // check for enabled tags and return entities if it exists
   return entities.filter(e => {
-    for (let z = 0; z < Object.keys(tags).length; z++) {
-      const group = Object.keys(tags)[z];
-      for (let y = 0; y < Object.keys(tags[group]).length; y++) {
-        const item = Object.keys(tags[group])[y];
-        const value = tags[group][item];
-        if (value) {
-          if (getTagValue(e.tags, group) === item) {
-            return true;
-          }
-        }
+    for (let z = 0; z < tags.length; z++) {
+      const tagSplit = tags[z].split(': ');
+      if (e[`tag.${tagSplit[0]}`] === tagSplit[1]) {
+        return true;
       }
     }
-
     return false;
   });
 };
