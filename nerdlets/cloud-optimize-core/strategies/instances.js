@@ -18,6 +18,7 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
       entityMetricTotals.instances.datacenterSpend += e.datacenterSpend;
 
       e.currentSpend = e.datacenterSpend;
+      matchedPrice = e.datacenterSpend;
     } else {
       e.unableToGetOnPremPrice = true;
       matchedPrice = 0;

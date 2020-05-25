@@ -1,7 +1,6 @@
 /* eslint 
 no-console: 0,
 no-async-promise-executor: 0,
-no-func-assign: 0,
 require-atomic-updates: 0,
 no-unused-vars: 0
 */
