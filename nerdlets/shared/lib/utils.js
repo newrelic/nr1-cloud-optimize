@@ -141,7 +141,7 @@ export const getAccountCollection = async (
   documentId
 ) => {
   const payload = { collection };
-  payload.accountId = accountId;
+  payload.accountId = parseFloat(accountId);
   if (documentId) payload.documentId = documentId;
   const result = await AccountStorageQuery.query(payload);
   const collectionResult = (result || {}).data || (documentId ? null : []);

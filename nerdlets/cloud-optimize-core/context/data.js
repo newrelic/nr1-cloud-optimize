@@ -123,7 +123,8 @@ export const optimizationDefaults = {
   amazonRegion: 'us-east-1',
   azureRegion: 'westus',
   googleRegion: 'us-west1',
-  alibabaRegion: 'us-east-1'
+  alibabaRegion: 'us-east-1',
+  disableMenu: false
 };
 
 export class DataProvider extends Component {
@@ -260,7 +261,7 @@ export class DataProvider extends Component {
       tempEntities,
       workloadEntities
     );
-    workloadEntities = this.calculateWorkloadDatacenterCost(workloadEntities);
+    this.calculateWorkloadDatacenterCost(workloadEntities);
 
     // get pricing, matches and optimized matches and perform any decoration if required
     const { entities, entityMetricTotals } = await this.processEntities(
@@ -285,64 +286,55 @@ export class DataProvider extends Component {
   };
 
   // refresh workloads
-  getWorkloadDocs = async guid => {
-    let { originalWorkloadEntities, workloadEntities } = this.state;
+  getWorkloadDocs = guid => {
+    this.setState({ disableMenu: true }, async () => {
+      const { originalWorkloadEntities } = this.state;
 
-    if (!guid) {
-      const workloadDocPromises = originalWorkloadEntities.map(wl =>
-        getEntityCollection('dcDoc', wl.guid, 'dcDoc')
+      if (!guid) {
+        const workloadDocPromises = originalWorkloadEntities.map(wl =>
+          getEntityCollection('dcDoc', wl.guid, 'dcDoc')
+        );
+
+        await Promise.all(workloadDocPromises).then(values => {
+          values.forEach((v, i) => {
+            if (!originalWorkloadEntities[i].dcDoc) {
+              originalWorkloadEntities[i].dcDoc = v;
+            }
+          });
+        });
+      } else {
+        const dcDoc = await getEntityCollection('dcDoc', guid, 'dcDoc');
+        for (let z = 0; z < originalWorkloadEntities.length; z++) {
+          if (guid === originalWorkloadEntities[z].guid) {
+            originalWorkloadEntities[z].dcDoc = dcDoc;
+            break;
+          }
+        }
+      }
+
+      this.calculateWorkloadDatacenterCost(originalWorkloadEntities);
+
+      const { entities, entityMetricTotals } = await this.processEntities(
+        [...this.state.entities],
+        originalWorkloadEntities
       );
 
-      await Promise.all(workloadDocPromises).then(values => {
-        values.forEach((v, i) => {
-          if (!originalWorkloadEntities[i].dcDoc) {
-            originalWorkloadEntities[i].dcDoc = v;
-            for (let z = 0; z < workloadEntities.length; z++) {
-              if (
-                originalWorkloadEntities[i].guid === workloadEntities[z].guid
-              ) {
-                workloadEntities[z].dcDoc = v;
-                break;
-              }
-            }
-          }
-        });
-      });
-    } else {
-      const dcDoc = await getEntityCollection('dcDoc', guid, 'dcDoc');
-      for (let z = 0; z < workloadEntities.length; z++) {
-        if (guid === workloadEntities[z].guid) {
-          workloadEntities[z].dcDoc = dcDoc;
-          break;
+      const groupedEntities = _.groupBy(entities, e => e.type);
+      const groupByOptions = buildGroupByOptions(entities);
+
+      this.setState(
+        {
+          entities,
+          originalWorkloadEntities,
+          groupedEntities,
+          groupByOptions,
+          entityMetricTotals,
+          disableMenu: false
+        },
+        () => {
+          this.updateDataState(null, ['filterEntities']);
         }
-      }
-      for (let z = 0; z < originalWorkloadEntities.length; z++) {
-        if (guid === originalWorkloadEntities[z].guid) {
-          originalWorkloadEntities[z].dcDoc = dcDoc;
-          break;
-        }
-      }
-    }
-
-    originalWorkloadEntities = this.calculateWorkloadDatacenterCost(
-      originalWorkloadEntities
-    );
-    workloadEntities = this.calculateWorkloadDatacenterCost(workloadEntities);
-
-    const { entities, entityMetricTotals } = await this.processEntities(
-      this.state.entities,
-      workloadEntities
-    );
-
-    const groupedEntities = _.groupBy(entities, e => e.type);
-    const groupByOptions = buildGroupByOptions(entities);
-
-    this.setState({
-      originalWorkloadEntities,
-      workloadEntities,
-      groupedEntities,
-      groupByOptions,
-      entityMetricTotals
+      );
     });
   };
 
@@ -355,7 +347,10 @@ export class DataProvider extends Component {
 
         if (doc && doc.costs) {
           Object.keys(doc.costs).forEach(key => {
-            if (!costTotal[key]) costTotal[key] = 0;
+            if (!costTotal[key]) {
+              costTotal[key] = 0;
+            }
+
             doc.costs[key].forEach(cost => {
               const finalCost =
                 cost.units * cost.rate * (12 / cost.recurringMonths);
@@ -411,8 +406,6 @@ export class DataProvider extends Component {
         workloadEntities[z].totalCU = totalCU;
       }
     }
-
-    return workloadEntities;
   };
 
   // addEntityDataToWorkload
@@ -565,18 +558,22 @@ export class DataProvider extends Component {
       tags
     });
 
-    entities.forEach(e => {
+    const processedEntityPromises = entities.map(e => {
       const {
         optimizationConfig,
         optimizedWith,
         workload
       } = this.getOptimizationConfig(e, workloadEntities);
-      if (workload && workload.costPerCU) {
-        e.costPerCU = workload.costPerCU;
+
+      if (workload) {
+        e.costPerCU = workload.costPerCU || 0;
       }
+
       e.optimizedWith = optimizedWith;
-      this.processEntity(e, optimizationConfig, entityMetricTotals);
+      return this.processEntity(e, optimizationConfig, entityMetricTotals);
     });
+
+    await Promise.all(processedEntityPromises);
 
     return { entities, entityMetricTotals };
   };
@@ -609,7 +606,7 @@ export class DataProvider extends Component {
         }
 
         // check if exists in workload and if DC costing is available
-        if (e.costPerCU) {
+        if (e.costPerCU >= 0) {
           const instanceCU = Math.round(e.memoryGb + e.coreCount);
           e.datacenterSpend = instanceCU * e.costPerCU;
         }
@@ -1116,31 +1113,59 @@ export class DataProvider extends Component {
 
   updateDataState = (stateData, actions) => {
     return new Promise((resolve, reject) => {
-      const newState = { ...stateData, updatingContext: true };
-
-      this.setState(newState, () => {
-        // do stuff with updated state if required
-        if (newState.selectedTags) {
-          const { entities, originalWorkloadEntities } = this.state;
-          const groupedEntities = _.groupBy(
-            tagFilterEntities(entities, newState.selectedTags),
-            e => e.type
-          );
-          const workloadEntities = tagFilterEntities(
-            originalWorkloadEntities,
-            newState.selectedTags
-          );
-          this.setState({
-            groupedEntities,
-            workloadEntities
-          });
+      // actions
+      (actions || []).forEach(action => {
+        switch (action) {
+          case 'filterEntities': {
+            const { selectedTags } = this.state;
+            const { entities, originalWorkloadEntities } = this.state;
+            const groupedEntities = _.groupBy(
+              tagFilterEntities(entities, selectedTags),
+              e => e.type
+            );
+            const workloadEntities = tagFilterEntities(
+              originalWorkloadEntities,
+              selectedTags
+            );
+            this.setState({
+              groupedEntities,
+              workloadEntities
+            });
+            break;
+          }
         }
-
-        // completed update
-        this.setState({ updatingContext: false }, () => {
-          resolve(true);
-        });
       });
+
+      // state updates
+      if (stateData) {
+        const newState = { ...stateData, updatingContext: true };
+
+        this.setState(newState, () => {
+          // do stuff with updated state if required
+          if (newState.selectedTags) {
+            const { entities, originalWorkloadEntities } = this.state;
+            const groupedEntities = _.groupBy(
+              tagFilterEntities(entities, newState.selectedTags),
+              e => e.type
+            );
+            const workloadEntities = tagFilterEntities(
+              originalWorkloadEntities,
+              newState.selectedTags
+            );
+            this.setState({
+              groupedEntities,
+              workloadEntities
+            });
+          }
+
+          // completed update
+          this.setState({ updatingContext: false }, () => {
+            resolve(true);
+          });
+        });
+      }
+
+      resolve(true);
     });
   };
 

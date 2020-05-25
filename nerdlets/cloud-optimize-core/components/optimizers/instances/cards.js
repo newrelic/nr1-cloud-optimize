@@ -43,7 +43,8 @@ export default class InstanceCards extends React.PureComponent {
 
                   const renderIcon = icon => (
                     <>
-                      <img src={icon} height="25px" /> &nbsp;
+                      <img src={icon} height="25px" />
+                      &nbsp;
                     </>
                   );
 

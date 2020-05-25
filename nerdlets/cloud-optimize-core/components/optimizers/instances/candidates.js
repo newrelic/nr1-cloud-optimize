@@ -131,6 +131,7 @@ export default class InstanceCandidates extends React.PureComponent {
                       onClick={(e, d) =>
                         this.onClickTableHeaderCell('cloud', e, d)
                       }
+                      style={{ paddingLeft: '10px' }}
                       width="50px"
                     />
 
@@ -214,11 +215,18 @@ export default class InstanceCandidates extends React.PureComponent {
                       <TableRow>
                         {renderRowCell(
                           icon ? (
-                            <img src={icon} height="25px" />
+                            <img
+                              src={icon}
+                              height="25px"
+                              style={{ paddingLeft: '10px' }}
+                            />
                           ) : (
                             <>
-                              &nbsp;
-                              <Icon name="server" size="large" />
+                              <Icon
+                                name="server"
+                                size="large"
+                                style={{ paddingLeft: '10px' }}
+                              />
                             </>
                           )
                         )}

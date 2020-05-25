@@ -94,6 +94,7 @@ table {
 
 .ui.menu .dropdown.item .menu {
   min-width: calc(100% - 1px) !important;
+  border-radius: 0px !important;
   /* border-radius: 0 0 0.28571429rem 0.28571429rem !important; */
   /* background: #fff !important; */
   margin: 0 0 0 !important;
@@ -132,6 +133,7 @@ table {
   box-shadow: none !important;
   /* border: 1px solid rgba(34, 36, 38, 0.15) !important; */
   /* border-radius: 0.28571429rem !important; */
+  border-radius: 0px !important;
   -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease !important;
   transition: width 0.1s ease, -webkit-box-shadow 0.1s ease !important;
   transition: box-shadow 0.1s ease, width 0.1s ease !important;
@@ -150,4 +152,7 @@ table {
   transition: box-shadow 0.1s ease, width 0.1s ease,
     -webkit-box-shadow 0.1s ease !important;
   -webkit-tap-highlight-color: transparent !important;
+}
+.input > input {
+  border: 1px solid rgba(34, 36, 38, 0.15) !important;
 }

@@ -13,7 +13,7 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
 
   // check if dc pricing
   if (!e.cloud) {
-    if (e.datacenterSpend) {
+    if (e.datacenterSpend >= 0) {
       entityMetricTotals.instances.currentSpend += e.datacenterSpend;
       entityMetricTotals.instances.datacenterSpend += e.datacenterSpend;
 
@@ -85,6 +85,11 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
   if (e.cloud) {
     entityMetricTotals.instances.cloudSpend += matchedPrice;
     e.cloudSpend = matchedPrice;
+
+    if (e.currentSpend > 0) {
+      e[`${e.cloud}Spend`] = e.currentSpend;
+      entityMetricTotals.instances[`${e.cloud}Spend`] = e.currentSpend;
+    }
   } else {
     // this is done further up
     // entityMetricTotals.instances.datacenterSpend += matchedPrice;
@@ -128,11 +133,6 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     // do not add pricing if the current spend is not more than 0
     // having the optimizedResult is okay for suggestions
     if (optimizedResult && e.currentSpend > 0) {
-      if (e.cloud) {
-        e[`${e.cloud}Spend`] = e.currentSpend;
-        entityMetricTotals.instances[`${e.cloud}Spend`] = e.currentSpend;
-      }
-
       entityMetricTotals.instances.optimizedInstances += 1;
 
       e.optimizedResult = optimizedResult;
@@ -189,7 +189,7 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     }
     // end optimized results
 
-    if (!e.unableToGetOnPremPrice && matchedPrice > 0) {
+    if (!e.unableToGetOnPremPrice && matchedPrice > 0 && optimizedPrice > 0) {
       potentialSavings = matchedPrice - optimizedPrice;
       entityMetricTotals.instances.potentialSavings += potentialSavings;
       e.potentialSavings = potentialSavings;
@@ -200,8 +200,6 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
       e.optimizedPrice = optimizedPrice;
     }
   }
-
-  //   console.log(entityMetricTotals, e);
 
   //   return entityMetricTotals;
 };

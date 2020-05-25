@@ -18,7 +18,7 @@ export default class LeftMenu extends React.PureComponent {
 
     return (
       <DataConsumer>
-        {({ selectedPage, updateDataState }) => {
+        {({ selectedPage, updateDataState, disableMenu }) => {
           // const isLoading = fetchingEntities || postProcessing;
 
           const menuItem = (name, val, icon) => {
@@ -30,6 +30,7 @@ export default class LeftMenu extends React.PureComponent {
                 icon={icon || 'circle thin'}
                 name={name}
                 active={selectedPage === val}
+                disabled={disableMenu}
                 onClick={() => updateDataState({ selectedPage: val })}
               />
             );

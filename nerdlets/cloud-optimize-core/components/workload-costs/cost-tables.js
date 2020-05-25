@@ -17,13 +17,22 @@ const costTables = [
 ];
 
 export default class CostTables extends React.PureComponent {
-  deleteCost = async (getWorkloadDocs, guid, doc, costType, index) => {
-    doc.costs[costType].splice(index, 1);
-    await writeEntityDocument(guid, 'dcDoc', 'dcDoc', doc);
-    getWorkloadDocs(guid);
+  constructor(props) {
+    super(props);
+    this.state = { deleting: false };
+  }
+
+  deleteCost = (getWorkloadDocs, guid, doc, costType, index) => {
+    this.setState({ deleting: true }, async () => {
+      doc.costs[costType].splice(index, 1);
+      await writeEntityDocument(guid, 'dcDoc', 'dcDoc', doc);
+      getWorkloadDocs(guid);
+      this.setState({ deleting: false });
+    });
   };
 
   render() {
+    const { deleting } = this.state;
     const { dc, guid, doc, costs, costTotal, selectedWorkload } = this.props;
 
     return (
@@ -141,11 +150,12 @@ export default class CostTables extends React.PureComponent {
                                   </Table.Cell>
                                   <Table.Cell textAlign="right">
                                     <Icon
-                                      name="minus"
+                                      name={deleting ? 'spinner' : 'minus'}
                                       size="small"
                                       color="red"
                                       circular
                                       inverted
+                                      loading={deleting}
                                       style={{
                                         cursor: 'pointer',
                                         paddingBottom: '11px'
