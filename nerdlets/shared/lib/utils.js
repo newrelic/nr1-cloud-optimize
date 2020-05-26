@@ -1,3 +1,8 @@
+/* 
+eslint no-use-before-define: 0,
+no-console: 0,
+*/ // --> OFF
+
 import {
   UserStorageQuery,
   UserStorageMutation,
@@ -10,8 +15,57 @@ import {
 import gql from 'graphql-tag';
 import {
   categoryTypes,
-  entityMetricModel
+  entityMetricModel,
+  optimizationDefaults
 } from '../../cloud-optimize-core/context/data';
+
+export const validateRegion = (cloud, region, cloudRegions, userConfig) => {
+  const regionExists = r => {
+    for (let z = 0; z < cloudRegions[cloud].length; z++) {
+      if (r === cloudRegions[cloud][z].id) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  switch (cloud) {
+    case 'amazon': {
+      const re = /^\w+-\w+-\d+$/;
+      if (!re.test(region)) {
+        console.log(`invalid ${cloud} region ${region}`);
+        const rSplit = region.split('-');
+        if (rSplit.length === 3) {
+          const newRegion = `${rSplit[0]}-${rSplit[1]}-${rSplit[2].replace(
+            /[^\d-]/g,
+            ''
+          )}`;
+
+          if (regionExists(newRegion)) {
+            console.log(`new region set ${newRegion}`);
+            return newRegion;
+          }
+        }
+      }
+      break;
+    }
+  }
+
+  if (regionExists(region)) {
+    return region;
+  }
+
+  const defaultRegion =
+    userConfig && userConfig[`${cloud}Region`]
+      ? userConfig[`${cloud}Region`]
+      : optimizationDefaults[`${cloud}Region`];
+
+  console.log(
+    `region does not exist ${cloud} ${region}, setting default ${defaultRegion}`
+  );
+
+  return defaultRegion;
+};
 
 export const getTagValue = (tags, tag) => {
   if (tags) {
@@ -288,13 +342,11 @@ export const accountsWithData = async eventType => {
   const gql = `{actor {accounts {name id reportingEventTypes(filter:["${eventType}"])}}}`;
   const result = await NerdGraphQuery.query({ query: gql });
   if (result.errors) {
-    /* eslint-disable no-console */
     console.log(
       "Can't get reporting event types because NRDB is grumpy at NerdGraph.",
       result.errors
     );
     console.log(JSON.stringify(result.errors.slice(0, 5), 0, 2));
-    /* eslint-enable */
     return [];
   }
   return result.data.actor.accounts.filter(

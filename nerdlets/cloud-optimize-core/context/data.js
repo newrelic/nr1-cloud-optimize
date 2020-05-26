@@ -18,7 +18,8 @@ import {
   getAccountCollection,
   existsInObjArray,
   roundHalf,
-  tagFilterEntities
+  tagFilterEntities,
+  validateRegion
 } from '../../shared/lib/utils';
 import {
   entitySearchQuery,
@@ -196,7 +197,7 @@ export class DataProvider extends Component {
       userConfig = { ...optimizationDefaults };
     }
 
-    this.fetchCloudRegions();
+    await this.fetchCloudRegions();
 
     this.setState({ userConfig }, () => {
       // handle incoming props with postProcessEntities, else run fetchEntities for default view
@@ -219,7 +220,7 @@ export class DataProvider extends Component {
     }
   }
 
-  fetchCloudRegions = () => {
+  fetchCloudRegions = async () => {
     const { cloudRegions } = this.state;
     const cloudRegionPromises = supportedClouds.map(cloud =>
       fetch(`${pricingURL}/${cloud}/regions.json`).then(response =>
@@ -227,7 +228,7 @@ export class DataProvider extends Component {
       )
     );
 
-    Promise.all(cloudRegionPromises).then(values => {
+    await Promise.all(cloudRegionPromises).then(values => {
       values.forEach((v, i) => {
         cloudRegions[supportedClouds[i]] = v;
       });
@@ -842,7 +843,13 @@ export class DataProvider extends Component {
 
   getCloudPricing = (cloud, region) => {
     return new Promise(resolve => {
-      fetch(`${pricingURL}/${cloud}/compute/pricing/${region}.json`)
+      const cleanRegion = validateRegion(
+        cloud,
+        region,
+        this.state.cloudRegions,
+        this.state.userConfig
+      );
+      fetch(`${pricingURL}/${cloud}/compute/pricing/${cleanRegion}.json`)
         .then(response => {
           return response.json();
         })
