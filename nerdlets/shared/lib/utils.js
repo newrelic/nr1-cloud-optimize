@@ -42,16 +42,18 @@ export const tagFilterEntities = (entities, tags) => {
   });
 };
 
-export const calculateGroupedMetrics = (entities, existingData) => {
+export const calculateGroupedMetrics = (entities, existingData, type) => {
   const entityMetricTotals =
     existingData || JSON.parse(JSON.stringify(entityMetricModel));
 
   entities.forEach(e => {
     // add instance costs
-    if (categoryTypes.instances.includes(e.type)) {
-      Object.keys(entityMetricTotals.instances).forEach(k => {
-        if (e[k]) {
-          entityMetricTotals.instances[k] += e[k] || 0;
+    if (categoryTypes[type].includes(e.type)) {
+      Object.keys(entityMetricTotals[type]).forEach(k => {
+        if (type === 'workloads' && k === 'entityCount') {
+          entityMetricTotals[type][k] += e.entityData.length;
+        } else if (e[k]) {
+          entityMetricTotals[type][k] += e[k] || 0;
         }
       });
     }

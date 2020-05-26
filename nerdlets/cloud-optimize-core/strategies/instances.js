@@ -189,7 +189,7 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     }
     // end optimized results
 
-    if (!e.unableToGetOnPremPrice && matchedPrice > 0 && optimizedPrice > 0) {
+    if (!e.unableToGetOnPremPrice && matchedPrice > 0 && optimizedPrice >= 0) {
       potentialSavings = matchedPrice - optimizedPrice;
       entityMetricTotals.instances.potentialSavings += potentialSavings;
       e.potentialSavings = potentialSavings;

@@ -1,18 +1,20 @@
 import React from 'react';
-import InstanceCards from './cards';
 import { DataConsumer, categoryTypes } from '../../../context/data';
 import { calculateGroupedMetrics } from '../../../../shared/lib/utils';
+import Cards from './cards';
 import _ from 'lodash';
-import InstanceSummary from './summary';
 
-export default class InstanceOptimizer extends React.PureComponent {
+export default class WorkloadOptimizer extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ groupBy, sortBy, orderBy, groupedEntities }) => {
+        {({ groupBy, sortBy, orderBy, groupedEntities, workloadEntities }) => {
           let entities = [];
-          categoryTypes.instances.forEach(type => {
-            entities = [...entities, ...(groupedEntities[type] || [])];
+
+          groupedEntities.WORKLOAD = workloadEntities;
+
+          categoryTypes.workloads.forEach(type => {
+            entities = [...(groupedEntities[type] || [])];
           });
 
           const menuGroupedEntities = _.groupBy(
@@ -26,7 +28,7 @@ export default class InstanceOptimizer extends React.PureComponent {
               metrics: calculateGroupedMetrics(
                 menuGroupedEntities[k],
                 null,
-                'instances'
+                'workloads'
               ),
               entities: menuGroupedEntities[k] || [],
               name: k
@@ -39,7 +41,7 @@ export default class InstanceOptimizer extends React.PureComponent {
               orderBy.value === 'desc' ? ['desc', 'asc'] : ['asc', 'desc'];
             menuGroupedMetrics = _.orderBy(
               menuGroupedMetrics,
-              d => d.metrics.instances[sortBy.value],
+              d => d.metrics.workloads[sortBy.value],
               order
             );
           }
@@ -48,9 +50,9 @@ export default class InstanceOptimizer extends React.PureComponent {
 
           return (
             <>
-              <InstanceSummary groups={groups} />
-              <br />
-              <InstanceCards groups={groups} />
+              <Cards groups={groups} />
+              {/* <InstanceSummary groups={groups} />
+              <br />  */}
             </>
           );
         }}

@@ -111,6 +111,9 @@ export const entityMetricModel = {
     alibabaSpend: 0,
     unknown: 0,
     vmware: 0
+  },
+  workloads: {
+    entityCount: 0
   }
 };
 
@@ -149,6 +152,8 @@ export class DataProvider extends Component {
 
     this.state = {
       selectedPage: 'home',
+      selectedWorkload: null,
+      selectedGroup: null,
       updatingContext: false,
       accounts: [],
       accountsObj: {},
@@ -177,7 +182,6 @@ export class DataProvider extends Component {
       groupByOptions: [],
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
-      selectedGroup: null,
       cloudRegions: {},
       timeRange: null,
       timepickerEnabled: false
@@ -1182,7 +1186,8 @@ export class DataProvider extends Component {
             );
             this.setState({
               groupedEntities,
-              workloadEntities
+              workloadEntities,
+              selectedWorkload: null
             });
             break;
           }

@@ -159,6 +159,7 @@ export default class OptimizationConfigs extends React.PureComponent {
     this.setState({ deleting: true }, async () => {
       if (activeItem === 'user') {
         await deleteDocument('optimizationConfig', 'main');
+        updateDataState({ userConfig: { ...optimizationDefaults } });
       } else if (activeItem === 'account' && selectedAccount) {
         await deleteAccountDocument(
           selectedAccount.value,

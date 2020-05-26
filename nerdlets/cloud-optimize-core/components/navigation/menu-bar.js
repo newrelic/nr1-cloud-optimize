@@ -62,7 +62,11 @@ export default class MenuBar extends React.PureComponent {
                     isDisabled={isLoading || selectedPage === 'home'}
                     options={groupByOptions}
                     onChange={g =>
-                      updateDataState({ groupBy: g, selectedGroup: null })
+                      updateDataState({
+                        groupBy: g,
+                        selectedGroup: null,
+                        selectedWorkload: null
+                      })
                     }
                     value={groupBy}
                     classNamePrefix="react-select"
@@ -75,7 +79,11 @@ export default class MenuBar extends React.PureComponent {
                   <label>Sort By</label>
                   <Select
                     options={sortByOptions}
-                    isDisabled={isLoading || selectedPage === 'home'}
+                    isDisabled={
+                      isLoading ||
+                      selectedPage === 'home' ||
+                      selectedPage === 'workload-optimizer'
+                    }
                     onChange={s => updateDataState({ sortBy: s })}
                     value={sortBy}
                     classNamePrefix="react-select"
@@ -92,7 +100,11 @@ export default class MenuBar extends React.PureComponent {
                       { value: 'desc', label: 'Descending' },
                       { value: 'asc', label: 'Ascending' }
                     ]}
-                    isDisabled={isLoading || selectedPage === 'home'}
+                    isDisabled={
+                      isLoading ||
+                      selectedPage === 'home' ||
+                      selectedPage === 'workload-optimizer'
+                    }
                     onChange={s => updateDataState({ orderBy: s })}
                     value={orderBy}
                     classNamePrefix="react-select"

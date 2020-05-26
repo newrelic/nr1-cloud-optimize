@@ -18,7 +18,8 @@ export default class FilterBar extends React.PureComponent {
           postProcessing,
           tags,
           selectedTags,
-          updateDataState
+          updateDataState,
+          selectedWorkload
         }) => {
           const isLoading = fetchingEntities || postProcessing;
 
@@ -47,7 +48,7 @@ export default class FilterBar extends React.PureComponent {
                   display: 'inline-block'
                 }}
                 placeholder="Filter Tags"
-                disabled={isLoading}
+                disabled={isLoading || selectedWorkload !== null}
                 fluid
                 multiple
                 search

@@ -31,7 +31,9 @@ export default class LeftMenu extends React.PureComponent {
                 name={name}
                 active={selectedPage === val}
                 disabled={disableMenu}
-                onClick={() => updateDataState({ selectedPage: val })}
+                onClick={() =>
+                  updateDataState({ selectedPage: val, selectedWorkload: null })
+                }
               />
             );
           };

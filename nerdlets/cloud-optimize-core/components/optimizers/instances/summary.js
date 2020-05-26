@@ -14,7 +14,11 @@ export default class InstanceSummary extends React.PureComponent {
     const entityMetricTotals = JSON.parse(JSON.stringify(entityMetricModel));
 
     groups.forEach(g => {
-      calculateGroupedMetrics(g.entities, entityMetricTotals);
+      calculateGroupedMetrics(
+        g.entityData || g.entities,
+        entityMetricTotals,
+        'instances'
+      );
     });
 
     const c = entityMetricTotals.instances;

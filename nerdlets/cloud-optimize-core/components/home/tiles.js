@@ -49,7 +49,8 @@ export default class Tiles extends React.PureComponent {
                           style={{ cursor: 'pointer' }}
                           onClick={() =>
                             updateDataState({
-                              selectedPage: `${o.optimizer}-optimizer`
+                              selectedPage: `${o.optimizer}-optimizer`,
+                              selectedWorkload: null
                             })
                           }
                         >
