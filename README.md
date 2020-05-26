@@ -12,7 +12,7 @@ The application compares the size of your instances to their utilization, identi
 
 Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.
 
-This application supports AWS, GCP, and Azure cloud infrastructures.
+This application supports AWS, GCP, Azure and Alibaba cloud infrastructures.
 
 ![Screenshot #1](catalog/screenshots/nr1-cloud-optimize-1.png)
 ![Screenshot #2](catalog/screenshots/nr1-cloud-optimize-2.png)
