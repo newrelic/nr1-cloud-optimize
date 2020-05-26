@@ -36,8 +36,8 @@ export default class InstancePerformanceCard extends React.PureComponent {
 
     Object.keys(accountGroups).forEach(id => {
       Object.keys(accountGroups[id]).forEach(type => {
-        let cpuQuery = '';
-        let memQuery = '';
+        let cpuQuery = systemSampleCpu;
+        let memQuery = systemSampleMem;
         switch (type) {
           case 'HOST':
             cpuQuery = systemSampleCpu;
