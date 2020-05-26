@@ -1,6 +1,6 @@
 {
   "schemaType": "NERDPACK",
-  "id": "e30b3b37-db06-439a-b030-cd5bcf7ee323",
+  "id": "58aeb614-675d-42a1-9f0d-de22b0539863",
   "displayName": "Cloud Optimize",
-  "description": "Identify right-sizing opportunities and potential savings of your AWS, GCP, and Azure instances across your cloud environment"
+  "description": "Identify right-sizing opportunities and potential savings of your AWS, GCP, Azure & Alibaba instances across your cloud environment"
 }

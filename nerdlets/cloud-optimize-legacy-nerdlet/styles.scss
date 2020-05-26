@@ -1,9 +1,9 @@
 @import url('//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css');
 
 #root {
-    padding: 0;
-    background-color: #f4f5f5;
-  }
+  padding: 0;
+  background-color: #f4f5f5;
+}
 
 .main {
   height: 100%;
@@ -21,7 +21,7 @@
 
 .header-bar {
   text-align: center;
-  margin-bottom: 0px
+  margin-bottom: 0px;
 }
 
 .header-bar-light {
@@ -35,43 +35,46 @@
 }
 
 .card {
-    margin-bottom: 1px;
-    width: 400px;
+  margin-bottom: 1px;
+  width: 400px;
 }
 
 .card-dark {
-    background-color: rgb(51, 51, 51)
+  background-color: rgb(51, 51, 51);
 }
 
 .card-content-dark {
-  color: white
+  color: white;
 }
 
 .card-content-light {
-    color: black
+  color: black;
 }
 
 .config-dark {
-    background-color: black;
+  background-color: black;
 }
 
 .ui.compact.table td {
-    padding: .2em .5em !important;
+  padding: 0.2em 0.5em !important;
 }
 
 .ui.table td {
-  padding: .2em .5em !important;
+  padding: 0.2em 0.5em !important;
 }
 
-.ui.mini.button, .ui.mini.buttons .button, .ui.mini.buttons .or {
-  font-size: .78571429rem !important;
+.ui.mini.button,
+.ui.mini.buttons .button,
+.ui.mini.buttons .or {
+  font-size: 0.78571429rem !important;
 }
 
 .segment-clear {
-  background: "" !important;
+  background: '' !important;
 }
 
-.ui.card, .ui.cards>.card {
+.ui.card,
+.ui.cards > .card {
   border-radius: 0 !important;
 }
 
@@ -89,11 +92,10 @@
   border-left: 0px !important;
 }
 
-.segment{
+.segment {
   border-radius: 0px !important;
 }
 
-.menu{
+.menu {
   border-radius: 0px !important;
-
 }

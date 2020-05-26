@@ -1,9 +1,160 @@
-import { UserStorageQuery, UserStorageMutation, NerdGraphQuery } from 'nr1';
+import {
+  UserStorageQuery,
+  UserStorageMutation,
+  EntityStorageMutation,
+  AccountStorageMutation,
+  NerdGraphQuery,
+  EntityStorageQuery,
+  AccountStorageQuery
+} from 'nr1';
 import gql from 'graphql-tag';
+import {
+  categoryTypes,
+  entityMetricModel
+} from '../../cloud-optimize-core/context/data';
 
-export const getCollection = async collection => {
-  const result = await UserStorageQuery.query({ collection: collection });
-  const collectionResult = (result || {}).data || [];
+export const getTagValue = (tags, tag) => {
+  if (tags) {
+    for (let z = 0; z < tags.length; z++) {
+      if (tags[z].key === tag) {
+        if (tags[z].values.length === 1) {
+          return tags[z].values[0];
+        } else {
+          return tags[z].values;
+        }
+      }
+    }
+  }
+  return null;
+};
+
+export const tagFilterEntities = (entities, tags) => {
+  if (tags.length === 0) return entities;
+
+  return entities.filter(e => {
+    for (let z = 0; z < tags.length; z++) {
+      const tagSplit = tags[z].split(': ');
+      if (e[`tag.${tagSplit[0]}`] === tagSplit[1]) {
+        return true;
+      }
+    }
+    return false;
+  });
+};
+
+export const calculateGroupedMetrics = (entities, existingData, type) => {
+  const entityMetricTotals =
+    existingData || JSON.parse(JSON.stringify(entityMetricModel));
+
+  entities.forEach(e => {
+    // add instance costs
+    if (categoryTypes[type].includes(e.type)) {
+      Object.keys(entityMetricTotals[type]).forEach(k => {
+        if (type === 'workloads' && k === 'entityCount') {
+          entityMetricTotals[type][k] += e.entityData.length;
+        } else if (e[k]) {
+          entityMetricTotals[type][k] += e[k] || 0;
+        }
+      });
+    }
+  });
+
+  return entityMetricTotals;
+};
+
+export const buildTags = (currentTags, newTags) => {
+  newTags.forEach(tag => {
+    currentTags.push(`${tag.key}:${tag.values[0]}`);
+  });
+  return [...new Set(currentTags)].sort();
+};
+
+export const buildGroupByOptions = entities => {
+  const groupByOptions = [
+    ...new Set(
+      entities
+        .map(e => e.tags)
+        .flat()
+        .map(t => t.key)
+    )
+  ]
+    .sort()
+    .map(t => ({
+      value: t,
+      label: t
+    }));
+
+  return groupByOptions;
+};
+
+export const existsInObjArray = (array, key, value) => {
+  for (let z = 0; z < (array || []).length; z++) {
+    if (array[z][key] === value) {
+      return z;
+    }
+  }
+  return false;
+};
+
+export const roundHalf = num => {
+  return num < 0.5 ? 0.5 : Math.round(num * 2) / 2;
+};
+
+export const adjustCost = (period, value) => {
+  switch (period.value) {
+    case 'D':
+      value = value * 24;
+      break;
+    case 'M':
+      value = value * 24 * 30;
+      break;
+    case 'Y':
+      value = value * 24 * 30 * 12;
+      break;
+  }
+  return parseFloat(value);
+};
+
+export const formatValue = (cost, decimals) => {
+  if (decimals) {
+    return cost.toFixed(decimals).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  }
+  return cost.toString().replace(/\d(?=(\d{3})+\.)/g, '$&,');
+};
+
+// chunking for batching nerdgraph calls
+export const chunk = (arr, size) =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+
+export const getEntityCollection = async (collection, guid, documentId) => {
+  const payload = { collection };
+  payload.entityGuid = guid;
+  if (documentId) payload.documentId = documentId;
+  const result = await EntityStorageQuery.query(payload);
+  const collectionResult = (result || {}).data || (documentId ? null : []);
+  return collectionResult;
+};
+
+export const getAccountCollection = async (
+  accountId,
+  collection,
+  documentId
+) => {
+  const payload = { collection };
+  payload.accountId = parseFloat(accountId);
+  if (documentId) payload.documentId = documentId;
+  const result = await AccountStorageQuery.query(payload);
+  const collectionResult = (result || {}).data || (documentId ? null : []);
+  return collectionResult;
+};
+
+export const getCollection = async (collection, documentId) => {
+  const payload = { collection };
+  if (documentId) payload.documentId = documentId;
+  const result = await UserStorageQuery.query(payload);
+  const collectionResult = (result || {}).data || (documentId ? null : []);
   return collectionResult;
 };
 
@@ -15,6 +166,52 @@ export const getDocument = async (collection, documentId) => {
   return result.data;
 };
 
+export const writeEntityDocument = async (
+  guid,
+  collection,
+  documentId,
+  payload
+) => {
+  const result = await EntityStorageMutation.mutate({
+    entityGuid: guid,
+    actionType: EntityStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+    collection,
+    documentId,
+    document: payload
+  });
+  return result;
+};
+
+export const deleteEntityDocument = async (guid, collection, documentId) => {
+  const deletePayload = {
+    entityGuid: guid,
+    actionType: EntityStorageMutation.ACTION_TYPE.DELETE_COLLECTION,
+    collection
+  };
+  if (documentId) {
+    deletePayload.documentId = documentId;
+    deletePayload.actionType =
+      EntityStorageMutation.ACTION_TYPE.DELETE_DOCUMENT;
+  }
+  const result = await EntityStorageMutation.mutate(deletePayload);
+  return result;
+};
+
+export const writeAccountDocument = async (
+  accountId,
+  collection,
+  documentId,
+  payload
+) => {
+  const result = await AccountStorageMutation.mutate({
+    accountId,
+    actionType: AccountStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+    collection,
+    documentId,
+    document: payload
+  });
+  return result;
+};
 export const writeDocument = async (collection, documentId, payload) => {
   const result = await UserStorageMutation.mutate({
     actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
@@ -30,6 +227,20 @@ export const deleteDocument = async (collection, documentId) => {
     actionType: UserStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
     collection: collection,
     documentId: documentId
+  });
+  return result;
+};
+
+export const deleteAccountDocument = async (
+  accountId,
+  collection,
+  documentId
+) => {
+  const result = await AccountStorageMutation.mutate({
+    accountId,
+    actionType: AccountStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
+    collection,
+    documentId
   });
   return result;
 };

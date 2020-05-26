@@ -6,7 +6,7 @@ The application compares the size of your instances to their utilization, identi
 
 Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.
 
-This application supports AWS, GCP, and Azure cloud infrastructures.
+This application supports AWS, GCP, Azure and Alibaba cloud infrastructures.
 
 > In-Context Application Optimization requires APM
 
