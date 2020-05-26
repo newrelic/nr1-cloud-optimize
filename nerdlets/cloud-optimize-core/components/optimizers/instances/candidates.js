@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Segment } from 'semantic-ui-react';
-import { DataConsumer } from '../../../context/data';
+import { DataConsumer, categoryTypes } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
 import { getIcon } from '../../../strategies/entity-handler';
 import {
@@ -121,7 +121,11 @@ export default class InstanceCandidates extends React.PureComponent {
           return (
             <Segment raised>
               {group.entities.length > 0 ? (
-                <Table items={group.entities}>
+                <Table
+                  items={group.entities.filter(e =>
+                    categoryTypes.instances.includes(e.type)
+                  )}
+                >
                   <TableHeader>
                     <TableHeaderCell
                       value={({ item }) => item.cloud}
@@ -206,7 +210,8 @@ export default class InstanceCandidates extends React.PureComponent {
 
                   {({ item }) => {
                     const s = getData('system', item);
-                    const metric = attr => (s[attr] ? s[attr].toFixed(2) : '-');
+                    const metric = attr =>
+                      s && s[attr] ? s[attr].toFixed(2) : '-';
                     const instance = attr =>
                       item.instanceResult ? item.instanceResult[attr] : '-';
                     const icon = getIcon(item);
@@ -236,7 +241,7 @@ export default class InstanceCandidates extends React.PureComponent {
                         {renderRowCell(metric('max.transmitBytesPerSecond'))}
                         {renderRowCell(metric('max.receiveBytesPerSecond'))}
                         {renderRowCell(item.coreCount)}
-                        {renderRowCell(item.memoryGb.toFixed(2))}
+                        {renderRowCell((item.memoryGb || 0).toFixed(2))}
                         {renderRowCell(instance('type'))}
                         {renderRowCell(
                           item.cloud
