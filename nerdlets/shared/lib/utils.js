@@ -61,7 +61,7 @@ export const validateRegion = (cloud, region, cloudRegions, userConfig) => {
       : optimizationDefaults[`${cloud}Region`];
 
   console.log(
-    `region does not exist ${cloud} ${region}, setting default ${defaultRegion}`
+    `${cloud} ${region} does not exist, setting default ${defaultRegion}`
   );
 
   return defaultRegion;
