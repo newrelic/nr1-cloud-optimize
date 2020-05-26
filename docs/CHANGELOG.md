@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.2.0...v1.2.1) (2020-05-25)
+
+
+### Bug Fixes
+
+* config & region update (issues caused by [#40](https://github.com/newrelic/nr1-cloud-optimize/issues/40)) ([#43](https://github.com/newrelic/nr1-cloud-optimize/issues/43)) ([0d2c2bd](https://github.com/newrelic/nr1-cloud-optimize/commit/0d2c2bd3f90195d1e3b1ae6efff1aea7304c1ef8))
+* resolve screenshot sizes ([#44](https://github.com/newrelic/nr1-cloud-optimize/issues/44)) ([81ca3d7](https://github.com/newrelic/nr1-cloud-optimize/commit/81ca3d7bf242fb4d8c9ad764755caadeb3c231bf))
+
 # [1.2.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.1.0...v1.2.0) (2020-03-30)
 
 

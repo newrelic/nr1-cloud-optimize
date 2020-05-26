@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
   Divider,
   Form,
@@ -12,13 +11,7 @@ import {
 } from 'semantic-ui-react';
 import { deleteDocument } from '../lib/utils';
 
-export default class Config extends React.PureComponent {
-  static propTypes = {
-    config: PropTypes.object,
-    handleParentState: PropTypes.func,
-    button: PropTypes.bool
-  };
-
+export default class Config extends React.Component {
   constructor(props) {
     super(props);
     this.handleConfigurator = this.handleConfigurator.bind(this);
@@ -81,6 +74,7 @@ export default class Config extends React.PureComponent {
             </Menu.Item>
           )
         }
+        closeIcon
       >
         <Modal.Header>Advanced Configuration</Modal.Header>
         <Modal.Content className="config config-dark">

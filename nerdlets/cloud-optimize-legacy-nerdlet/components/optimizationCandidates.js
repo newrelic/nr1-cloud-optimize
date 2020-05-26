@@ -269,7 +269,7 @@ export default class OptimizationCandidates extends React.Component {
                           rel="noopener noreferrer"
                           target="_blank"
                         >
-                          {instance.hostname} <Icon name="external alternate" />
+                          {instance.hostname}
                         </a>
                       </Table.Cell>
                       <Table.Cell>
@@ -285,7 +285,6 @@ export default class OptimizationCandidates extends React.Component {
                           target="_blank"
                         >
                           {instance.entityName}{' '}
-                          <Icon name="external alternate" />
                         </a>
                       </Table.Cell>
                       <Table.Cell>
