@@ -14,6 +14,7 @@ code, the source code can be found at [https://github.com/newrelic/nr1-cloud-opt
 
 **[dependencies](#dependencies)**
 
+* [async](#async)
 * [graphql-tag](#graphql-tag)
 * [graphql](#graphql)
 * [js-base64](#js-base64)
@@ -21,8 +22,11 @@ code, the source code can be found at [https://github.com/newrelic/nr1-cloud-opt
 * [prop-types](#prop-types)
 * [react-dom](#react-dom)
 * [react-json-to-csv](#react-json-to-csv)
+* [react-select](#react-select)
+* [react-toastify](#react-toastify)
 * [react](#react)
 * [semantic-ui-react](#semantic-ui-react)
+* [semver](#semver)
 
 **[devDependencies](#devDependencies)**
 
@@ -34,6 +38,33 @@ code, the source code can be found at [https://github.com/newrelic/nr1-cloud-opt
 
 
 ## dependencies
+
+### async
+
+This product includes source derived from [async](https://github.com/caolan/async) ([v3.2.0](https://github.com/caolan/async/tree/v3.2.0)), distributed under the [MIT License](https://github.com/caolan/async/blob/v3.2.0/LICENSE):
+
+```
+Copyright (c) 2010-2018 Caolan McMahon
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+```
 
 ### graphql-tag
 
@@ -269,6 +300,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+### react-select
+
+This product includes source derived from [react-select](https://github.com/JedWatson/react-select) ([v3.1.0](https://github.com/JedWatson/react-select/tree/v3.1.0)), distributed under the [MIT License](https://github.com/JedWatson/react-select/blob/v3.1.0/README.md):
+
+```
+MIT License Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### react-toastify
+
+This product includes source derived from [react-toastify](https://github.com/fkhadra/react-toastify) ([v5.5.0](https://github.com/fkhadra/react-toastify/tree/v5.5.0)), distributed under the [MIT License](https://github.com/fkhadra/react-toastify/blob/v5.5.0/LICENSE):
+
+```
+MIT License
+
+Copyright (c) 2019 Fadi Khadra
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ### react
 
 This product includes source derived from [react](https://github.com/facebook/react) ([v16.13.1](https://github.com/facebook/react/tree/v16.13.1)), distributed under the [MIT License](https://github.com/facebook/react/blob/v16.13.1/LICENSE):
@@ -324,6 +397,29 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+```
+
+### semver
+
+This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.2](https://github.com/npm/node-semver/tree/v7.3.2)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.2/LICENSE):
+
+```
+The ISC License
+
+Copyright (c) Isaac Z. Schlueter and Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ```
 
