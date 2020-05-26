@@ -7,6 +7,7 @@ import OptimizationConfigs from '../optimization-configs';
 import Setup from '../setup';
 import WorkloadCosts from '../workload-costs';
 import WorkloadOptimizer from '../optimizers/workloads';
+import FAQ from '../faq';
 
 export default class ContentContainer extends React.PureComponent {
   render() {
@@ -28,6 +29,8 @@ export default class ContentContainer extends React.PureComponent {
                 return <WorkloadCosts />;
               case 'workload-optimizer':
                 return <WorkloadOptimizer />;
+              case 'faq':
+                return <FAQ />;
               default:
                 return selectedPage;
             }

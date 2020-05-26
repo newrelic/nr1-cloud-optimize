@@ -76,9 +76,29 @@ export default class Tiles extends React.PureComponent {
                       </Card.Content>
 
                       <Card.Content extra>
-                        <Icon name="cubes" />
-                        {count}&nbsp;
-                        {count.length === 1 ? 'Entity' : 'Entities'}
+                        <span style={{ float: 'left' }}>
+                          <Icon name="cubes" />
+                          {count}&nbsp;
+                          {count.length === 1 ? 'Entity' : 'Entities'}
+                        </span>
+
+                        <span
+                          style={{
+                            float: 'right',
+                            display: o.optimizer === 'workload' ? '' : 'none'
+                          }}
+                        >
+                          <a
+                            href="https://one.newrelic.com/launcher/workloads.home"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            style={{
+                              color: '#0079BF'
+                            }}
+                          >
+                            Create Workloads
+                          </a>
+                        </span>
                       </Card.Content>
                     </Card>
                   );
