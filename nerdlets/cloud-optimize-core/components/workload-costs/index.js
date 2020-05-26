@@ -63,7 +63,10 @@ export default class WorkloadCosts extends React.PureComponent {
               <Grid.Row style={{ paddingBottom: '0px' }}>
                 <Grid.Column style={{ paddingTop: '15px' }}>
                   <Header as="h3">Workload Costs</Header>
-                  <Message floating style={{ borderRadius: 0 }}>
+                  <Message
+                    floating
+                    style={{ borderRadius: 0, backgroundColor: 'white' }}
+                  >
                     <Message.Header>Input your workload costs.</Message.Header>
                     <Message.List>
                       <Message.Item>
@@ -73,9 +76,15 @@ export default class WorkloadCosts extends React.PureComponent {
                     </Message.List>
                   </Message>
 
-                  <Message floating style={{ borderRadius: 0, zIndex: 100 }}>
-                    <Message.Header>Select your workload.</Message.Header>
-                    <Message.List>
+                  <Segment raised color="grey">
+                    <div
+                      style={{
+                        margin: '9px',
+                        padding: '10px',
+                        paddingTop: '5px'
+                      }}
+                    >
+                      <Header as="h4">Select a workload.</Header>
                       <Dropdown
                         style={{ width: '250px' }}
                         className="singledrop"
@@ -104,8 +113,8 @@ export default class WorkloadCosts extends React.PureComponent {
                           )
                         }
                       />
-                    </Message.List>
-                  </Message>
+                    </div>
+                  </Segment>
                 </Grid.Column>
               </Grid.Row>
               <Grid.Row style={{ display: selectedWorkload ? '' : 'none' }}>

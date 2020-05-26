@@ -1,3 +1,25 @@
+const MINUTE = 60000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+export const timeRangeToNrql = timeRange => {
+  if (!timeRange) {
+    return 'SINCE 7 DAYS AGO';
+  }
+
+  if (timeRange.beginTime && timeRange.endTime) {
+    return `SINCE ${timeRange.beginTime} UNTIL ${timeRange.endTime}`;
+  } else if (timeRange.begin_time && timeRange.end_time) {
+    return `SINCE ${timeRange.begin_time} UNTIL ${timeRange.end_time}`;
+  } else if (timeRange.duration <= HOUR) {
+    return `SINCE ${timeRange.duration / MINUTE} MINUTES AGO`;
+  } else if (timeRange.duration <= DAY) {
+    return `SINCE ${timeRange.duration / HOUR} HOURS AGO`;
+  } else {
+    return `SINCE ${timeRange.duration / DAY} DAYS AGO`;
+  }
+};
+
 // collect infra entities and apm entities
 export const entitySearchQuery = cursor => `{
     actor {
@@ -85,7 +107,7 @@ const apmDatabaseSlowQuery = `SELECT max(duration), average(duration), latest(ca
                                 WHERE category = 'datastore' OR nr.categories LIKE '%datastore%' AND db.statement IS NOT NULL FACET db.statement LIMIT 100`;
 
 // core query
-export const getEntityDataQuery = `query ($guids: [EntityGuid]!) {
+export const getEntityDataQuery = timeRange => `query ($guids: [EntityGuid]!) {
   actor {
     entities(guids: $guids) {
       type
@@ -101,30 +123,42 @@ export const getEntityDataQuery = `query ($guids: [EntityGuid]!) {
       ... on GenericInfrastructureEntity {
         guid
         name
-        vsphereVmSample: nrdbQuery(nrql: "${vSphereVmQuery}", timeout: 30000) {
+        vsphereVmSample: nrdbQuery(nrql: "${vSphereVmQuery} ${timeRangeToNrql(
+  timeRange
+)}", timeout: 30000) {
           results
         }
-        vsphereHostSample: nrdbQuery(nrql: "${vSphereHostQuery}", timeout: 30000) {
+        vsphereHostSample: nrdbQuery(nrql: "${vSphereHostQuery} ${timeRangeToNrql(
+  timeRange
+)}", timeout: 30000) {
           results
         }
       }
       ... on ApmApplicationEntity {
         guid
         name
-        apmInfraData: nrdbQuery(nrql: "${apmInfraDataQuery}", timeout: 30000) {
+        apmInfraData: nrdbQuery(nrql: "${apmInfraDataQuery} ${timeRangeToNrql(
+  timeRange
+)}", timeout: 30000) {
           results
         }
-        apmDatabaseSlowQueryData: nrdbQuery(nrql: "${apmDatabaseSlowQuery}", timeout: 30000) {
+        apmDatabaseSlowQueryData: nrdbQuery(nrql: "${apmDatabaseSlowQuery} ${timeRangeToNrql(
+  timeRange
+)}", timeout: 30000) {
           results
         }
       }
       ... on InfrastructureHostEntity {
         guid
         name
-        systemSample: nrdbQuery(nrql: "${infraSystemSampleQuery}", timeout: 30000) {
+        systemSample: nrdbQuery(nrql: "${infraSystemSampleQuery} ${timeRangeToNrql(
+  timeRange
+)}", timeout: 30000) {
           results
         }
-        networkSample: nrdbQuery(nrql: "${infraNetworkSampleQuery}", timeout: 30000) {
+        networkSample: nrdbQuery(nrql: "${infraNetworkSampleQuery} ${timeRangeToNrql(
+  timeRange
+)}", timeout: 30000) {
           results
         }
       }

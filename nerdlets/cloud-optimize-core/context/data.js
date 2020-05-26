@@ -2,12 +2,14 @@
 no-console: 0,
 no-async-promise-executor: 0,
 require-atomic-updates: 0,
-no-unused-vars: 0
+no-unused-vars: 0,
+react/no-did-update-set-state: 0
 */
 
 import React, { Component } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { NerdGraphQuery } from 'nr1';
+import { Icon } from 'semantic-ui-react';
 import {
   chunk,
   buildGroupByOptions,
@@ -61,6 +63,20 @@ const ignoreTags = [
   'instance_id',
   'private'
 ];
+
+export const loadingMsg = msg => (
+  <>
+    <Icon name="spinner" loading />
+    {msg}
+  </>
+);
+
+export const successMsg = msg => (
+  <>
+    <Icon name="check" />
+    {msg}
+  </>
+);
 
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
@@ -162,7 +178,9 @@ export class DataProvider extends Component {
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
       selectedGroup: null,
-      cloudRegions: {}
+      cloudRegions: {},
+      timeRange: null,
+      timepickerEnabled: false
     };
   }
 
@@ -180,6 +198,21 @@ export class DataProvider extends Component {
       // handle incoming props with postProcessEntities, else run fetchEntities for default view
       this.fetchEntities();
     });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { timepickerEnabled } = this.state;
+    if (
+      this.props.platformState &&
+      prevProps.platformState &&
+      timepickerEnabled &&
+      prevProps.platformState.timeRange !== this.props.platformState.timeRange
+    ) {
+      this.setState({ timeRange: this.props.platformState.timeRange }, () => {
+        console.log('post process with time');
+        this.postProcessEntities();
+      });
+    }
   }
 
   fetchCloudRegions = () => {
@@ -227,12 +260,21 @@ export class DataProvider extends Component {
   };
 
   postProcessEntities = async guids => {
-    this.setState({
-      postProcessing: true,
-      entityDataProgress: 0,
-      accountConfigProgress: 0,
-      cloudPricingProgress: 0
-    });
+    this.setState(
+      {
+        postProcessing: true,
+        entityDataProgress: 0,
+        accountConfigProgress: 0,
+        cloudPricingProgress: 0
+      },
+      () => {
+        toast.info(loadingMsg('Processing entities...'), {
+          autoClose: false,
+          containerId: 'C',
+          toastId: 'processEntities'
+        });
+      }
+    );
 
     let { rawEntities } = this.state;
     rawEntities = [...rawEntities, ...(guids || [])];
@@ -274,15 +316,25 @@ export class DataProvider extends Component {
     const groupedEntities = _.groupBy(entities, e => e.type);
     const groupByOptions = buildGroupByOptions(entities);
 
-    this.setState({
-      entities,
-      groupedEntities,
-      workloadEntities,
-      originalWorkloadEntities: workloadEntities,
-      entityMetricTotals,
-      postProcessing: false,
-      groupByOptions
-    });
+    this.setState(
+      {
+        entities,
+        groupedEntities,
+        workloadEntities,
+        originalWorkloadEntities: workloadEntities,
+        entityMetricTotals,
+        postProcessing: false,
+        groupByOptions
+      },
+      () => {
+        toast.update('processEntities', {
+          autoClose: 3000,
+          type: toast.TYPE.SUCCESS,
+          containerId: 'C',
+          render: successMsg('Finished processing entities.')
+        });
+      }
+    );
   };
 
   // refresh workloads
@@ -840,6 +892,7 @@ export class DataProvider extends Component {
 
   // collect entity data
   getEntityData = async nonWorkloadEntities => {
+    const { timeRange } = this.state;
     // chunk entity guids
     const guidChunks = chunk(
       nonWorkloadEntities.map(e => e.guid),
@@ -853,7 +906,7 @@ export class DataProvider extends Component {
       chunksCompleted++;
 
       NerdGraphQuery.query({
-        query: getEntityDataQuery,
+        query: getEntityDataQuery(timeRange),
         variables: { guids: task.chunk }
       }).then(v => {
         const entities = (((v || {}).data || {}).actor || {}).entities || [];
@@ -1318,17 +1371,13 @@ export class DataProvider extends Component {
           getWorkloadDocs: this.getWorkloadDocs
         }}
       >
-        <ToastContainer
+        {/* <ToastContainer
           enableMultiContainer
           containerId="B"
           position={toast.POSITION.TOP_RIGHT}
-        />
+        /> */}
 
-        <ToastContainer
-          enableMultiContainer
-          containerId="C"
-          position={toast.POSITION.BOTTOM_RIGHT}
-        />
+        <ToastContainer containerId="C" position="bottom-right" />
 
         {children}
       </DataContext.Provider>

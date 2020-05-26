@@ -6,7 +6,10 @@ import Select from 'react-select';
 import { DataConsumer } from '../../context/data';
 import CostPeriod from './cost-period';
 import FilterBar from './filter-bar';
-// import { Popup, Icon } from 'semantic-ui-react';
+import { Radio, Popup } from 'semantic-ui-react';
+import { toast } from 'react-toastify';
+
+toast.configure();
 
 export default class MenuBar extends React.PureComponent {
   constructor(props) {
@@ -24,7 +27,9 @@ export default class MenuBar extends React.PureComponent {
           fetchingEntities,
           postProcessing,
           updateDataState,
-          selectedPage
+          selectedPage,
+          timepickerEnabled,
+          postProcessEntities
         }) => {
           const isLoading = fetchingEntities || postProcessing;
 
@@ -94,24 +99,39 @@ export default class MenuBar extends React.PureComponent {
                   />
                 </div>
 
-                {/* {selectedMigration && migrationId ? (
-                  <Popup
-                    trigger={
-                      <span>
-                        <Icon name="tag" color="black" size="large" circular />
-                        <b>Migration ID:</b> {migrationId}&nbsp;{' '}
-                        <b>Target Cloud:</b> {targetCloud}:&nbsp;{targetRegion}
-                      </span>
-                    }
-                    content="Tag your cloud instances with this MigrationId tag for automatic detection and compliance."
-                    position="top center"
-                  />
-                ) : (
-                  ''
-                )} */}
+                <CostPeriod />
 
                 <div className="flex-push" />
-                <CostPeriod />
+                <Popup
+                  basic
+                  content="After the Time Picker is enabled select a time range above to evalute your optimization results. Disabling resets to 7 days."
+                  trigger={
+                    <Radio
+                      toggle
+                      label="Time Picker"
+                      checked={timepickerEnabled}
+                      onChange={() => {
+                        updateDataState({
+                          timepickerEnabled: !timepickerEnabled
+                        });
+                        if (!timepickerEnabled === false) {
+                          postProcessEntities();
+                          toast.info('Resetting to 7 day window.', {
+                            containerId: 'C'
+                          });
+                        } else {
+                          toast.info(
+                            'Time Picker enabled, please select a time range to update.',
+                            {
+                              containerId: 'C'
+                            }
+                          );
+                        }
+                      }}
+                      style={{ paddingRight: '10px' }}
+                    />
+                  }
+                />
 
                 {/*  <RefreshSelector /> */}
               </div>

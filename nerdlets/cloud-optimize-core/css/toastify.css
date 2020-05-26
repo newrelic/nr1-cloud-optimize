@@ -16,10 +16,10 @@
   left: 50%;
   margin-left: -160px;
 }
-.Toastify__toast-container--top-right {
+/* .Toastify__toast-container--top-right {
   top: 1em;
   right: 1em;
-}
+} */
 .Toastify__toast-container--bottom-left {
   bottom: 1em;
   left: 1em;

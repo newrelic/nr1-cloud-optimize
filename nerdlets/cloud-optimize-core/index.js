@@ -4,7 +4,7 @@ no-console: 0,
 */ // --> OFF
 
 import React from 'react';
-import { AutoSizer } from 'nr1';
+import { AutoSizer, PlatformStateContext } from 'nr1';
 import CloudOptimize from './components/cloud-optimize';
 import pkg from '../../package.json';
 import { DataProvider } from './context/data';
@@ -26,9 +26,13 @@ export default class CloudOptimizeCore extends React.Component {
     return (
       <AutoSizer>
         {({ height }) => (
-          <DataProvider>
-            <CloudOptimize height={height - 60} />
-          </DataProvider>
+          <PlatformStateContext.Consumer>
+            {platformState => (
+              <DataProvider platformState={platformState}>
+                <CloudOptimize height={height - 96} />
+              </DataProvider>
+            )}
+          </PlatformStateContext.Consumer>
         )}
       </AutoSizer>
     );

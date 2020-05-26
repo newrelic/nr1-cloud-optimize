@@ -17,17 +17,31 @@ export default class CostPeriod extends React.PureComponent {
 
     return (
       <DataConsumer>
-        {({ costPeriod, updateDataState }) => (
-          <div className="react-select-input-group" style={{ width: '125px' }}>
-            <label>COST PERIOD</label>
-            <Select
-              options={timeBucketOptions}
-              onChange={data => updateDataState({ costPeriod: data })}
-              value={costPeriod}
-              classNamePrefix="react-select"
-            />
-          </div>
-        )}
+        {({
+          costPeriod,
+          updateDataState,
+          fetchingEntities,
+          postProcessing,
+          selectedPage
+        }) => {
+          const isLoading = fetchingEntities || postProcessing;
+
+          return (
+            <div
+              className="react-select-input-group"
+              style={{ width: '125px' }}
+            >
+              <label>COST PERIOD</label>
+              <Select
+                isDisabled={isLoading || selectedPage === 'home'}
+                options={timeBucketOptions}
+                onChange={data => updateDataState({ costPeriod: data })}
+                value={costPeriod}
+                classNamePrefix="react-select"
+              />
+            </div>
+          );
+        }}
       </DataConsumer>
     );
   }
