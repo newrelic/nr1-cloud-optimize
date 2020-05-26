@@ -2,11 +2,7 @@
   "private": true,
   "name": "nr1-cloud-optimize",
   "description": "Nerdpack cloud-optimize",
-<<<<<<< HEAD
   "version": "2.0.0",
-=======
-  "version": "1.2.1",
->>>>>>> 5471c40cf5f9d21cc4ca54e677eeea7a60fc626b
   "scripts": {
     "start": "nr1 nerdpack:serve",
     "test": "exit 0",
