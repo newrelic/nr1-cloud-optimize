@@ -49,7 +49,7 @@ export const processEntitySamples = e => {
       e.cloud = 'azure';
       e.cloudRegion = e.systemSample['latest.regionName'];
     } else if (e.systemSample['latest.zone']) {
-      e.cloud = 'gcp';
+      e.cloud = 'google';
       e.cloudRegion = e.systemSample['latest.zone'];
     } else if (e.systemSample['latest.regionId']) {
       e.cloud = 'alibaba';

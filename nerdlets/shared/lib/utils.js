@@ -23,36 +23,26 @@ export const validateRegion = (cloud, region, cloudRegions, userConfig) => {
   const regionExists = r => {
     for (let z = 0; z < cloudRegions[cloud].length; z++) {
       if (r === cloudRegions[cloud][z].id) {
-        return true;
+        return cloudRegions[cloud][z].id;
       }
     }
     return false;
   };
 
-  switch (cloud) {
-    case 'amazon': {
-      const re = /^\w+-\w+-\d+$/;
-      if (!re.test(region)) {
-        console.log(`invalid ${cloud} region ${region}`);
-        const rSplit = region.split('-');
-        if (rSplit.length === 3) {
-          const newRegion = `${rSplit[0]}-${rSplit[1]}-${rSplit[2].replace(
-            /[^\d-]/g,
-            ''
-          )}`;
+  // region fallbacks
+  // standard check
+  const standardCheck = regionExists(region);
+  if (standardCheck) return standardCheck;
 
-          if (regionExists(newRegion)) {
-            console.log(`new region set ${newRegion}`);
-            return newRegion;
-          }
-        }
-      }
-      break;
+  // zone to regions
+  // sometimes regions with zones are returned which can be several characters longer from the region
+  // attempt to match the primary region
+  for (let z = 1; z < 5; z++) {
+    const newRegion = regionExists(region.slice(0, z * -1));
+    if (newRegion) {
+      console.log(`setting ${cloud} region ${region} to ${newRegion}`);
+      return newRegion;
     }
-  }
-
-  if (regionExists(region)) {
-    return region;
   }
 
   const defaultRegion =
