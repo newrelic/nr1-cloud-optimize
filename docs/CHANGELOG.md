@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.2.1...v1.3.0) (2020-05-29)
+
+
+### Bug Fixes
+
+* add cloud region validation ([104a8de](https://github.com/newrelic/nr1-cloud-optimize/commit/104a8de65722044581cb0adf35a95f7e1206d764))
+
+
+### Features
+
+* Switch CI to GitHub Actions ([#47](https://github.com/newrelic/nr1-cloud-optimize/issues/47)) ([7443dd9](https://github.com/newrelic/nr1-cloud-optimize/commit/7443dd9e320d7fccfd1c2d9beb34d839e46896ed))
+
 ## [1.2.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.2.0...v1.2.1) (2020-05-25)
 
 
