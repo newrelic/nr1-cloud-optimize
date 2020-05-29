@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.0.0...v2.1.0) (2020-05-29)
+
+
+### Features
+
+* trigger semantic-release of minor version ([72cd47f](https://github.com/newrelic/nr1-cloud-optimize/commit/72cd47f29dcbdd572721bf47f0c056c40362f8f4))
+
 # [2.0.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.3.0...v2.0.0) (2020-05-29)
 
 
