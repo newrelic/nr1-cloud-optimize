@@ -1,0 +1,138 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+  repository_dispatch:
+    types: [pull-request]
+
+jobs:
+  checkout-and-build-pr:
+    name: checkout-and-build-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v1
+        env:
+          cache-name: node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install NR1 CLI
+        run: curl -s https://cli.nr-ext.net/installer.sh | sudo bash
+
+      - name: NR1 Nerdpack Build
+        run: |
+          nr1 nerdpack:build
+
+  eslint:
+    name: eslint
+    needs: checkout-and-build-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v1
+        env:
+          cache-name: node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run eslint-check and generate report
+        id: eslint-check
+        run: |
+          npm run eslint-check -- --output-file eslint_report.json --format json
+        continue-on-error: true
+
+      - name: Annotate Lint Results
+        uses: ataylorme/eslint-annotate-action@1.0.4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          report-json: eslint_report.json
+        continue-on-error: true
+
+      - name: Check eslint-check outcome
+        if: steps.eslint-check.outcome != 'success'
+        run: |
+          echo "::error::eslint-check failed. View output of _Run eslint-check and generate report_ step"
+          exit 1
+
+  test:
+    name: test
+    needs: checkout-and-build-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v1
+        env:
+          cache-name: node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run npm test
+        run: npm test
+
+  validate-nerdpack:
+    name: validate nerdpack
+    needs: checkout-and-build-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Validate Open Source Files
+        uses: newrelic/validate-nerdpack-action@v1.0.2
+
+      - name: Install NR1 CLI
+        run: |
+          curl -s https://cli.nr-ext.net/installer.sh | sudo bash
+
+      - name: Validate Nerdpack Schema
+        run: |
+          nr1 nerdpack:validate
