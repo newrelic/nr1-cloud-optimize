@@ -1,3 +1,22 @@
+# [2.0.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.3.0...v2.0.0) (2020-05-29)
+
+
+### Features
+
+* trigger semantic-release of major version ([162d6a1](https://github.com/newrelic/nr1-cloud-optimize/commit/162d6a193d5f2c583ac54e1e898a1b7da113fb99))
+
+
+### BREAKING CHANGES
+
+* Incrementing release to v2.0.0
+
+- Refactor core code base
+- Support grouping by entity tags
+- Refresh UX
+- Add Workloads Optimizer
+- Multi level optimization configuration
+- Optionally leverage the time picker to optimize over any time frame
+
 # [1.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v1.2.1...v1.3.0) (2020-05-29)
 
 
