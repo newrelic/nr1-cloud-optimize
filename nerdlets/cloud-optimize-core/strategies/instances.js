@@ -189,7 +189,12 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
     }
     // end optimized results
 
-    if (!e.unableToGetOnPremPrice && matchedPrice > 0 && optimizedPrice >= 0) {
+    if (
+      !e.unableToGetOnPremPrice &&
+      matchedPrice > 0 &&
+      optimizedPrice !== null &&
+      optimizedPrice >= 0
+    ) {
       potentialSavings = matchedPrice - optimizedPrice;
       entityMetricTotals.instances.potentialSavings += potentialSavings;
       e.potentialSavings = potentialSavings;
@@ -197,7 +202,13 @@ export const addInstanceCostTotal = (entityMetricTotals, e) => {
       e.optimizedPrice = optimizedPrice;
 
       e.currentSpend = matchedPrice;
-      e.optimizedPrice = optimizedPrice;
+    } else if (
+      !e.unableToGetOnPremPrice &&
+      matchedPrice > 0 &&
+      optimizedPrice === null
+    ) {
+      // assign current cost for non-optimized instances
+      e.optimizedSpend = matchedPrice;
     }
   }
 
