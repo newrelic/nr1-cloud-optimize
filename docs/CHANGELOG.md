@@ -1,3 +1,11 @@
+## [2.1.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.0...v2.1.1) (2020-07-24)
+
+
+### Bug Fixes
+
+* instance candidates, chore: bump packages ([b7eaf78](https://github.com/newrelic/nr1-cloud-optimize/commit/b7eaf788cdc323f01247f4d01d166c00721e722f))
+* package.json & package-lock.json to reduce vulnerabilities ([#51](https://github.com/newrelic/nr1-cloud-optimize/issues/51)) ([7e11c14](https://github.com/newrelic/nr1-cloud-optimize/commit/7e11c14e46ef1abaf3bf7d935caeafff5847d5a7))
+
 # [2.1.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.0.0...v2.1.0) (2020-05-29)
 
 
