@@ -688,9 +688,17 @@ export class DataProvider extends Component {
     }
   };
 
-  getCloudInstances = async (cloud, optimizationConfig, cpu, mem, basePrice) => {
+  getCloudInstances = async (
+    cloud,
+    optimizationConfig,
+    cpu,
+    mem,
+    basePrice
+  ) => {
     const defaultCloud =
-      cloud || optimizationConfig.defaultCloud || optimizationDefaults.defaultCloud;
+      cloud ||
+      optimizationConfig.defaultCloud ||
+      optimizationDefaults.defaultCloud;
     const defaultRegion =
       optimizationConfig[`${defaultCloud}Region`] ||
       optimizationDefaults[`${defaultCloud}Region`];
