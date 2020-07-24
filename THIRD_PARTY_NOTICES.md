@@ -126,7 +126,7 @@ SOFTWARE.
 
 ### js-base64
 
-This product includes source derived from [js-base64](https://github.com/dankogai/js-base64) ([v2.5.2](https://github.com/dankogai/js-base64/tree/v2.5.2)), distributed under the [BSD-3-Clause License](https://github.com/dankogai/js-base64/blob/v2.5.2/LICENSE.md):
+This product includes source derived from [js-base64](https://github.com/dankogai/js-base64) ([v2.6.3](https://github.com/dankogai/js-base64/tree/v2.6.3)), distributed under the [BSD-3-Clause License](https://github.com/dankogai/js-base64/blob/v2.6.3/LICENSE.md):
 
 ```
 Copyright (c) 2014, Dan Kogai
@@ -161,7 +161,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### lodash
 
-This product includes source derived from [lodash](https://github.com/lodash/lodash) ([v4.17.15](https://github.com/lodash/lodash/tree/v4.17.15)), distributed under the [MIT License](https://github.com/lodash/lodash/blob/v4.17.15/LICENSE):
+This product includes source derived from [lodash](https://github.com/lodash/lodash) ([v4.17.19](https://github.com/lodash/lodash/tree/v4.17.19)), distributed under the [MIT License](https://github.com/lodash/lodash/blob/v4.17.19/LICENSE):
 
 ```
 Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
