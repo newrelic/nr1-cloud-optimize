@@ -7,7 +7,7 @@ export default class CloudOptimize extends React.Component {
   render() {
     const { height } = this.props;
     return (
-      <div>
+      <div style={{ minWidth: "665px" }}>
         <MenuBar />
         <div style={{ float: 'left' }}>
           <LeftMenu height={height} />

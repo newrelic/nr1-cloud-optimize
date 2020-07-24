@@ -41,7 +41,8 @@ export default class ContentContainer extends React.PureComponent {
               style={{
                 height,
                 overflowY: 'scroll',
-                overflowX: 'hidden'
+                overflowX: 'hidden',
+                minWidth: '451px'
               }}
             >
               <div
