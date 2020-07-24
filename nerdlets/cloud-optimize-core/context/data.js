@@ -656,6 +656,7 @@ export class DataProvider extends Component {
       } else if (!e.cloud) {
         if (!isNaN(e.coreCount) && !isNaN(e.memoryGb)) {
           e.matchedInstances = await this.getCloudInstances(
+            e.cloud,
             optimizationConfig,
             e.coreCount,
             Math.round(e.memoryGb)
@@ -687,9 +688,9 @@ export class DataProvider extends Component {
     }
   };
 
-  getCloudInstances = async (optimizationConfig, cpu, mem, basePrice) => {
+  getCloudInstances = async (cloud, optimizationConfig, cpu, mem, basePrice) => {
     const defaultCloud =
-      optimizationConfig.defaultCloud || optimizationDefaults.defaultCloud;
+      cloud || optimizationConfig.defaultCloud || optimizationDefaults.defaultCloud;
     const defaultRegion =
       optimizationConfig[`${defaultCloud}Region`] ||
       optimizationDefaults[`${defaultCloud}Region`];
@@ -1313,6 +1314,7 @@ export class DataProvider extends Component {
       }
 
       optimizationData.matchedInstances = await this.getCloudInstances(
+        cloud,
         optimizationConfig,
         cpuCount,
         memGb,
