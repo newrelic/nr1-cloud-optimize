@@ -97,7 +97,7 @@ SOFTWARE.
 
 ### graphql
 
-This product includes source derived from [graphql](https://github.com/graphql/graphql-js) ([v14.6.0](https://github.com/graphql/graphql-js/tree/v14.6.0)), distributed under the [MIT License](https://github.com/graphql/graphql-js/blob/v14.6.0/LICENSE):
+This product includes source derived from [graphql](https://github.com/graphql/graphql-js) ([v14.7.0](https://github.com/graphql/graphql-js/tree/v14.7.0)), distributed under the [MIT License](https://github.com/graphql/graphql-js/blob/v14.7.0/LICENSE):
 
 ```
 MIT License
