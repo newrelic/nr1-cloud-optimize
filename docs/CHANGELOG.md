@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.1...v2.1.2) (2020-08-24)
+
+
+### Bug Fixes
+
+* upgrade graphql from 14.6.0 to 14.7.0 ([#57](https://github.com/newrelic/nr1-cloud-optimize/issues/57)) ([25af685](https://github.com/newrelic/nr1-cloud-optimize/commit/25af6852d49536d53caa652b1249aacb032eb7d2))
+
 ## [2.1.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.0...v2.1.1) (2020-07-24)
 
 
