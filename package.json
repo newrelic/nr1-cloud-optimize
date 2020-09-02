@@ -19,8 +19,6 @@
     "js-base64": "^2.6.0",
     "lodash": "^4.17.19",
     "prop-types": "^15.6.2",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
     "react-json-to-csv": "^1.0.4",
     "react-select": "^3.0.8",
     "react-toastify": "^5.5.0",
@@ -33,10 +31,12 @@
     "not dead"
   ],
   "devDependencies": {
-    "@newrelic/eslint-plugin-newrelic": "^0.3.0",
-    "@semantic-release/changelog": "^3.0.5",
-    "@semantic-release/git": "^7.0.18",
+    "@newrelic/eslint-plugin-newrelic": "^0.3.1",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
     "eslint": "^6.8.0",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "react": "16.6.3",
+    "react-dom": "16.6.3"
   }
 }
