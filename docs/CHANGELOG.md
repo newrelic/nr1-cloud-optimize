@@ -1,3 +1,10 @@
+## [2.1.4](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.3...v2.1.4) (2020-09-02)
+
+
+### Bug Fixes
+
+* test release, changelog, and repolinter with new default branch ([71cc6e9](https://github.com/newrelic/nr1-cloud-optimize/commit/71cc6e9ff7237765ac50cdaac13b6feb85e2ea1d))
+
 ## [2.1.3](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.2...v2.1.3) (2020-09-02)
 
 
