@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Mon Aug 24 2020 00:44:28 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Wed Sep 02 2020 20:16:50 GMT+0000 (Coordinated Universal Time)",
   "projectName": "nr1-cloud-optimize",
   "projectUrl": "https://github.com/newrelic/nr1-cloud-optimize",
   "includeDev": true,
@@ -74,17 +74,6 @@
       "licenseUrl": "https://github.com/facebook/prop-types/blob/v15.7.2/LICENSE",
       "licenseTextSource": "file"
     },
-    "react-dom@16.13.1": {
-      "name": "react-dom",
-      "version": "16.13.1",
-      "range": "^16.6.3",
-      "licenses": "MIT",
-      "repoUrl": "https://github.com/facebook/react",
-      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.13.1",
-      "licenseFile": "node_modules/react-dom/LICENSE",
-      "licenseUrl": "https://github.com/facebook/react/blob/v16.13.1/LICENSE",
-      "licenseTextSource": "file"
-    },
     "react-json-to-csv@1.0.4": {
       "name": "react-json-to-csv",
       "version": "1.0.4",
@@ -125,17 +114,6 @@
       "email": "fdkhadra@gmail.com",
       "url": "https://fkhadra.github.io"
     },
-    "react@16.13.1": {
-      "name": "react",
-      "version": "16.13.1",
-      "range": "^16.6.3",
-      "licenses": "MIT",
-      "repoUrl": "https://github.com/facebook/react",
-      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.13.1",
-      "licenseFile": "node_modules/react/LICENSE",
-      "licenseUrl": "https://github.com/facebook/react/blob/v16.13.1/LICENSE",
-      "licenseTextSource": "file"
-    },
     "semantic-ui-react@0.88.2": {
       "name": "semantic-ui-react",
       "version": "0.88.2",
@@ -162,40 +140,40 @@
     }
   },
   "devDependencies": {
-    "@newrelic/eslint-plugin-newrelic@0.3.0": {
+    "@newrelic/eslint-plugin-newrelic@0.3.1": {
       "name": "@newrelic/eslint-plugin-newrelic",
-      "version": "0.3.0",
-      "range": "^0.3.0",
+      "version": "0.3.1",
+      "range": "^0.3.1",
       "licenses": "Apache-2.0",
       "repoUrl": "https://github.com/NewRelic/eslint-plugin-newrelic",
-      "versionedRepoUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/tree/v0.3.0",
+      "versionedRepoUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/tree/v0.3.1",
       "licenseFile": "node_modules/@newrelic/eslint-plugin-newrelic/LICENSE",
-      "licenseUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/blob/v0.3.0/LICENSE",
+      "licenseUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/blob/v0.3.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "New Relic"
     },
-    "@semantic-release/changelog@3.0.6": {
+    "@semantic-release/changelog@5.0.1": {
       "name": "@semantic-release/changelog",
-      "version": "3.0.6",
-      "range": "^3.0.5",
+      "version": "5.0.1",
+      "range": "^5.0.1",
       "licenses": "MIT",
       "repoUrl": "https://github.com/semantic-release/changelog",
-      "versionedRepoUrl": "https://github.com/semantic-release/changelog/tree/v3.0.6",
+      "versionedRepoUrl": "https://github.com/semantic-release/changelog/tree/v5.0.1",
       "licenseFile": "node_modules/@semantic-release/changelog/LICENSE",
-      "licenseUrl": "https://github.com/semantic-release/changelog/blob/v3.0.6/LICENSE",
+      "licenseUrl": "https://github.com/semantic-release/changelog/blob/v5.0.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Pierre Vanduynslager",
       "url": "https://github.com/pvdlg"
     },
-    "@semantic-release/git@7.0.18": {
+    "@semantic-release/git@9.0.0": {
       "name": "@semantic-release/git",
-      "version": "7.0.18",
-      "range": "^7.0.18",
+      "version": "9.0.0",
+      "range": "^9.0.0",
       "licenses": "MIT",
       "repoUrl": "https://github.com/semantic-release/git",
-      "versionedRepoUrl": "https://github.com/semantic-release/git/tree/v7.0.18",
+      "versionedRepoUrl": "https://github.com/semantic-release/git/tree/v9.0.0",
       "licenseFile": "node_modules/@semantic-release/git/LICENSE",
-      "licenseUrl": "https://github.com/semantic-release/git/blob/v7.0.18/LICENSE",
+      "licenseUrl": "https://github.com/semantic-release/git/blob/v9.0.0/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Pierre Vanduynslager",
       "url": "https://github.com/pvdlg"
@@ -224,6 +202,28 @@
       "licenseUrl": "https://github.com/prettier/prettier/blob/v1.19.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "James Long"
+    },
+    "react-dom@16.6.3": {
+      "name": "react-dom",
+      "version": "16.6.3",
+      "range": "16.6.3",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/facebook/react",
+      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.6.3",
+      "licenseFile": "node_modules/react-dom/LICENSE",
+      "licenseUrl": "https://github.com/facebook/react/blob/v16.6.3/LICENSE",
+      "licenseTextSource": "file"
+    },
+    "react@16.6.3": {
+      "name": "react",
+      "version": "16.6.3",
+      "range": "16.6.3",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/facebook/react",
+      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.6.3",
+      "licenseFile": "node_modules/react/LICENSE",
+      "licenseUrl": "https://github.com/facebook/react/blob/v16.6.3/LICENSE",
+      "licenseTextSource": "file"
     }
   }
 }
