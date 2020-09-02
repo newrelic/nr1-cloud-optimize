@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.2...v2.1.3) (2020-09-02)
+
+
+### Bug Fixes
+
+* change master to main ([39820a0](https://github.com/newrelic/nr1-cloud-optimize/commit/39820a04e36426e5bf77880976a85dfb1223e2f4))
+
 ## [2.1.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.1...v2.1.2) (2020-08-24)
 
 
