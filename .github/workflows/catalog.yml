@@ -1,0 +1,38 @@
+name: Catalog
+
+on:
+  workflow_dispatch:
+    inputs:
+      appName:
+        description: "NR1 Nerdpack Name"
+        required: true
+      version:
+        description: "Version to update"
+        required: true
+      ref:
+        description: "Commit SHA to update the submodule to"
+        required: true
+      user:
+        description: "User who initiated the deployment"
+        required: true
+jobs:
+  job-check-workflow-dispatch-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "App Name: ${{ github.event.inputs.appName }}"
+          echo "Version: ${{ github.event.inputs.version }}"
+          echo "ref: ${{ github.event.inputs.ref }}"
+          echo "User: ${{ github.event.inputs.user }}"
+
+  job-trigger-catalog-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invoke nr1-catalog PR workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Generate Catalog PR
+          repo: newrelic/nr1-catalog
+          token: ${{ secrets.OPENSOURCE_BOT_TOKEN }}
+          ref: master
+          inputs: '{ "appName": "${{ github.event.inputs.appName }}", "version": "${{ github.event.inputs.version }}", "ref": "${{ github.event.inputs.ref }}", "user": "${{ github.event.inputs.user }}" }'
