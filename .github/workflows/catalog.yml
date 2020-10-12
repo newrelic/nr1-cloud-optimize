@@ -15,15 +15,24 @@ on:
       user:
         description: "User who initiated the deployment"
         required: true
+      action:
+        description: "Action to take with submodule. Possible values: add, update"
+        required: true
+        default: "update"
+      url:
+        description: "If action == `add`, must supply URL of repo"
+        required: false
 jobs:
   job-check-workflow-dispatch-inputs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "App Name: ${{ github.event.inputs.appName }}"
-          echo "Version: ${{ github.event.inputs.version }}"
+          echo "appName: ${{ github.event.inputs.appName }}"
+          echo "version: ${{ github.event.inputs.version }}"
           echo "ref: ${{ github.event.inputs.ref }}"
-          echo "User: ${{ github.event.inputs.user }}"
+          echo "user: ${{ github.event.inputs.user }}"
+          echo "action: ${{ github.event.inputs.action }}"
+          echo "url: ${{ github.event.inputs.url }}"
 
   job-trigger-catalog-workflow:
     runs-on: ubuntu-latest
@@ -35,4 +44,4 @@ jobs:
           repo: newrelic/nr1-catalog
           token: ${{ secrets.OPENSOURCE_BOT_TOKEN }}
           ref: master
-          inputs: '{ "appName": "${{ github.event.inputs.appName }}", "version": "${{ github.event.inputs.version }}", "ref": "${{ github.event.inputs.ref }}", "user": "${{ github.event.inputs.user }}" }'
+          inputs: '{ "appName": "${{ github.event.inputs.appName }}", "version": "${{ github.event.inputs.version }}", "ref": "${{ github.event.inputs.ref }}", "user": "${{ github.event.inputs.user }}", "action": "${{ github.event.inputs.action }}", "url": "${{ github.event.inputs.url }}" }'
