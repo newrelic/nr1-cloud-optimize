@@ -20,7 +20,7 @@
     "lodash": "^4.17.19",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
-    "react-dom": "^16.6.3",
+    "react-dom": "^16.14.0",
     "react-json-to-csv": "^1.0.4",
     "react-select": "^3.0.8",
     "react-toastify": "^5.5.0",
