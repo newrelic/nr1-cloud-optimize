@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.4...v2.2.0) (2020-11-24)
+
+
+### Features
+
+* export csv, improve instance matching ([3e8793b](https://github.com/newrelic/nr1-cloud-optimize/commit/3e8793bc71924a02074debbf286555fd3db16bbc))
+
 ## [2.1.4](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.3...v2.1.4) (2020-09-02)
 
 
