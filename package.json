@@ -9,6 +9,10 @@
     "eslint-check": "eslint nerdlets/",
     "eslint-fix": "eslint nerdlets/ --fix"
   },
+  "ids":{
+    "o": "39d3665c-8670-4f9f-aa79-1a18f23d3960",
+    "dv2":"ec734258-b5ca-41b2-84ef-d97352e0ea19"
+  },
   "bugs": {
     "email": "opensource@newrelic.com"
   },

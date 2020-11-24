@@ -646,12 +646,17 @@ export class DataProvider extends Component {
   processEntity = async (e, optimizationConfig, entityMetricTotals) => {
     // if system sample or vsphere get instance pricing
     if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
-      if (e.cloud && e.cloudRegion && e.systemSample['latest.instanceType']) {
+      const selectedType =
+        e.systemSample['latest.instanceType'] ||
+        e['tag.instanceType'] ||
+        e['tag.type'];
+
+      if (e.cloud && e.cloudRegion && selectedType && selectedType !== 'HOST') {
         // assess cloud instance
         e.instanceResult = await this.getInstanceCloudPricing(
           e.cloud,
           e.cloudRegion,
-          e.systemSample['latest.instanceType']
+          selectedType
         );
       } else if (!e.cloud) {
         if (!isNaN(e.coreCount) && !isNaN(e.memoryGb)) {
