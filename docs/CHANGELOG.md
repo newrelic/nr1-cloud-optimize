@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.2.0...v2.3.0) (2020-11-25)
+
+
+### Features
+
+* use cpusPerVm & memPerVm for candidates ([5842126](https://github.com/newrelic/nr1-cloud-optimize/commit/5842126b5f5b289372ad1fbaef1558bbcba7aae5))
+
 # [2.2.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.4...v2.2.0) (2020-11-24)
 
 
