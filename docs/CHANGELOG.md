@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.3.0...v2.4.0) (2020-11-25)
+
+
+### Features
+
+* allow user entity search query ([e2dd42e](https://github.com/newrelic/nr1-cloud-optimize/commit/e2dd42edc1a01abf63e9b90b1fce4797e8de68e5))
+
 # [2.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.2.0...v2.3.0) (2020-11-25)
 
 
