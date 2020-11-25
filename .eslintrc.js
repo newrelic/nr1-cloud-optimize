@@ -1,28 +1,29 @@
 module.exports = {
   env: {
     browser: true,
-    es6: true,
+    es6: true
   },
   extends: [
     'plugin:@newrelic/eslint-plugin-newrelic/react',
     'plugin:@newrelic/eslint-plugin-newrelic/jest',
-    'plugin:@newrelic/eslint-plugin-newrelic/prettier',
+    'plugin:@newrelic/eslint-plugin-newrelic/prettier'
   ],
   globals: {
     Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
+    SharedArrayBuffer: 'readonly'
   },
   parser: 'babel-eslint',
   parserOptions: {
     ecmaFeatures: {
-      jsx: true,
+      jsx: true
     },
     ecmaVersion: 2018,
-    sourceType: 'module',
+    sourceType: 'module'
   },
   plugins: ['react', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
     'react/prop-types': 0,
-  },
+    'eslint-comments/no-unused-disable': 0
+  }
 };
