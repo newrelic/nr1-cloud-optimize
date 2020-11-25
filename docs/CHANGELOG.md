@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.4.0...v2.5.0) (2020-11-25)
+
+
+### Features
+
+* update eslint config ([aa6377a](https://github.com/newrelic/nr1-cloud-optimize/commit/aa6377a4ff432aa0b59f85c5c14638730bde453f))
+
 # [2.4.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.3.0...v2.4.0) (2020-11-25)
 
 
