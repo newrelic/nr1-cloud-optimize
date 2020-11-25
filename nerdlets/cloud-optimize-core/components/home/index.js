@@ -17,7 +17,9 @@ export default class Home extends React.PureComponent {
           workloadCostProgress,
           workloadConfigProgress
         }) => {
-          const isLoading = fetchingEntities || postProcessing;
+          const isLoading =
+            fetchingEntities === true || postProcessing === true;
+
           return (
             <>
               <Dimmer active={isLoading}>

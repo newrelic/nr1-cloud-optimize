@@ -21,9 +21,10 @@ export const timeRangeToNrql = timeRange => {
 };
 
 // collect infra entities and apm entities
-export const entitySearchQuery = cursor => `{
+export const entitySearchQuery = (cursor, eSearchQuery) => `{
     actor {
-      entitySearch(query: "(domain IN ('INFRA') AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST')) OR (type IN ('WORKLOAD')) OR (domain IN ('APM') AND type IN ('APPLICATION')) AND reporting = 'true'") {
+      entitySearch(query: "(domain IN ('INFRA') AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST')) OR (type IN ('WORKLOAD')) OR (domain IN ('APM') AND type IN ('APPLICATION')) AND reporting = 'true' ${eSearchQuery ||
+        ''}") {
         count
         results${cursor ? `(cursor: "${cursor}")` : ''} {
           nextCursor

@@ -60,6 +60,7 @@ export default class OptimizationConfigs extends React.PureComponent {
     postProcessEntities,
     enable,
     inclusionPeriodHours,
+    entitySearchQuery,
     cpuUpper,
     memUpper,
     cpuMemUpperOperator,
@@ -85,6 +86,8 @@ export default class OptimizationConfigs extends React.PureComponent {
       inclusionPeriodHours: parseFloat(
         inclusionPeriodHours || optimizationDefaults.inclusionPeriodHours
       ),
+      entitySearchQuery:
+        entitySearchQuery || optimizationDefaults.entitySearchQuery,
       cpuUpper: parseFloat(valueCheck(cpuUpper, 'cpuUpper')),
       memUpper: parseFloat(valueCheck(memUpper, 'memUpper')),
       staleCpu: parseFloat(valueCheck(staleCpu, 'staleCpu')),
@@ -263,6 +266,7 @@ export default class OptimizationConfigs extends React.PureComponent {
             'cpuMemUpperStaleOperator'
           );
           const inclusionPeriodHours = handleValue('inclusionPeriodHours');
+          const entitySearchQuery = handleValue('entitySearchQuery');
           const cpuRightSize = handleValue('cpuRightSize');
           const memRightSize = handleValue('memRightSize');
           const excludedInstanceTypes = handleValue('excludedInstanceTypes');
@@ -389,6 +393,43 @@ export default class OptimizationConfigs extends React.PureComponent {
                     The instance needs to have reported at least once within
                     this period.
                   </label>
+                  <Divider />
+
+                  <Form.Field inline width="16">
+                    <label style={{ width: '230px' }}>
+                      Entity Search Query
+                    </label>
+                    <Form.Input
+                      width="16"
+                      id="entitySearchQuery"
+                      inverted={false}
+                      value={entitySearchQuery}
+                      onChange={this.handleUpdate}
+                    />
+                  </Form.Field>
+                  <label>
+                    Supply an entity search query to narrow down your selection.
+                    Refresh required after saving.
+                  </label>
+                  <Message>
+                    Operators available: =, AND, IN, LIKE Entity queries use the
+                    same syntax of a WHERE clause in NRQL queries. <br /> <br />
+                    Examples:
+                    <Message.List>
+                      <Message.Item>name = 'MyApp (Staging)'</Message.Item>
+                      <Message.Item>
+                        name LIKE 'MyApp' AND type IN ('APPLICATION')
+                      </Message.Item>
+                      <Message.Item>
+                        reporting = 'false' AND type IN ('HOST')
+                      </Message.Item>
+                      <Message.Item>domain IN ('INFRA', 'APM')</Message.Item>
+                      <Message.Item>
+                        domain IN ('APM') AND reporting = 'true' AND
+                        tags.accountId IN ('1234567','8765432')
+                      </Message.Item>
+                    </Message.List>
+                  </Message>
                   <Divider />
 
                   <Form.Group widths={4}>
@@ -564,6 +605,7 @@ export default class OptimizationConfigs extends React.PureComponent {
                         postProcessEntities,
                         enable,
                         inclusionPeriodHours,
+                        entitySearchQuery,
                         cpuUpper,
                         memUpper,
                         cpuMemUpperOperator,

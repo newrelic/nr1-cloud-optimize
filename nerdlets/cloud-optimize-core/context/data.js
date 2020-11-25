@@ -144,7 +144,8 @@ export const optimizationDefaults = {
   azureRegion: 'westus',
   googleRegion: 'us-west1',
   alibabaRegion: 'us-east-1',
-  disableMenu: false
+  disableMenu: false,
+  entitySearchQuery: ''
 };
 
 export class DataProvider extends Component {
@@ -201,7 +202,7 @@ export class DataProvider extends Component {
 
     this.setState({ userConfig }, () => {
       // handle incoming props with postProcessEntities, else run fetchEntities for default view
-      this.fetchEntities();
+      this.fetchEntities(null);
     });
   }
 
@@ -237,9 +238,14 @@ export class DataProvider extends Component {
   };
 
   fetchEntities = async nextCursor => {
+    const { userConfig } = this.state;
+    const searchQuery = userConfig.entitySearchQuery
+      ? ` AND ${userConfig.entitySearchQuery}`
+      : null;
+
     // intentionally do not query tags now, so that we can support incoming entities that only contain a guid and type
     const result = await NerdGraphQuery.query({
-      query: entitySearchQuery(nextCursor)
+      query: entitySearchQuery(nextCursor, searchQuery)
     });
     const entitySearchResult =
       ((((result || {}).data || {}).actor || {}).entitySearch || {}).results ||
@@ -252,7 +258,7 @@ export class DataProvider extends Component {
     }
 
     if (entitySearchResult.nextCursor) {
-      this.fetchEntities(entitySearchResult.nextCursor);
+      this.fetchEntities(entitySearchResult.nextCursor, searchQuery);
     } else if (
       !entitySearchResult.nextCursor ||
       entitySearchResult.entities.length === 0
@@ -301,7 +307,10 @@ export class DataProvider extends Component {
       workloadEntities = await this.processWorkloads(workloadEntities);
     }
 
-    const tempEntities = await this.getEntityData(nonWorkloadEntities);
+    let tempEntities = [];
+    if (nonWorkloadEntities.length > 0) {
+      tempEntities = await this.getEntityData(nonWorkloadEntities);
+    }
 
     // stitch relevant entities back into workloads so on prem cost/cu calculations can be made
     workloadEntities = this.addEntityDataToWorkload(
@@ -601,7 +610,9 @@ export class DataProvider extends Component {
       }
     });
 
-    await Promise.all([cloudPricingQueue.drain(), accountCfgQueue.drain()]);
+    if (cloudPricingQueue.length > 0 || accountCfgQueue.length > 0) {
+      await Promise.all([cloudPricingQueue.drain(), accountCfgQueue.drain()]);
+    }
 
     tags = _.chain(tags)
       .uniqBy(t => t.key)
@@ -883,7 +894,8 @@ export class DataProvider extends Component {
     const { cloudPricing } = this.state;
     return new Promise(resolve => {
       const pricingKey = `${cloud}_${region}`;
-      if (cloudPricing[pricingKey]) {
+
+      if (cloudPricing[pricingKey] && cloudPricing[pricingKey].length > 0) {
         if (instanceType) {
           // provide direct instance type price
           for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
