@@ -115,6 +115,9 @@ export default class InstanceCandidates extends React.PureComponent {
             const instance = attr =>
               e.instanceResult ? e.instanceResult[attr] : '-';
 
+            const cpusPerVm = instance('cpusPerVm');
+            const memPerVm = instance('memPerVm');
+
             return {
               cloud: e.cloud,
               spot: e.spot,
@@ -125,8 +128,8 @@ export default class InstanceCandidates extends React.PureComponent {
                 'max.transmitBytesPerSecond'
               ),
               'max.receiveBytesPerSecond': metric('max.receiveBytesPerSecond'),
-              coreCount: e.coreCount,
-              memoryGb: (e.memoryGb || 0).toFixed(2),
+              coreCount: cpusPerVm || e.coreCount,
+              memoryGb: memPerVm || (e.memoryGb || 0).toFixed(2),
               instanceType: instance('type'),
               price: e.cloud
                 ? instance('onDemandPrice')
