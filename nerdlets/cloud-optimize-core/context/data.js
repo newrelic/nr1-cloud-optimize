@@ -81,7 +81,8 @@ export const successMsg = msg => (
 
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
-  workloads: ['WORKLOAD']
+  workloads: ['WORKLOAD'],
+  database: []
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
 };
@@ -177,11 +178,13 @@ export class DataProvider extends Component {
       processedWorkloads: [],
       cloudPricing: {},
       tags: [],
+      tagsRds: [],
       selectedTags: [],
       groupBy: { value: 'account', label: 'account' },
       sortBy: { value: 'currentSpend', label: 'Current Spend' },
       orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
+      groupByOptionsRds: [],
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
       cloudRegions: {},
@@ -1405,6 +1408,7 @@ export class DataProvider extends Component {
       <DataContext.Provider
         value={{
           ...this.state,
+          storeState: this.storeState,
           updateDataState: this.updateDataState,
           postProcessEntities: this.postProcessEntities,
           getWorkloadDocs: this.getWorkloadDocs

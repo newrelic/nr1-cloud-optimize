@@ -17,6 +17,14 @@ const optimizers = [
     desc: 'Optimize the entities within your workloads.',
     cat: 'workloads',
     img: workloadsIcon
+  },
+  {
+    name: 'Amazon RDS',
+    optimizer: 'rds',
+    desc: 'Optimize Amazon RDS Entities',
+    cat: 'database',
+    icon: 'database',
+    hideEntityCount: true
   }
 ];
 
@@ -76,7 +84,12 @@ export default class Tiles extends React.PureComponent {
                       </Card.Content>
 
                       <Card.Content extra>
-                        <span style={{ float: 'left' }}>
+                        <span
+                          style={{
+                            float: 'left',
+                            display: o.hideEntityCount ? 'none' : ''
+                          }}
+                        >
                           <Icon name="cubes" />
                           {count}&nbsp;
                           {count.length === 1 ? 'Entity' : 'Entities'}
