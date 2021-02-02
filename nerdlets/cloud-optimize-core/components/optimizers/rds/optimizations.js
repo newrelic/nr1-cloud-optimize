@@ -12,7 +12,7 @@ export default class RdsOptimizations extends React.PureComponent {
 
     return (
       <RdsConsumer>
-        {({ entities, fetchingEntities }) => {
+        {({ entities, fetchingEntities, rules }) => {
           // show loader when fetching
           if (fetchingEntities) {
             return (
@@ -46,8 +46,14 @@ export default class RdsOptimizations extends React.PureComponent {
 
           return (
             <>
-              <RulesConfiguration />
-              <Groups groups={menuGroupEntities} costPeriod={costPeriod} />
+              {rules && Object.keys(rules).length > 0 ? (
+                <>
+                  <RulesConfiguration />
+                  <Groups groups={menuGroupEntities} costPeriod={costPeriod} />
+                </>
+              ) : (
+                ''
+              )}
             </>
           );
         }}

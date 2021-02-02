@@ -12,7 +12,12 @@ import { Icon } from 'semantic-ui-react';
 import _ from 'lodash';
 import { NerdGraphQuery } from 'nr1';
 import queue from 'async/queue';
-import { chunk, buildGroupByOptions } from '../../../../shared/lib/utils';
+import {
+  chunk,
+  buildGroupByOptions,
+  getCollection
+} from '../../../../shared/lib/utils';
+import { getInstance, processOptimizationSuggestions } from './utils';
 
 toast.configure();
 
@@ -92,11 +97,17 @@ export const entitySearchQuery = (cursor, eSearchQuery) => `{
 
 const RdsQuery = `FROM DatastoreSample SELECT \
                     latest(timestamp), latest(entityGuid), latest(entityName), latest(displayName), latest(dataSourceName), latest(provider.clusterInstance), \
-                    max(\`provider.readIops.Average\`), latest(provider.allocatedStorageBytes), latest(provider.freeStorageSpaceBytes.Average), \
-                    max(\`provider.writeIops.Average\`), max(\`provider.databaseConnections.Average\`), max(\`provider.cpuUtilization.Average\`), \
-                    max(\`provider.readLatency.Average\`), max(\`provider.writeLatency.Average\`), max(\`provider.networkReceiveThroughput.Average\`), \
-                    max(\`provider.networkTransmitThroughput.Average\`), max(\`provider.swapUsage\`), max(\`provider.swapUsageBytes.Average\`), \
+                    latest(provider.dbInstanceClass), latest(awsRegion), latest(provider.storageType), latest(provider.engine), latest(provider.engineVersion), \
+                    max(\`provider.readThroughput.Average\`), max(\`provider.writeThroughput.Average\`), \
+                    max(\`provider.networkReceiveThroughput.Average\`), max(\`provider.networkTransmitThroughput.Average\`), \
+                    max(\`provider.readIops.Average\`), max(\`provider.writeIops.Average\`), \
+                    latest(provider.allocatedStorageBytes), latest(provider.freeStorageSpaceBytes.Average), \
+                    max(\`provider.databaseConnections.Average\`), max(\`provider.cpuUtilization.Average\`), \
+                    max(\`provider.readLatency.Average\`), max(\`provider.writeLatency.Average\`), \
+                    max(\`provider.swapUsage\`), max(\`provider.swapUsageBytes.Average\`), \
                     max(\`provider.freeableMemory.Average\`) LIMIT 1`;
+
+const RdsRecentSampleQuery = `FROM DatastoreSample SELECT count(*) SINCE 12 hours ago LIMIT 1`;
 
 // core query
 export const getEntityDataQuery = timeRange => `query ($guids: [EntityGuid]!) {
@@ -115,6 +126,9 @@ export const getEntityDataQuery = timeRange => `query ($guids: [EntityGuid]!) {
       ... on GenericInfrastructureEntity {
         guid
         name
+        recentSample: nrdbQuery(nrql: "${RdsRecentSampleQuery}", timeout: 30000) {
+          results
+        }
         datastoreSample: nrdbQuery(nrql: "${RdsQuery} ${timeRangeToNrql(
   timeRange
 )}", timeout: 30000) {
@@ -134,16 +148,14 @@ export class RdsProvider extends Component {
       rawEntities: [],
       entities: [],
       timeRange: null,
-      rulesCpu: 50,
-      rulesStorageUsage: 50,
-      rulesConnections: 5,
-      rulesReadIops: 5000,
-      rulesWriteIops: 5000,
-      rulesFreeableMemoryMb: 2048
+      rules: {}
     };
   }
 
   async componentDidMount() {
+    const rdsUserConfig = await getCollection('rdsOptimizationConfig', 'main');
+    await this.setRdsUserConfig(rdsUserConfig);
+
     // fetch entities
     this.setState({ fetchingEntities: true }, () => {
       this.fetchEntities();
@@ -159,6 +171,46 @@ export class RdsProvider extends Component {
       });
     }
   }
+
+  setRdsUserConfig = config => {
+    return new Promise(resolve => {
+      let rules = config;
+      const defaultRules = {
+        cpu: 50,
+        cpuStale: 10,
+        memory: 50,
+        memoryStale: 10,
+        storageUsage: 50,
+        storageUsageStale: 10,
+        connections: 5,
+        connectionsStale: 2,
+        txStale: 10,
+        rxStale: 10
+      };
+
+      // if rules not set, set some defaults
+      if (
+        rules === undefined ||
+        rules === null ||
+        Object.keys(rules).length === 0
+      ) {
+        console.log('rds applying default rules');
+        rules = { ...defaultRules };
+      } else {
+        console.log('rds checking saved rules');
+        // if config is missing a rule apply a default automatically
+        Object.keys(defaultRules).forEach(rule => {
+          if (rules[rule] === undefined || rules[rule] === null) {
+            rules[rule] = defaultRules[rule];
+          }
+        });
+      }
+
+      this.setState({ rules: { ...rules } }, () => {
+        resolve(true);
+      });
+    });
+  };
 
   //
   updateDataState = stateData =>
@@ -256,6 +308,101 @@ export class RdsProvider extends Component {
 
     await q.drain();
 
+    const pricingPromises = [];
+
+    completeEntities.forEach((e, index) => {
+      // simply datastoreSample access
+      const datastoreSample =
+        (((e || {}).datastoreSample || {}).results || {})[0] || {};
+      completeEntities[index].datastoreSample = datastoreSample;
+
+      const recentEvents =
+        ((((e || {}).recentSample || {}).results || {})[0] || {}).count || 0;
+      completeEntities[index].recentEvents = recentEvents;
+
+      completeEntities[index].datastoreSample.storageUsage =
+        ((datastoreSample['latest.provider.allocatedStorageBytes'] -
+          datastoreSample['latest.provider.freeStorageSpaceBytes.Average']) /
+          datastoreSample['latest.provider.allocatedStorageBytes']) *
+        100;
+
+      // simplify engine...
+      let engine = datastoreSample['latest.provider.engine'];
+      const engineVersion = datastoreSample['latest.provider.engineVersion'];
+
+      if (engine.includes('aurora')) {
+        datastoreSample.aurora = true;
+        engine = engine.replace('aurora-', '');
+      }
+
+      if (engine === 'postgres') engine = 'postgresql';
+      if (engine.includes('sqlserver')) engine = 'sqlserver';
+
+      if (engine === 'aurora') {
+        if (engineVersion.includes('mysql')) {
+          engine = 'mysql';
+        }
+        if (engineVersion.includes('mariadb')) {
+          engine = 'mariadb';
+        }
+        if (engineVersion.includes('oracle')) {
+          engine = 'oracle';
+        }
+        if (engineVersion.includes('postgres')) {
+          engine = 'postgresql';
+        }
+        if (engineVersion.includes('sqlserver')) {
+          engine = 'sqlserver';
+        }
+      }
+
+      datastoreSample['latest.provider.engine'] = engine;
+
+      // get instance pricing
+      pricingPromises.push(
+        getInstance(
+          datastoreSample['latest.awsRegion'],
+          datastoreSample['latest.provider.dbInstanceClass'],
+          datastoreSample['latest.provider.engine'],
+          index
+        )
+      );
+    });
+
+    const pricingData = await Promise.all(pricingPromises);
+    pricingData.forEach(d => {
+      if (d) {
+        completeEntities[d.index].pricing = d;
+
+        if (d && d[0]) {
+          const { vcpu, memory } = d[0].attributes;
+          completeEntities[d.index].datastoreSample.memory = memory;
+          completeEntities[d.index].datastoreSample.memoryBytes =
+            memory.split(' ')[0] * 1.074e9; // convert GiB to Bytes
+
+          // calculate memory usage here as NR doesn't have the RDS instances available memory
+          completeEntities[d.index].datastoreSample.memoryUsage =
+            ((completeEntities[d.index].datastoreSample.memoryBytes -
+              completeEntities[d.index].datastoreSample[
+                'max.provider.freeableMemory.Average'
+              ]) /
+              completeEntities[d.index].datastoreSample.memoryBytes) *
+            100;
+          completeEntities[d.index].datastoreSample.vcpu = vcpu;
+          completeEntities[d.index].datastoreSample.price =
+            d[0].onDemandPrice.pricePerUnit.USD;
+        }
+      }
+    });
+
+    const optimizationPromises = completeEntities.map((e, index) =>
+      processOptimizationSuggestions(e, index, this.state.rules)
+    );
+
+    await Promise.all(optimizationPromises);
+
+    console.log(completeEntities);
+
     // generate tags
     const tags = [];
     completeEntities.forEach(e => {
@@ -278,7 +425,17 @@ export class RdsProvider extends Component {
         }
       });
     });
-    return { completeEntities, tags };
+
+    completeEntities = completeEntities.filter(
+      e =>
+        e.recentEvents > 0 &&
+        e.datastoreSample['latest.provider.engine'] !== 'docdb'
+    );
+
+    return {
+      completeEntities,
+      tags: tags.filter((v, i, a) => a.findIndex(t => t.key === v.key) === i)
+    };
   };
 
   render() {

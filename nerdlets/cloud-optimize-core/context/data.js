@@ -201,12 +201,12 @@ export class DataProvider extends Component {
       userConfig = { ...optimizationDefaults };
     }
 
-    await this.fetchCloudRegions();
+    // await this.fetchCloudRegions();
 
-    this.setState({ userConfig }, () => {
-      // handle incoming props with postProcessEntities, else run fetchEntities for default view
-      this.fetchEntities(null);
-    });
+    // this.setState({ userConfig }, () => {
+    //   // handle incoming props with postProcessEntities, else run fetchEntities for default view
+    //   this.fetchEntities(null);
+    // });
   }
 
   componentDidUpdate(prevProps, prevState) {

@@ -35,7 +35,7 @@ export default class Groups extends React.PureComponent {
 
     return (
       <RdsConsumer>
-        {({ rulesCpu, rulesConnections, rulesStorageUsage }) => {
+        {({ rules }) => {
           return (
             <>
               <Modal hidden={this.state.hidden} onClose={this.onClose}>
@@ -58,13 +58,14 @@ export default class Groups extends React.PureComponent {
               <Header as="h4" content="Groups" />
               {groups.map(g => {
                 const tableData = g.entities.map(e => {
-                  const datastoreSample =
-                    (((e || {}).datastoreSample || {}).results || {})[0] || {};
+                  const datastoreSample = e.datastoreSample;
 
                   const row = {
                     name: e.name,
                     guid: datastoreSample['latest.entityGuid'],
-                    cpu: datastoreSample['max.provider.cpuUtilization.Average'],
+                    cpu:
+                      datastoreSample['max.provider.cpuUtilization.Average'] ||
+                      0,
                     freeableMemory:
                       datastoreSample['max.provider.freeableMemory.Average'],
                     databaseConnections:
@@ -75,49 +76,62 @@ export default class Groups extends React.PureComponent {
                       datastoreSample[
                         'latest.provider.freeStorageSpaceBytes.Average'
                       ],
+                    memoryUsage: datastoreSample.memoryUsage,
                     allocatedStorageBytes:
                       datastoreSample['latest.provider.allocatedStorageBytes'],
-                    storageUsedPercent: 0,
+                    storageUsage: datastoreSample.storageUsage,
                     readIops: datastoreSample['max.provider.readIops.Average'],
                     writeIops:
                       datastoreSample['max.provider.writeIops.Average'],
+                    tx:
+                      datastoreSample[
+                        'max.provider.networkTransmitThroughput.Average'
+                      ],
+                    rx:
+                      datastoreSample[
+                        'max.provider.networkReceiveThroughput.Average'
+                      ],
+                    type: datastoreSample['latest.provider.dbInstanceClass'],
+                    region: datastoreSample['latest.awsRegion'],
+                    storageType: datastoreSample['latest.provider.storageType'],
                     passing: 'TRUE',
-                    failures: []
+                    failures: [],
+                    memory: datastoreSample.memory,
+                    vcpu: datastoreSample.vcpu,
+                    price: datastoreSample.price,
+                    suggestedType: e.suggestedType,
+                    suggestedPrice: e.suggestedPrice,
+                    potentialSavings: e.potentialSavings
                   };
-
-                  row.storageUsedPercent =
-                    ((row.allocatedStorageBytes - row.freeStorageBytes) /
-                      row.allocatedStorageBytes) *
-                    100;
 
                   // check rules
 
                   // cpu
-                  if (rulesCpu !== 0 && row.cpu < rulesCpu) {
+                  if (rules.cpu !== 0 && row.cpu < rules.cpu) {
                     row.failures.push(
-                      `Low CPU ${row.cpu.toFixed(2)} < ${rulesCpu}`
+                      `Low CPU ${(row.cpu || 0).toFixed(2)} < ${rules.cpu}`
                     );
                   }
 
                   // storage
                   if (
-                    rulesStorageUsage !== 0 &&
-                    row.storageUsedPercent < rulesStorageUsage
+                    rules.storageUsage !== 0 &&
+                    row.storageUsage < rules.storageUsage
                   ) {
                     row.failures.push(
-                      `Low Storage Usage ${row.storageUsedPercent.toFixed(
+                      `Low Storage Usage ${(row.storageUsage || 0).toFixed(
                         2
-                      )} < ${rulesStorageUsage}`
+                      )} < ${rules.storageUsage}`
                     );
                   }
 
                   // connections
                   if (
-                    rulesConnections !== 0 &&
-                    row.databaseConnections < rulesConnections
+                    rules.connections !== 0 &&
+                    row.databaseConnections < rules.connections
                   ) {
                     row.failures.push(
-                      `Low Connections ${row.databaseConnections} < ${rulesConnections}`
+                      `Low Connections ${row.databaseConnections} < ${rules.connections}`
                     );
                   }
 
@@ -130,7 +144,7 @@ export default class Groups extends React.PureComponent {
 
                 const tableHdrCell = (name, type, attr, order) => (
                   <TableHeaderCell
-                    value={({ item }) => item[name]}
+                    value={({ item }) => item[attr]}
                     sortable
                     sortingType={this.state[attr]}
                     sortingOrder={order}
@@ -165,7 +179,7 @@ export default class Groups extends React.PureComponent {
                       fontSize: '12px'
                     }}
                     type={type}
-                    value={value}
+                    value={value || 0}
                   />
                 );
 
@@ -174,69 +188,117 @@ export default class Groups extends React.PureComponent {
                     <Card.Content>
                       <Card.Header>{g.name}</Card.Header>
 
-                      <Table
-                        items={tableData}
-                        onSelect={(evt, { item }) =>
-                          (item.selected = evt.target.checked)
-                        }
-                      >
+                      <Table items={tableData}>
                         <TableHeader>
-                          {tableHdrCell('Name', null, 'name')}
+                          {tableHdrCell('Name', null, 'name', 0)}
+
                           {tableHdrCell(
                             'Connections',
                             null,
                             'databaseConnections',
                             1
                           )}
-                          {tableHdrCell('CPU', null, 'cpu', 2)}
+
+                          {tableHdrCell('CPU %', null, 'cpu', 2)}
+
+                          {tableHdrCell('Memory %', null, 'memoryUsage', 3)}
 
                           {tableHdrCell(
                             'Storage Used',
                             null,
-                            'storageUsedPercent',
-                            3
-                          )}
-                          {tableHdrCell(
-                            'Freeable Memory MB',
-                            null,
-                            'freeableMemory',
+                            'storageUsage',
                             4
                           )}
-                          {tableHdrCell('Read IOPS', null, 'readIops', 5)}
-                          {tableHdrCell('Write IOPS', null, 'writeIops', 6)}
 
-                          {tableHdrCell('Rules Passing', null, 'passing', 0)}
+                          {tableHdrCell('TX', null, 'tx', 5)}
+
+                          {tableHdrCell('RX', null, 'rx', 6)}
+                          {/* 
+                          {tableHdrCell('Read IOPS', null, 'readIops', 7)}
+
+                          {tableHdrCell('Write IOPS', null, 'writeIops', 8)} */}
+
+                          {tableHdrCell('VCPU', null, 'vcpu', 9)}
+
+                          {tableHdrCell('Memory', null, 'memory', 10)}
+
+                          {tableHdrCell('Type', null, 'type', 11)}
+
+                          {tableHdrCell('Region', null, 'region', 12)}
+
+                          {tableHdrCell('Price', null, 'price', 13)}
+
+                          {tableHdrCell(
+                            'Suggested Type',
+                            null,
+                            'suggestedType',
+                            14
+                          )}
+
+                          {tableHdrCell(
+                            'Suggested Price',
+                            null,
+                            'suggestedPrice',
+                            15
+                          )}
+
+                          {tableHdrCell(
+                            'Potential Savings',
+                            null,
+                            'potentialSavings',
+                            16
+                          )}
+
+                          {tableHdrCell('Rules Passing', null, 'passing', 17)}
                         </TableHeader>
 
                         {({ item }) => (
                           <TableRow style={{ backgroundColor: 'red' }}>
                             {renderRowCell(item.name, item.guid)}
                             {renderRowCell(item.databaseConnections)}
-
+                            {item.cpu
+                              ? renderMetricRowCell(
+                                  MetricTableRowCell.TYPE.UNKNOWN,
+                                  parseFloat(item.cpu.toFixed(2))
+                                )
+                              : renderRowCell('')}
+                            {item.memoryUsage
+                              ? renderMetricRowCell(
+                                  MetricTableRowCell.TYPE.UNKNOWN,
+                                  parseFloat((item.memoryUsage || 0).toFixed(2))
+                                )
+                              : renderRowCell('')}
+                            {item.storageUsage
+                              ? renderMetricRowCell(
+                                  MetricTableRowCell.TYPE.UNKNOWN,
+                                  parseFloat(item.storageUsage.toFixed(2))
+                                )
+                              : renderRowCell('')}
                             {renderMetricRowCell(
                               MetricTableRowCell.TYPE.UNKNOWN,
-                              parseFloat(item.cpu.toFixed(2))
+                              item.tx
                             )}
-
                             {renderMetricRowCell(
                               MetricTableRowCell.TYPE.UNKNOWN,
-                              parseFloat(item.storageUsedPercent.toFixed(2))
+                              item.rx
                             )}
-
-                            {renderMetricRowCell(
-                              MetricTableRowCell.TYPE.BYTES,
-                              item.freeableMemory
-                            )}
-
-                            {renderMetricRowCell(
+                            {/* {renderMetricRowCell(
                               MetricTableRowCell.TYPE.UNKNOWN,
                               item.readIops
                             )}
-
                             {renderMetricRowCell(
                               MetricTableRowCell.TYPE.UNKNOWN,
                               item.writeIops
-                            )}
+                            )} */}
+                            {renderRowCell(item.vcpu)}
+                            {renderRowCell(item.memory)}
+                            {renderRowCell(item.type)}
+                            {renderRowCell(item.region)}
+                            {renderRowCell(item.price)}
+
+                            {renderRowCell(item.suggestedType)}
+                            {renderRowCell(item.suggestedPrice)}
+                            {renderRowCell(item.potentialSavings)}
 
                             <TableRowCell
                               style={{
