@@ -253,10 +253,13 @@ export const calculateMetricTotals = entities => {
   entities.forEach(e => {
     totals.currentSpend += parseFloat(e.datastoreSample.currentSpend) || 0;
     totals.potentialSavings += parseFloat(e.potentialSavings) || 0;
-    totals.estimatedNewSpend +=
-      e.suggestedPrice !== undefined && e.suggestedPrice !== null
-        ? parseFloat(e.suggestedPrice)
-        : parseFloat(e.datastoreSample.currentSpend) || 0;
+
+    if (!e.isStale) {
+      totals.estimatedNewSpend +=
+        e.suggestedPrice !== undefined && e.suggestedPrice !== null
+          ? parseFloat(e.suggestedPrice)
+          : parseFloat(e.datastoreSample.currentSpend) || 0;
+    }
   });
 
   return totals;

@@ -18,9 +18,12 @@ export default class InstanceSummary extends React.PureComponent {
         metricTotals.currentSpend +=
           parseFloat(e.datastoreSample.currentSpend) || 0;
         metricTotals.potentialSavings += parseFloat(e.potentialSavings) || 0;
-        metricTotals.estimatedNewSpend += e.suggestedPrice
-          ? parseFloat(e.suggestedPrice)
-          : parseFloat(e.datastoreSample.currentSpend) || 0;
+
+        if (!e.isStale) {
+          metricTotals.estimatedNewSpend += e.suggestedPrice
+            ? parseFloat(e.suggestedPrice)
+            : parseFloat(e.datastoreSample.currentSpend) || 0;
+        }
       });
     });
 
