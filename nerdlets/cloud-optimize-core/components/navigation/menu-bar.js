@@ -20,18 +20,27 @@ export default class MenuBar extends React.PureComponent {
     return (
       <DataConsumer>
         {({
+          selectedPage,
           groupBy,
           groupByOptions,
+          groupByOptionsRds,
           sortBy,
           orderBy,
           fetchingEntities,
           postProcessing,
           updateDataState,
-          selectedPage,
           timepickerEnabled,
           postProcessEntities
         }) => {
           const isLoading = fetchingEntities || postProcessing;
+
+          let groupByOptionsSet = groupByOptions;
+
+          switch (selectedPage) {
+            case 'rds-optimizer': {
+              groupByOptionsSet = groupByOptionsRds;
+            }
+          }
 
           let sortByOptions = [];
 
@@ -50,6 +59,14 @@ export default class MenuBar extends React.PureComponent {
             ];
           }
 
+          if (selectedPage === 'rds-optimizer') {
+            sortByOptions = [
+              { value: 'currentSpend', label: 'Current Spend' },
+              { value: 'potentialSavings', label: 'Potential Savings' },
+              { value: 'estimatedNewSpend', label: 'Estimated New Spend' }
+            ];
+          }
+
           return (
             <div>
               <div className="utility-bar">
@@ -60,7 +77,7 @@ export default class MenuBar extends React.PureComponent {
                   <label>Group By</label>
                   <Select
                     isDisabled={isLoading || selectedPage === 'home'}
-                    options={groupByOptions}
+                    options={groupByOptionsSet}
                     onChange={g =>
                       updateDataState({
                         groupBy: g,
@@ -72,6 +89,7 @@ export default class MenuBar extends React.PureComponent {
                     classNamePrefix="react-select"
                   />
                 </div>
+
                 <div
                   className="react-select-input-group"
                   style={{ width: '200px' }}

@@ -2,6 +2,9 @@ import React from 'react';
 import { DataConsumer, categoryTypes } from '../../context/data';
 import { Card, Icon } from 'semantic-ui-react';
 import workloadsIcon from '../../../shared/images/workloads.png';
+import awsIcon from '../../../shared/images/awsIcon.png';
+
+// import awsIcon from '../../../../shared/images/awsIcon.png';
 
 const optimizers = [
   {
@@ -16,7 +19,20 @@ const optimizers = [
     optimizer: 'workload',
     desc: 'Optimize the entities within your workloads.',
     cat: 'workloads',
-    img: workloadsIcon
+    img: workloadsIcon,
+    link: 'https://one.newrelic.com/launcher/workloads.home',
+    linkName: 'Create Workloads'
+  },
+  {
+    name: 'Amazon RDS',
+    optimizer: 'rds',
+    desc: 'Optimize Amazon RDS Entities',
+    cat: 'database',
+    icon: 'database',
+    cloudIcon: awsIcon,
+    link:
+      'https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-rds-monitoring-integration',
+    linkName: 'Integration Docs'
   }
 ];
 
@@ -24,7 +40,12 @@ export default class Tiles extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
-        {({ groupedEntities, workloadEntities, updateDataState }) => {
+        {({
+          groupedEntities,
+          workloadEntities,
+          updateDataState,
+          entityCountRds
+        }) => {
           return (
             <>
               {/* <Message floating style={{ borderRadius: 0 }}>
@@ -38,9 +59,14 @@ export default class Tiles extends React.PureComponent {
                 {optimizers.map((o, i) => {
                   groupedEntities.WORKLOAD = workloadEntities;
                   let count = 0;
-                  categoryTypes[o.cat].forEach(type => {
-                    count += (groupedEntities[type] || []).length;
-                  });
+
+                  if (o.optimizer === 'rds') {
+                    count = entityCountRds;
+                  } else {
+                    categoryTypes[o.cat].forEach(type => {
+                      count += (groupedEntities[type] || []).length;
+                    });
+                  }
 
                   return (
                     <Card key={i}>
@@ -60,6 +86,17 @@ export default class Tiles extends React.PureComponent {
                           ) : (
                             ''
                           )}
+                          {o.cloudIcon ? (
+                            <>
+                              <img
+                                src={o.cloudIcon}
+                                style={{ float: 'right', height: '25px' }}
+                              />
+                              &nbsp;&nbsp;
+                            </>
+                          ) : (
+                            ''
+                          )}
                           {o.img ? (
                             <img
                               style={{ float: 'right', height: '25px' }}
@@ -76,29 +113,37 @@ export default class Tiles extends React.PureComponent {
                       </Card.Content>
 
                       <Card.Content extra>
-                        <span style={{ float: 'left' }}>
+                        <span
+                          style={{
+                            float: 'left',
+                            display: o.hideEntityCount ? 'none' : ''
+                          }}
+                        >
                           <Icon name="cubes" />
                           {count}&nbsp;
                           {count.length === 1 ? 'Entity' : 'Entities'}
                         </span>
 
-                        <span
-                          style={{
-                            float: 'right',
-                            display: o.optimizer === 'workload' ? '' : 'none'
-                          }}
-                        >
-                          <a
-                            href="https://one.newrelic.com/launcher/workloads.home"
-                            rel="noopener noreferrer"
-                            target="_blank"
+                        {o.link && o.linkName ? (
+                          <span
                             style={{
-                              color: '#0079BF'
+                              float: 'right'
                             }}
                           >
-                            Create Workloads
-                          </a>
-                        </span>
+                            <a
+                              href={o.link}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              style={{
+                                color: '#0079BF'
+                              }}
+                            >
+                              {o.linkName}
+                            </a>
+                          </span>
+                        ) : (
+                          ''
+                        )}
                       </Card.Content>
                     </Card>
                   );

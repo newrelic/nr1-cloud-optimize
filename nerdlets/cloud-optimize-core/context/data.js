@@ -25,7 +25,8 @@ import {
   entitySearchQuery,
   getWorkloadTags,
   workloadQueries,
-  getEntityDataQuery
+  getEntityDataQuery,
+  rdsCountQuery
 } from '../../shared/lib/queries';
 import _ from 'lodash';
 import { addInstanceCostTotal } from '../strategies/instances';
@@ -81,7 +82,8 @@ export const successMsg = msg => (
 
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
-  workloads: ['WORKLOAD']
+  workloads: ['WORKLOAD'],
+  database: []
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
 };
@@ -154,6 +156,7 @@ export class DataProvider extends Component {
 
     this.state = {
       selectedPage: 'home',
+      lastSelectedOptimizer: '',
       selectedWorkload: null,
       selectedGroup: null,
       updatingContext: false,
@@ -177,16 +180,19 @@ export class DataProvider extends Component {
       processedWorkloads: [],
       cloudPricing: {},
       tags: [],
+      tagsRds: [],
       selectedTags: [],
       groupBy: { value: 'account', label: 'account' },
       sortBy: { value: 'currentSpend', label: 'Current Spend' },
       orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
+      groupByOptionsRds: [],
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
       cloudRegions: {},
       timeRange: null,
-      timepickerEnabled: false
+      timepickerEnabled: false,
+      entityCountRds: 0
     };
   }
 
@@ -198,6 +204,7 @@ export class DataProvider extends Component {
       userConfig = { ...optimizationDefaults };
     }
 
+    this.getRdsCount();
     await this.fetchCloudRegions();
 
     this.setState({ userConfig }, () => {
@@ -207,7 +214,9 @@ export class DataProvider extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { timepickerEnabled } = this.state;
+    const { timepickerEnabled, lastSelectedOptimizer } = this.state;
+    const { selectedPage } = this.props;
+
     if (
       this.props.platformState &&
       prevProps.platformState &&
@@ -219,7 +228,29 @@ export class DataProvider extends Component {
         this.postProcessEntities();
       });
     }
+
+    if (selectedPage && selectedPage.includes('optimizer')) {
+      if (selectedPage !== lastSelectedOptimizer) {
+        // reset the selected group if the optimizer changes
+        console.log('reset');
+        this.setState({
+          lastSelectedOptimizer: selectedPage,
+          selectedGroup: null
+        });
+      }
+    }
   }
+
+  getRdsCount = async () => {
+    const result = await NerdGraphQuery.query({
+      query: rdsCountQuery
+    });
+
+    const entityCountRds =
+      ((((result || {}).data || {}).actor || {}).entitySearch || {}).count || 0;
+
+    this.setState({ entityCountRds });
+  };
 
   fetchCloudRegions = async () => {
     const { cloudRegions } = this.state;
@@ -1405,6 +1436,7 @@ export class DataProvider extends Component {
       <DataContext.Provider
         value={{
           ...this.state,
+          storeState: this.storeState,
           updateDataState: this.updateDataState,
           postProcessEntities: this.postProcessEntities,
           getWorkloadDocs: this.getWorkloadDocs

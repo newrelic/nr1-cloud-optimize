@@ -3,6 +3,7 @@ import { DataConsumer } from '../../context/data';
 import { Segment } from 'semantic-ui-react';
 import Home from '../home';
 import InstanceOptimizer from '../optimizers/instances';
+import RdsOptimizer from '../optimizers/rds';
 import OptimizationConfigs from '../optimization-configs';
 import Setup from '../setup';
 import WorkloadCosts from '../workload-costs';
@@ -21,6 +22,8 @@ export default class ContentContainer extends React.PureComponent {
                 return <Home />;
               case 'instance-optimizer':
                 return <InstanceOptimizer />;
+              case 'rds-optimizer':
+                return <RdsOptimizer height={height} />;
               case 'optimization-configs':
                 return <OptimizationConfigs />;
               case 'setup':

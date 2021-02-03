@@ -29,7 +29,7 @@ export default class CloudOptimizeCore extends React.Component {
           <PlatformStateContext.Consumer>
             {platformState => (
               <DataProvider platformState={platformState}>
-                <CloudOptimize height={height - 96} />
+                <CloudOptimize height={height - 101} />
               </DataProvider>
             )}
           </PlatformStateContext.Consumer>
