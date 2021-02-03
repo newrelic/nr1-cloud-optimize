@@ -92,7 +92,7 @@ export default class Tiles extends React.PureComponent {
                                 src={o.cloudIcon}
                                 style={{ float: 'right', height: '25px' }}
                               />
-                              &nbsp;
+                              &nbsp;&nbsp;
                             </>
                           ) : (
                             ''

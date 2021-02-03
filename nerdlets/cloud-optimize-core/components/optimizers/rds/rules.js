@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Header, Icon } from 'semantic-ui-react';
+import { Form, Header, Icon, Message } from 'semantic-ui-react';
 import { RdsConsumer } from './context';
 import { writeDocument } from '../../../../shared/lib/utils';
 import { DataConsumer } from '../../../context/data';
@@ -44,17 +44,6 @@ export default class RulesConfiguration extends React.PureComponent {
                   updateDataState({ rules: { ...rules } });
                 };
 
-                // cpu: 50,
-                // cpuStale: 10,
-                // memory: 50,
-                // memoryStale: 10,
-                // storageUsage: 50,
-                // storageUsageStale: 10,
-                // connections: 5,
-                // connectionsStale: 2,
-                // txStale: 10,
-                // rxStale: 10
-
                 return (
                   <div>
                     <Header
@@ -69,6 +58,11 @@ export default class RulesConfiguration extends React.PureComponent {
                       )}
                       {this.state.showRules ? ' Hide Rules' : ' Show Rules'}
                     </Header>
+                    <Message
+                      style={{ display: this.state.showRules ? '' : 'none' }}
+                    >
+                      Disable rules by setting 0.
+                    </Message>
                     <Form
                       style={{ display: this.state.showRules ? '' : 'none' }}
                     >
@@ -144,7 +138,7 @@ export default class RulesConfiguration extends React.PureComponent {
                         <Form.Input
                           width="4"
                           fluid
-                          label="Stale Network TX  %"
+                          label="Stale Network TX Bytes"
                           onChange={(e, d) =>
                             updateRule('txStale', setValue(d.value))
                           }
@@ -153,11 +147,29 @@ export default class RulesConfiguration extends React.PureComponent {
                         <Form.Input
                           width="4"
                           fluid
-                          label="Stale Network RX  %"
+                          label="Stale Network RX Bytes"
                           onChange={(e, d) =>
                             updateRule('rxStale', setValue(d.value))
                           }
                           value={rules.rxStale}
+                        />
+                        <Form.Input
+                          width="4"
+                          fluid
+                          label="Stale Read Throughput Bytes  %"
+                          onChange={(e, d) =>
+                            updateRule('readStale', setValue(d.value))
+                          }
+                          value={rules.readStale}
+                        />
+                        <Form.Input
+                          width="4"
+                          fluid
+                          label="Stale Write Throughput Bytes  %"
+                          onChange={(e, d) =>
+                            updateRule('writeStale', setValue(d.value))
+                          }
+                          value={rules.writeStale}
                         />
                       </Form.Group>
                       <Form.Group>

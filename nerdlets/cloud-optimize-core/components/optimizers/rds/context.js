@@ -186,7 +186,9 @@ export class RdsProvider extends Component {
         connections: 5,
         connectionsStale: 2,
         txStale: 10,
-        rxStale: 10
+        rxStale: 10,
+        readStale: 10,
+        writeStale: 10
       };
 
       // if rules not set, set some defaults

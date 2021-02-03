@@ -109,7 +109,7 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
         fixed: 2
       },
       {
-        msg: 'Stale Network Transmit',
+        msg: 'Stale Network Transmit Bytes',
         staleMetric: 'txStale',
         value:
           entity.datastoreSample[
@@ -118,7 +118,7 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
         fixed: 2
       },
       {
-        msg: 'Stale Network Recieve',
+        msg: 'Stale Network Recieve Bytes',
         staleMetric: 'rxStale',
         value:
           entity.datastoreSample[
@@ -131,6 +131,16 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
         staleMetric: 'connectionsStale',
         value:
           entity.datastoreSample['max.provider.databaseConnections.Average']
+      },
+      {
+        msg: 'Stale Read Throughput Bytes',
+        staleMetric: 'readStale',
+        value: entity.datastoreSample['max.provider.readThroughput.Average']
+      },
+      {
+        msg: 'Stale Write Throughput Bytes',
+        staleMetric: 'writeStale',
+        value: entity.datastoreSample['max.provider.writeThroughput.Average']
       }
     ];
 

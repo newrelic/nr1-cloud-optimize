@@ -116,11 +116,24 @@ export default class Cards extends React.PureComponent {
                     <Card
                       key={i}
                       color="green"
-                      style={{ width: g.name === selectedGroup ? '31%' : '' }}
+                      style={{
+                        width: g.name === selectedGroup ? '31%' : ''
+                      }}
                     >
                       <Card.Content>
-                        <Card.Content>
-                          <span style={{ fontSize: '13px' }}>
+                        <Card.Content
+                          style={{
+                            width: g.name === selectedGroup ? '31%' : '',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: '13px'
+                            }}
+                          >
                             {g.name === 'undefined' ? 'Uncategorized' : g.name}
                           </span>
                         </Card.Content>

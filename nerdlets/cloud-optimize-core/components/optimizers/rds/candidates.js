@@ -150,11 +150,11 @@ export default class InstanceCandidates extends React.PureComponent {
                   {renderRowCell(item.memory)}
                   {renderRowCell(item.type)}
                   {renderRowCell(item.region)}
-                  {renderRowCell(item.price)}
+                  {renderRowCell(item.price, null, true)}
 
                   {renderRowCell(item.isStale ? 'STALE' : item.suggestedType)}
-                  {renderRowCell(item.suggestedPrice)}
-                  {renderRowCell(item.potentialSavings)}
+                  {renderRowCell(item.suggestedPrice, null, true)}
+                  {renderRowCell(item.potentialSavings, null, true)}
 
                   <TableRowCell
                     style={{

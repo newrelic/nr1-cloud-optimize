@@ -8,7 +8,9 @@ export default class ExtendedMetrics extends React.PureComponent {
     super(props);
     this.state = {
       cpuChartData: null,
-      connChartData: null
+      connChartData: null,
+      nwChartData: null,
+      rwChartData: null
     };
   }
 
@@ -21,9 +23,15 @@ export default class ExtendedMetrics extends React.PureComponent {
 
     let cpuQuery = `SELECT max(\`provider.cpuUtilization.Average\`) as 'Max CPU utilization (%)' FROM DatastoreSample WHERE provider='RdsDbInstance' TIMESERIES FACET entityName`;
     let connQuery = `SELECT max(\`provider.databaseConnections.Average\`) as 'Max Connections' FROM DatastoreSample WHERE provider='RdsDbInstance' TIMESERIES FACET entityName`;
+    let throughputQuery =
+      "SELECT max(`provider.networkReceiveThroughput.Average`+`provider.networkTransmitThroughput.Average`) as 'networkBytesPerSecond' FROM DatastoreSample  WHERE provider='RdsDbInstance' TIMESERIES FACET entityName";
+    let rwThroughputQuery =
+      "SELECT max(`provider.readThroughput.Average`+`provider.writeThroughput.Average`) as 'rwThroughput' FROM DatastoreSample WHERE provider='RdsDbInstance' TIMESERIES FACET entityName";
 
     const cpuQueryPromises = [];
     const connQueryPromises = [];
+    const nwQueryPromises = [];
+    const rwQueryPromises = [];
 
     Object.keys(accountGroups).forEach(id => {
       Object.keys(accountGroups[id]).forEach(type => {
@@ -32,21 +40,34 @@ export default class ExtendedMetrics extends React.PureComponent {
           .join("','")}'`;
         cpuQuery += ` WHERE entityGuid IN (${guids})`;
         connQuery += ` WHERE entityGuid IN (${guids})`;
+        throughputQuery += ` WHERE entityGuid IN (${guids})`;
+        rwThroughputQuery += ` WHERE entityGuid IN (${guids})`;
+
         cpuQueryPromises.push(
           NrqlQuery.query({ accountId: id, query: cpuQuery })
         );
         connQueryPromises.push(
           NrqlQuery.query({ accountId: id, query: connQuery })
         );
+        nwQueryPromises.push(
+          NrqlQuery.query({ accountId: id, query: throughputQuery })
+        );
+        rwQueryPromises.push(
+          NrqlQuery.query({ accountId: id, query: rwThroughputQuery })
+        );
       });
     });
 
     let cpuChartData = [];
     let connChartData = [];
+    let nwChartData = [];
+    let rwChartData = [];
 
     const allDataPromises = [
       Promise.all(cpuQueryPromises),
-      Promise.all(connQueryPromises)
+      Promise.all(connQueryPromises),
+      Promise.all(nwQueryPromises),
+      Promise.all(rwQueryPromises)
     ];
 
     await Promise.all(allDataPromises).then(d => {
@@ -64,20 +85,31 @@ export default class ExtendedMetrics extends React.PureComponent {
             }
           });
         } else if (i === 2) {
-          // arr.forEach(v => {
-          //   if (v.data) {
-          //     nwChartData = [...nwChartData, ...v.data.chart];
-          //   }
-          // });
+          arr.forEach(v => {
+            if (v.data) {
+              nwChartData = [...nwChartData, ...v.data.chart];
+            }
+          });
+        } else if (i === 3) {
+          arr.forEach(v => {
+            if (v.data) {
+              rwChartData = [...rwChartData, ...v.data.chart];
+            }
+          });
         }
       });
     });
 
-    this.setState({ cpuChartData, connChartData });
+    this.setState({ cpuChartData, connChartData, nwChartData, rwChartData });
   }
 
   render() {
-    const { cpuChartData, connChartData } = this.state;
+    const {
+      cpuChartData,
+      connChartData,
+      nwChartData,
+      rwChartData
+    } = this.state;
 
     return (
       <>
@@ -97,6 +129,30 @@ export default class ExtendedMetrics extends React.PureComponent {
           <div style={{ padding: '10px', height: '100%', width: '100%' }}>
             <Loader active={connChartData === null} />
             <LineChart data={connChartData || []} fullWidth fullHeight />
+          </div>
+        </Card>
+
+        <Card color="black" style={{ height: '270px', width: '47%' }}>
+          <Card.Content>
+            <span style={{ fontSize: '13px' }}>
+              Network TX+RX Throughput Bytes/s
+            </span>
+          </Card.Content>
+          <div style={{ padding: '10px', height: '100%', width: '100%' }}>
+            <Loader active={nwChartData === null} />
+            <LineChart data={nwChartData || []} fullWidth fullHeight />
+          </div>
+        </Card>
+
+        <Card color="black" style={{ height: '270px', width: '47%' }}>
+          <Card.Content>
+            <span style={{ fontSize: '13px' }}>
+              Read/Write Throughput Bytes/s
+            </span>
+          </Card.Content>
+          <div style={{ padding: '10px', height: '100%', width: '100%' }}>
+            <Loader active={rwChartData === null} />
+            <LineChart data={rwChartData || []} fullWidth fullHeight />
           </div>
         </Card>
       </>
