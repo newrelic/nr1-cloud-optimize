@@ -688,10 +688,9 @@ export class DataProvider extends Component {
   processEntity = async (e, optimizationConfig, entityMetricTotals) => {
     // if system sample or vsphere get instance pricing
     if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
-      const selectedType =
-        e.systemSample['latest.instanceType'] ||
-        e['tag.instanceType'] ||
-        e['tag.type'];
+      const selectedType = e.systemSample
+        ? e.systemSample['latest.instanceType']
+        : e['tag.instanceType'] || e['tag.type'];
 
       if (e.cloud && e.cloudRegion && selectedType && selectedType !== 'HOST') {
         // assess cloud instance
