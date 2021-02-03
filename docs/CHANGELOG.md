@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.5.0...v2.6.0) (2021-02-03)
+
+
+### Features
+
+* whats new w/rds optimizer ([5ec4ad2](https://github.com/newrelic/nr1-cloud-optimize/commit/5ec4ad254c18d151ca3ceabfb1dfd76f2e2174bf))
+
 # [2.5.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.4.0...v2.5.0) (2020-11-25)
 
 
