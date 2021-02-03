@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.0...v2.6.1) (2021-02-03)
+
+
+### Bug Fixes
+
+* handle when sysSample unavailable ([5423b48](https://github.com/newrelic/nr1-cloud-optimize/commit/5423b482cf1b7110b5aa382d80509e40161f3e73))
+
 # [2.6.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.5.0...v2.6.0) (2021-02-03)
 
 
