@@ -12,10 +12,11 @@ export default class RdsOptimizer extends React.PureComponent {
         {({
           storeState,
           groupBy,
+          orderBy,
+          sortBy,
           selectedTags,
           timeRange,
-          timepickerEnabled,
-          costPeriod
+          timepickerEnabled
         }) => {
           return (
             <RdsProvider
@@ -24,9 +25,10 @@ export default class RdsOptimizer extends React.PureComponent {
               timepickerEnabled={timepickerEnabled}
             >
               <RdsOptimizations
-                costPeriod={costPeriod}
                 height={height}
                 groupBy={groupBy}
+                sortBy={sortBy}
+                orderBy={orderBy}
                 selectedTags={selectedTags}
               />
             </RdsProvider>

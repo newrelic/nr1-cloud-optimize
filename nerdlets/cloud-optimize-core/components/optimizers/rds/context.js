@@ -30,7 +30,8 @@ const ignoreTags = [
   'memorybytes',
   'instanceid',
   'instance_id',
-  'private'
+  'private',
+  'aws.arn'
 ];
 
 export const loadingMsg = msg => (
@@ -165,7 +166,7 @@ export class RdsProvider extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { timepickerEnabled, timeRange } = this.props;
     if (timepickerEnabled && prevProps.timeRange !== timeRange) {
-      this.setState({ timeRange }, () => {
+      this.setState({ timeRange, fetchingEntities: true }, () => {
         console.log('post process with time');
         this.fetchEntities();
       });
@@ -221,6 +222,7 @@ export class RdsProvider extends Component {
     });
 
   fetchEntities = async nextCursor => {
+    this.props.storeState({ selectedGroup: null });
     const { userConfig } = this.state;
     const searchQuery =
       userConfig && userConfig.entitySearchQuery
@@ -391,6 +393,9 @@ export class RdsProvider extends Component {
           completeEntities[d.index].datastoreSample.vcpu = vcpu;
           completeEntities[d.index].datastoreSample.price =
             d[0].onDemandPrice.pricePerUnit.USD;
+          // duplicated to work with sort by
+          completeEntities[d.index].datastoreSample.currentSpend =
+            d[0].onDemandPrice.pricePerUnit.USD;
         }
       }
     });
@@ -445,7 +450,8 @@ export class RdsProvider extends Component {
       <DataContext.Provider
         value={{
           ...this.state,
-          updateDataState: this.updateDataState
+          updateDataState: this.updateDataState,
+          fetchEntities: this.fetchEntities
         }}
       >
         {/* <ToastContainer

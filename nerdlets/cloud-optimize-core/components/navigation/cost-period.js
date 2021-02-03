@@ -26,22 +26,14 @@ export default class CostPeriod extends React.PureComponent {
         }) => {
           const isLoading = fetchingEntities || postProcessing;
 
-          let display = '';
-
-          if (selectedPage === 'rds-optimizer') display = 'none';
-
           return (
             <div
               className="react-select-input-group"
-              style={{ width: '125px', display }}
+              style={{ width: '125px' }}
             >
               <label>COST PERIOD</label>
               <Select
-                isDisabled={
-                  isLoading ||
-                  selectedPage === 'home' ||
-                  selectedPage === 'rds-optimizer'
-                }
+                isDisabled={isLoading || selectedPage === 'home'}
                 options={timeBucketOptions}
                 onChange={data => updateDataState({ costPeriod: data })}
                 value={costPeriod}

@@ -59,6 +59,14 @@ export default class MenuBar extends React.PureComponent {
             ];
           }
 
+          if (selectedPage === 'rds-optimizer') {
+            sortByOptions = [
+              { value: 'currentSpend', label: 'Current Spend' },
+              { value: 'potentialSavings', label: 'Potential Savings' },
+              { value: 'estimatedNewSpend', label: 'Estimated New Spend' }
+            ];
+          }
+
           return (
             <div>
               <div className="utility-bar">
@@ -68,7 +76,8 @@ export default class MenuBar extends React.PureComponent {
                 >
                   <label>Group By</label>
                   <Select
-                    isDisabled={isLoading || selectedPage === 'home'}
+                    isDisabled={selectedPage === 'home'}
+                    //                    isDisabled={isLoading || selectedPage === 'home'}
                     options={groupByOptionsSet}
                     onChange={g =>
                       updateDataState({
@@ -92,8 +101,7 @@ export default class MenuBar extends React.PureComponent {
                     isDisabled={
                       isLoading ||
                       selectedPage === 'home' ||
-                      selectedPage === 'workload-optimizer' ||
-                      selectedPage === 'rds-optimizer'
+                      selectedPage === 'workload-optimizer'
                     }
                     onChange={s => updateDataState({ sortBy: s })}
                     value={sortBy}

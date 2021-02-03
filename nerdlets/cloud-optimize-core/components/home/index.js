@@ -22,8 +22,7 @@ export default class Home extends React.PureComponent {
 
           return (
             <>
-              {/* <Dimmer active={isLoading}> */}
-              <Dimmer active={false}>
+              <Dimmer active={isLoading}>
                 <Loader size="large">
                   Please be patient while we analyze your entities...
                   <br />

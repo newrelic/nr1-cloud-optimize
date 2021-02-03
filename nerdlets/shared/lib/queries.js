@@ -20,6 +20,14 @@ export const timeRangeToNrql = timeRange => {
   }
 };
 
+export const rdsCountQuery = `{
+  actor {
+    entitySearch(query: "type = 'AWSRDSDBINSTANCE' AND reporting = 'true'") {
+      count
+    }
+  }
+}`;
+
 // collect infra entities and apm entities
 export const entitySearchQuery = (cursor, eSearchQuery) => `{
     actor {

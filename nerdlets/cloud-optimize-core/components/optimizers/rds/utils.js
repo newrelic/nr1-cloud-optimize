@@ -45,8 +45,8 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
       entity.datastoreSample['max.provider.databaseConnections.Average'];
 
     // process rules
-
     entity.failures = [];
+    entity.isStale = false;
 
     // track what to optimize
     let performOptimization = false;
@@ -89,9 +89,65 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
       );
     }
 
-    // stale rules
-    // if any stale instances add stale attribute to entity
-    // TODO
+    const staleChecks = [
+      {
+        msg: 'Stale CPU',
+        staleMetric: 'cpuStale',
+        value: entity.datastoreSample['max.provider.cpuUtilization.Average'],
+        fixed: 2
+      },
+      {
+        msg: 'Stale Memory',
+        staleMetric: 'memoryStale',
+        value: memoryUsage,
+        fixed: 2
+      },
+      {
+        msg: 'Stale Storage',
+        staleMetric: 'storageUsageStale',
+        value: storageUsage,
+        fixed: 2
+      },
+      {
+        msg: 'Stale Network Transmit',
+        staleMetric: 'txStale',
+        value:
+          entity.datastoreSample[
+            'max.provider.networkTransmitThroughput.Average'
+          ] || 0,
+        fixed: 2
+      },
+      {
+        msg: 'Stale Network Recieve',
+        staleMetric: 'rxStale',
+        value:
+          entity.datastoreSample[
+            'max.provider.networkReceiveThroughput.Average'
+          ] || 0,
+        fixed: 2
+      },
+      {
+        msg: 'Stale Connections',
+        staleMetric: 'connectionsStale',
+        value:
+          entity.datastoreSample['max.provider.databaseConnections.Average']
+      }
+    ];
+
+    staleChecks.forEach(s => {
+      const value = s.fixed !== undefined ? (s.value || 0).toFixed(2) : s.value;
+
+      if (
+        rules[s.staleMetric] &&
+        rules[s.staleMetric] !== 0 &&
+        s.value < rules[s.staleMetric]
+      ) {
+        entity.failures.push(`${s.msg} ${value} < ${rules[s.staleMetric]}`);
+        entity.isStale = true;
+        performOptimization = false;
+        entity.potentialSavings = entity.datastoreSample.price;
+      }
+    });
 
     // --------------------
 
@@ -135,15 +191,6 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
                 ) {
                   const productMemory = p.attributes.memory.split(' ')[0];
                   const productVcpu = p.attributes.vcpu;
-
-                  // console.log(
-                  //   entity.name,
-                  //   entity.datastoreSample.vcpu,
-                  //   lowestVcpu,
-                  //   productVcpu,
-                  //   lowestMemory,
-                  //   productMemory
-                  // );
 
                   if (
                     optimize.cpu &&
@@ -198,4 +245,19 @@ export const processOptimizationSuggestions = (entity, index, rules) => {
       resolve();
     }
   });
+};
+
+export const calculateMetricTotals = entities => {
+  const totals = { currentSpend: 0, potentialSavings: 0, estimatedNewSpend: 0 };
+
+  entities.forEach(e => {
+    totals.currentSpend += parseFloat(e.datastoreSample.currentSpend) || 0;
+    totals.potentialSavings += parseFloat(e.potentialSavings) || 0;
+    totals.estimatedNewSpend +=
+      e.suggestedPrice !== undefined && e.suggestedPrice !== null
+        ? parseFloat(e.suggestedPrice)
+        : parseFloat(e.datastoreSample.currentSpend) || 0;
+  });
+
+  return totals;
 };

@@ -2,13 +2,15 @@ import React from 'react';
 import { RdsConsumer } from './context';
 import { Segment, Dimmer, Loader } from 'semantic-ui-react';
 import { tagFilterEntities } from '../../../../shared/lib/utils';
-import Groups from './groups';
+import Cards from './cards';
 import _ from 'lodash';
 import RulesConfiguration from './rules';
+import { calculateMetricTotals } from './utils';
+import InstanceSummary from './summary';
 
 export default class RdsOptimizations extends React.PureComponent {
   render() {
-    const { groupBy, selectedTags, height, costPeriod } = this.props;
+    const { sortBy, groupBy, orderBy, selectedTags, height } = this.props;
 
     return (
       <RdsConsumer>
@@ -39,17 +41,39 @@ export default class RdsOptimizations extends React.PureComponent {
             e => e[`tag.${groupBy.value}`]
           );
 
-          const menuGroupEntities = Object.keys(menuGrouped).map(k => ({
-            entities: tagFilterEntities(menuGrouped[k] || [], selectedTags),
-            name: k
-          }));
+          // group
+          let menuGroupEntities = Object.keys(menuGrouped).map(k => {
+            const filteredEntities = tagFilterEntities(
+              menuGrouped[k] || [],
+              selectedTags
+            );
+
+            return {
+              entities: filteredEntities,
+              metricTotals: calculateMetricTotals(filteredEntities),
+              name: k
+            };
+          });
+
+          // sort
+          if (sortBy) {
+            const order =
+              orderBy.value === 'desc' ? ['desc', 'asc'] : ['asc', 'desc'];
+            menuGroupEntities = _.orderBy(
+              menuGroupEntities,
+              d => d.metricTotals[sortBy.value],
+              order
+            );
+          }
 
           return (
             <>
               {rules && Object.keys(rules).length > 0 ? (
                 <>
+                  <InstanceSummary groups={menuGroupEntities} />
+                  <br />
                   <RulesConfiguration />
-                  <Groups groups={menuGroupEntities} costPeriod={costPeriod} />
+                  <Cards groups={menuGroupEntities} />
                 </>
               ) : (
                 ''
