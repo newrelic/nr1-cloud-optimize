@@ -12,7 +12,7 @@
   "ids": {
     "o": "39d3665c-8670-4f9f-aa79-1a18f23d3960",
     "dv2": "ec734258-b5ca-41b2-84ef-d97352e0ea19",
-    "xps":"e84e5818-7009-4b76-af86-105e1f6abb87"
+    "xps": "e84e5818-7009-4b76-af86-105e1f6abb87"
   },
   "bugs": {
     "email": "opensource@newrelic.com"
@@ -20,12 +20,12 @@
   "dependencies": {
     "async": "^3.2.0",
     "graphql": "^14.7.0",
-    "graphql-tag": "^2.10.1",
+    "graphql-tag": "^2.10.4",
     "js-base64": "^2.6.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.20",
     "prop-types": "^15.6.2",
     "react-json-to-csv": "^1.0.4",
-    "react-select": "^3.0.8",
+    "react-select": "^3.1.1",
     "react-toastify": "^5.5.0",
     "semantic-ui-react": "^0.88.2",
     "semver": "^7.3.2"
