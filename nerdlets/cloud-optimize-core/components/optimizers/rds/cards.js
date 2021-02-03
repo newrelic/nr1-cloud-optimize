@@ -102,7 +102,8 @@ export default class Cards extends React.PureComponent {
                       suggestedType: e.suggestedType,
                       suggestedPrice: e.suggestedPrice,
                       potentialSavings: e.potentialSavings,
-                      isStale: e.isStale || false
+                      isStale: e.isStale || false,
+                      noFailures: e.failures.length
                     };
 
                     if (row.failures.length > 0) {

@@ -36,7 +36,7 @@ export default class InstanceCandidates extends React.PureComponent {
               value={({ item }) => item[attr]}
               sortable
               sortingType={this.state[attr]}
-              sortingOrder={order}
+              sortingOrder={order || undefined}
               onClick={(e, d) => this.onClickTableHeaderCell(attr, e, d)}
             >
               {name}
@@ -73,46 +73,41 @@ export default class InstanceCandidates extends React.PureComponent {
           return (
             <Table items={tableData}>
               <TableHeader>
-                {tableHdrCell('Name', null, 'name', 0)}
+                {tableHdrCell('Name', null, 'name')}
 
-                {tableHdrCell('Connections', null, 'databaseConnections', 1)}
+                {tableHdrCell('Connections', null, 'databaseConnections')}
 
-                {tableHdrCell('CPU %', null, 'cpu', 2)}
+                {tableHdrCell('CPU %', null, 'cpu')}
 
-                {tableHdrCell('Memory %', null, 'memoryUsage', 3)}
+                {tableHdrCell('Memory %', null, 'memoryUsage')}
 
-                {tableHdrCell('Storage Used', null, 'storageUsage', 4)}
+                {tableHdrCell('Storage Used', null, 'storageUsage')}
 
-                {tableHdrCell('TX', null, 'tx', 5)}
+                {tableHdrCell('TX', null, 'tx')}
 
-                {tableHdrCell('RX', null, 'rx', 6)}
+                {tableHdrCell('RX', null, 'rx')}
                 {/* 
                           {tableHdrCell('Read IOPS', null, 'readIops', 7)}
 
                           {tableHdrCell('Write IOPS', null, 'writeIops', 8)} */}
 
-                {tableHdrCell('VCPU', null, 'vcpu', 9)}
+                {tableHdrCell('VCPU', null, 'vcpu')}
 
-                {tableHdrCell('Memory', null, 'memory', 10)}
+                {tableHdrCell('Memory', null, 'memory')}
 
-                {tableHdrCell('Type', null, 'type', 11)}
+                {tableHdrCell('Type', null, 'type')}
 
-                {tableHdrCell('Region', null, 'region', 12)}
+                {tableHdrCell('Region', null, 'region')}
 
-                {tableHdrCell('Price', null, 'price', 13)}
+                {tableHdrCell('Price', null, 'price')}
 
-                {tableHdrCell('Suggested Type', null, 'suggestedType', 14)}
+                {tableHdrCell('Suggested Type', null, 'suggestedType')}
 
-                {tableHdrCell('Suggested Price', null, 'suggestedPrice', 15)}
+                {tableHdrCell('Suggested Price', null, 'suggestedPrice')}
 
-                {tableHdrCell(
-                  'Potential Savings',
-                  null,
-                  'potentialSavings',
-                  16
-                )}
+                {tableHdrCell('Potential Savings', null, 'potentialSavings')}
 
-                {tableHdrCell('Rules Passing', null, 'passing', 17)}
+                {tableHdrCell('Failing Rules', null, 'noFailures')}
               </TableHeader>
 
               {({ item }) => (
@@ -172,7 +167,7 @@ export default class InstanceCandidates extends React.PureComponent {
                         : undefined
                     }
                   >
-                    {item.passing}{' '}
+                    {item.passing === 'FALSE' ? 'FAIL' : 'PASS'}{' '}
                     {item.passing === 'FALSE'
                       ? ` (${item.failures.length})`
                       : ''}

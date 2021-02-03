@@ -156,7 +156,7 @@ export default class RulesConfiguration extends React.PureComponent {
                         <Form.Input
                           width="4"
                           fluid
-                          label="Stale Read Throughput Bytes  %"
+                          label="Stale Read Throughput Bytes"
                           onChange={(e, d) =>
                             updateRule('readStale', setValue(d.value))
                           }
@@ -165,7 +165,7 @@ export default class RulesConfiguration extends React.PureComponent {
                         <Form.Input
                           width="4"
                           fluid
-                          label="Stale Write Throughput Bytes  %"
+                          label="Stale Write Throughput Bytes"
                           onChange={(e, d) =>
                             updateRule('writeStale', setValue(d.value))
                           }
@@ -187,9 +187,13 @@ export default class RulesConfiguration extends React.PureComponent {
                           icon="refresh"
                           color="blue"
                           onClick={async () => {
-                            await storeState({ selectedGroup: null });
+                            await storeState({
+                              selectedGroup: null
+                            });
                             await updateDataState({
-                              fetchingEntities: true
+                              fetchingEntities: true,
+                              rawEntities: [],
+                              entities: []
                             });
                             fetchEntities();
                           }}
