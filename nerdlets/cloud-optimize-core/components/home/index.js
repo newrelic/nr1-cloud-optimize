@@ -61,15 +61,11 @@ export default class Home extends React.PureComponent {
                 </Loader>
               </Dimmer>
 
-              {!isLoading && rawEntities.length === 0 ? (
-                'No entities found'
-              ) : (
-                <Header
-                  as="h3"
-                  content="Optimizers"
-                  style={{ paddingTop: 0, marginTop: 0 }}
-                />
-              )}
+              <Header
+                as="h3"
+                content="Optimizers"
+                style={{ paddingTop: 0, marginTop: 0 }}
+              />
 
               <Tiles />
             </>

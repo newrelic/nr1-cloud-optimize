@@ -14,7 +14,7 @@ export default class RdsOptimizations extends React.PureComponent {
 
     return (
       <RdsConsumer>
-        {({ entities, fetchingEntities, rules }) => {
+        {({ entities, fetchingEntities, rules, entityDataProgress }) => {
           // show loader when fetching
           if (fetchingEntities) {
             return (
@@ -29,6 +29,9 @@ export default class RdsOptimizations extends React.PureComponent {
                 <Dimmer active={fetchingEntities}>
                   <Loader style={{ top: '150px' }} size="big">
                     Fetching Entities
+                    <br />
+                    <br />
+                    {`Entity data ${entityDataProgress.toFixed(2)}%`}
                   </Loader>
                 </Dimmer>
               </Segment>

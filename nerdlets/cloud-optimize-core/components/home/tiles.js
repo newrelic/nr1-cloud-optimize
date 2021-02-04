@@ -6,46 +6,51 @@ import awsIcon from '../../../shared/images/awsIcon.png';
 
 // import awsIcon from '../../../../shared/images/awsIcon.png';
 
-const optimizers = [
-  {
-    name: 'Instances',
-    optimizer: 'instance',
-    desc: 'Optimize your instances and hosts.',
-    cat: 'instances',
-    icon: 'server'
-  },
-  {
-    name: 'Workloads',
-    optimizer: 'workload',
-    desc: 'Optimize the entities within your workloads.',
-    cat: 'workloads',
-    img: workloadsIcon,
-    link: 'https://one.newrelic.com/launcher/workloads.home',
-    linkName: 'Create Workloads'
-  },
-  {
-    name: 'Amazon RDS',
-    optimizer: 'rds',
-    desc: 'Optimize Amazon RDS Entities',
-    cat: 'database',
-    icon: 'database',
-    cloudIcon: awsIcon,
-    link:
-      'https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-rds-monitoring-integration',
-    linkName: 'Integration Docs'
-  }
-];
-
 export default class Tiles extends React.PureComponent {
   render() {
     return (
       <DataConsumer>
         {({
+          runInstanceOptimizer,
           groupedEntities,
           workloadEntities,
           updateDataState,
-          entityCountRds
+          entityCountRds,
+          entityCountHost,
+          entityCountWorkload
         }) => {
+          const optimizers = [
+            {
+              name: 'Instances',
+              optimizer: 'instance',
+              desc: 'Optimize your instances and hosts.',
+              cat: 'instances',
+              icon: 'server',
+              run: runInstanceOptimizer
+            },
+            {
+              name: 'Workloads',
+              optimizer: 'workload',
+              desc: 'Optimize the entities within your workloads.',
+              cat: 'workloads',
+              img: workloadsIcon,
+              link: 'https://one.newrelic.com/launcher/workloads.home',
+              linkName: 'Create Workloads',
+              run: runInstanceOptimizer
+            },
+            {
+              name: 'Amazon RDS',
+              optimizer: 'rds',
+              desc: 'Optimize Amazon RDS Entities',
+              cat: 'database',
+              icon: 'database',
+              cloudIcon: awsIcon,
+              link:
+                'https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-rds-monitoring-integration',
+              linkName: 'Integration Docs'
+            }
+          ];
+
           return (
             <>
               {/* <Message floating style={{ borderRadius: 0 }}>
@@ -62,6 +67,10 @@ export default class Tiles extends React.PureComponent {
 
                   if (o.optimizer === 'rds') {
                     count = entityCountRds;
+                  } else if (o.optimizer === 'instance') {
+                    count = entityCountHost;
+                  } else if (o.optimizer === 'workload') {
+                    count = entityCountWorkload;
                   } else {
                     categoryTypes[o.cat].forEach(type => {
                       count += (groupedEntities[type] || []).length;
@@ -72,12 +81,20 @@ export default class Tiles extends React.PureComponent {
                     <Card key={i}>
                       <Card.Content>
                         <Card.Header
-                          style={{ cursor: 'pointer' }}
-                          onClick={() =>
-                            updateDataState({
-                              selectedPage: `${o.optimizer}-optimizer`,
-                              selectedWorkload: null
-                            })
+                          style={{ cursor: count > 0 ? 'pointer' : '' }}
+                          onClick={
+                            count > 0
+                              ? () => {
+                                  if (o.run) {
+                                    o.run(`${o.optimizer}-optimizer`);
+                                  } else {
+                                    updateDataState({
+                                      selectedPage: `${o.optimizer}-optimizer`,
+                                      selectedWorkload: null
+                                    });
+                                  }
+                                }
+                              : undefined
                           }
                         >
                           {o.name}&nbsp;

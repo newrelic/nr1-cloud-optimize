@@ -149,7 +149,8 @@ export class RdsProvider extends Component {
       rawEntities: [],
       entities: [],
       timeRange: null,
-      rules: {}
+      rules: {},
+      entityDataProgress: 0
     };
   }
 
@@ -158,7 +159,7 @@ export class RdsProvider extends Component {
     await this.setRdsUserConfig(rdsUserConfig);
 
     // fetch entities
-    this.setState({ fetchingEntities: true }, () => {
+    this.setState({ fetchingEntities: true, entityDataProgress: 0 }, () => {
       this.fetchEntities();
     });
   }
@@ -262,15 +263,14 @@ export class RdsProvider extends Component {
           fetchingEntities: false,
           entities: completeEntities,
           tags,
-          groupByOptions
+          groupByOptions,
+          entityDataProgress: 0
         },
         () => {
           this.props.storeState({
             tagsRds: tags,
             groupByOptionsRds: groupByOptions
           });
-          console.log(this.state.entities);
-          // this.postProcessEntities()
         }
       );
     }
@@ -339,8 +339,9 @@ export class RdsProvider extends Component {
         engine = engine.replace('aurora-', '');
       }
 
-      if (engine === 'postgres') engine = 'postgresql';
       if (engine.includes('sqlserver')) engine = 'sqlserver';
+      if (engine.includes('oracle')) engine = 'oracle';
+      if (engine.includes('postgres')) engine = 'postgresql';
 
       if (engine === 'aurora') {
         if (engineVersion.includes('mysql')) {
@@ -407,8 +408,6 @@ export class RdsProvider extends Component {
     );
 
     await Promise.all(optimizationPromises);
-
-    console.log(completeEntities);
 
     // generate tags
     const tags = [];

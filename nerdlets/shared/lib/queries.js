@@ -28,6 +28,22 @@ export const rdsCountQuery = `{
   }
 }`;
 
+export const hostVmCountQuery = `{
+  actor {
+    entitySearch(query: "(domain IN ('INFRA') AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST')) AND reporting = 'true'") {
+      count
+    }
+  }
+}`;
+
+export const workloadCountQuery = `{
+  actor {
+    entitySearch(query: "type IN ('WORKLOAD')") {
+      count
+    }
+  }
+}`;
+
 // collect infra entities and apm entities
 export const entitySearchQuery = (cursor, eSearchQuery) => `{
     actor {
