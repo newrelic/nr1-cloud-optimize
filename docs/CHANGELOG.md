@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.2...v2.7.0) (2021-02-04)
+
+
+### Features
+
+* load & perf improvements ([67d4660](https://github.com/newrelic/nr1-cloud-optimize/commit/67d4660e570184a4dba5b8db124422de1eb8f7fd))
+
 ## [2.6.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.1...v2.6.2) (2021-02-04)
 
 
