@@ -1,4 +1,4 @@
-/* eslint 
+/* eslint
 no-console: 0,
 no-async-promise-executor: 0
 */
@@ -88,7 +88,6 @@ export default class WorkloadCosts extends React.PureComponent {
                       <Dropdown
                         style={{ width: '250px' }}
                         className="singledrop"
-                        label="Select Workload"
                         placeholder="Select Workload"
                         search
                         selection
@@ -142,7 +141,6 @@ export default class WorkloadCosts extends React.PureComponent {
                           <Dropdown
                             style={{ width: '250px' }}
                             className="singledrop"
-                            label="Select Cost Category"
                             placeholder="Select Cost Category"
                             search
                             selection

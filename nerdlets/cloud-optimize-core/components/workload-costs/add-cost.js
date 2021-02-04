@@ -6,7 +6,7 @@ import { writeEntityDocument } from '../../../shared/lib/utils';
 const periods = Array.from(Array(61).keys());
 periods.shift();
 
-const periodOptions = periods.map(p => ({
+const periodOptions = periods.map((p) => ({
   key: p,
   text: p,
   value: p
@@ -96,7 +96,7 @@ export default class AddCost extends React.PureComponent {
       <DataConsumer>
         {({ workloadEntities, selectedWorkload, getWorkloadDocs }) => {
           const dc = workloadEntities.filter(
-            d => d.name === selectedWorkload
+            (d) => d.name === selectedWorkload
           )[0];
 
           return (
@@ -143,7 +143,6 @@ export default class AddCost extends React.PureComponent {
                       <Dropdown
                         className="singledrop"
                         width="8"
-                        label=""
                         placeholder="Months"
                         search
                         selection
