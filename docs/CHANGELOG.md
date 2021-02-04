@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.1...v2.6.2) (2021-02-04)
+
+
+### Bug Fixes
+
+* additional instanceType check ([88c7e64](https://github.com/newrelic/nr1-cloud-optimize/commit/88c7e6476a37838080c183c16751de3a1eddf2bd))
+
 ## [2.6.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.0...v2.6.1) (2021-02-03)
 
 
