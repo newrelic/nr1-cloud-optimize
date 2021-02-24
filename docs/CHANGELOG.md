@@ -1,3 +1,73 @@
+# [2.7.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.2...v2.7.0) (2021-02-04)
+
+
+### Features
+
+* load & perf improvements ([67d4660](https://github.com/newrelic/nr1-cloud-optimize/commit/67d4660e570184a4dba5b8db124422de1eb8f7fd))
+
+## [2.6.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.1...v2.6.2) (2021-02-04)
+
+
+### Bug Fixes
+
+* additional instanceType check ([88c7e64](https://github.com/newrelic/nr1-cloud-optimize/commit/88c7e6476a37838080c183c16751de3a1eddf2bd))
+
+## [2.6.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.0...v2.6.1) (2021-02-03)
+
+
+### Bug Fixes
+
+* handle when sysSample unavailable ([5423b48](https://github.com/newrelic/nr1-cloud-optimize/commit/5423b482cf1b7110b5aa382d80509e40161f3e73))
+
+# [2.6.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.5.0...v2.6.0) (2021-02-03)
+
+
+### Features
+
+* whats new w/rds optimizer ([5ec4ad2](https://github.com/newrelic/nr1-cloud-optimize/commit/5ec4ad254c18d151ca3ceabfb1dfd76f2e2174bf))
+
+# [2.5.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.4.0...v2.5.0) (2020-11-25)
+
+
+### Features
+
+* update eslint config ([aa6377a](https://github.com/newrelic/nr1-cloud-optimize/commit/aa6377a4ff432aa0b59f85c5c14638730bde453f))
+
+# [2.4.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.3.0...v2.4.0) (2020-11-25)
+
+
+### Features
+
+* allow user entity search query ([e2dd42e](https://github.com/newrelic/nr1-cloud-optimize/commit/e2dd42edc1a01abf63e9b90b1fce4797e8de68e5))
+
+# [2.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.2.0...v2.3.0) (2020-11-25)
+
+
+### Features
+
+* use cpusPerVm & memPerVm for candidates ([5842126](https://github.com/newrelic/nr1-cloud-optimize/commit/5842126b5f5b289372ad1fbaef1558bbcba7aae5))
+
+# [2.2.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.4...v2.2.0) (2020-11-24)
+
+
+### Features
+
+* export csv, improve instance matching ([3e8793b](https://github.com/newrelic/nr1-cloud-optimize/commit/3e8793bc71924a02074debbf286555fd3db16bbc))
+
+## [2.1.4](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.3...v2.1.4) (2020-09-02)
+
+
+### Bug Fixes
+
+* test release, changelog, and repolinter with new default branch ([71cc6e9](https://github.com/newrelic/nr1-cloud-optimize/commit/71cc6e9ff7237765ac50cdaac13b6feb85e2ea1d))
+
+## [2.1.3](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.2...v2.1.3) (2020-09-02)
+
+
+### Bug Fixes
+
+* change master to main ([39820a0](https://github.com/newrelic/nr1-cloud-optimize/commit/39820a04e36426e5bf77880976a85dfb1223e2f4))
+
 ## [2.1.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.1...v2.1.2) (2020-08-24)
 
 

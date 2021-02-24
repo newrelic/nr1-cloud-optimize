@@ -2,12 +2,17 @@
   "private": true,
   "name": "nr1-cloud-optimize",
   "description": "Nerdpack cloud-optimize",
-  "version": "2.1.2",
+  "version": "2.7.0",
   "scripts": {
     "start": "nr1 nerdpack:serve",
     "test": "exit 0",
     "eslint-check": "eslint nerdlets/",
     "eslint-fix": "eslint nerdlets/ --fix"
+  },
+  "ids": {
+    "o": "39d3665c-8670-4f9f-aa79-1a18f23d3960",
+    "dv2": "ec734258-b5ca-41b2-84ef-d97352e0ea19",
+    "xps": "e84e5818-7009-4b76-af86-105e1f6abb87"
   },
   "bugs": {
     "email": "opensource@newrelic.com"
@@ -15,14 +20,12 @@
   "dependencies": {
     "async": "^3.2.0",
     "graphql": "^14.7.0",
-    "graphql-tag": "^2.10.1",
-    "js-base64": "^2.6.4",
-    "lodash": "^4.17.19",
+    "graphql-tag": "^2.10.4",
+    "js-base64": "^2.6.0",
+    "lodash": "^4.17.20",
     "prop-types": "^15.6.2",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
     "react-json-to-csv": "^1.0.4",
-    "react-select": "^3.0.8",
+    "react-select": "^3.1.1",
     "react-toastify": "^5.5.0",
     "semantic-ui-react": "^0.88.2",
     "semver": "^7.3.2"
@@ -33,10 +36,12 @@
     "not dead"
   ],
   "devDependencies": {
-    "@newrelic/eslint-plugin-newrelic": "^0.3.0",
-    "@semantic-release/changelog": "^3.0.5",
-    "@semantic-release/git": "^7.0.18",
+    "@newrelic/eslint-plugin-newrelic": "^0.3.1",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
     "eslint": "^6.8.0",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "react": "16.6.3",
+    "react-dom": "16.6.3"
   }
 }

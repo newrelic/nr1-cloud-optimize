@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Mon Aug 24 2020 00:44:28 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Wed Feb 03 2021 12:53:10 GMT+0000 (Coordinated Universal Time)",
   "projectName": "nr1-cloud-optimize",
   "projectUrl": "https://github.com/newrelic/nr1-cloud-optimize",
   "includeDev": true,
@@ -16,15 +16,15 @@
       "licenseTextSource": "file",
       "publisher": "Caolan McMahon"
     },
-    "graphql-tag@2.10.3": {
+    "graphql-tag@2.11.0": {
       "name": "graphql-tag",
-      "version": "2.10.3",
-      "range": "^2.10.1",
+      "version": "2.11.0",
+      "range": "^2.10.4",
       "licenses": "MIT",
       "repoUrl": "https://github.com/apollographql/graphql-tag",
-      "versionedRepoUrl": "https://github.com/apollographql/graphql-tag/tree/v2.10.3",
+      "versionedRepoUrl": "https://github.com/apollographql/graphql-tag/tree/v2.11.0",
       "licenseFile": "node_modules/graphql-tag/LICENSE",
-      "licenseUrl": "https://github.com/apollographql/graphql-tag/blob/v2.10.3/LICENSE",
+      "licenseUrl": "https://github.com/apollographql/graphql-tag/blob/v2.11.0/LICENSE",
       "licenseTextSource": "file"
     },
     "graphql@14.7.0": {
@@ -50,15 +50,15 @@
       "licenseTextSource": "file",
       "publisher": "Dan Kogai"
     },
-    "lodash@4.17.19": {
+    "lodash@4.17.20": {
       "name": "lodash",
-      "version": "4.17.19",
-      "range": "^4.17.19",
+      "version": "4.17.20",
+      "range": "^4.17.20",
       "licenses": "MIT",
       "repoUrl": "https://github.com/lodash/lodash",
-      "versionedRepoUrl": "https://github.com/lodash/lodash/tree/v4.17.19",
+      "versionedRepoUrl": "https://github.com/lodash/lodash/tree/v4.17.20",
       "licenseFile": "node_modules/lodash/LICENSE",
-      "licenseUrl": "https://github.com/lodash/lodash/blob/v4.17.19/LICENSE",
+      "licenseUrl": "https://github.com/lodash/lodash/blob/v4.17.20/LICENSE",
       "licenseTextSource": "file",
       "publisher": "John-David Dalton",
       "email": "john.david.dalton@gmail.com"
@@ -72,17 +72,6 @@
       "versionedRepoUrl": "https://github.com/facebook/prop-types/tree/v15.7.2",
       "licenseFile": "node_modules/prop-types/LICENSE",
       "licenseUrl": "https://github.com/facebook/prop-types/blob/v15.7.2/LICENSE",
-      "licenseTextSource": "file"
-    },
-    "react-dom@16.13.1": {
-      "name": "react-dom",
-      "version": "16.13.1",
-      "range": "^16.6.3",
-      "licenses": "MIT",
-      "repoUrl": "https://github.com/facebook/react",
-      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.13.1",
-      "licenseFile": "node_modules/react-dom/LICENSE",
-      "licenseUrl": "https://github.com/facebook/react/blob/v16.13.1/LICENSE",
       "licenseTextSource": "file"
     },
     "react-json-to-csv@1.0.4": {
@@ -99,15 +88,15 @@
       "email": "coston.perkins@ua.edu",
       "url": "https://coston.io"
     },
-    "react-select@3.1.0": {
+    "react-select@3.2.0": {
       "name": "react-select",
-      "version": "3.1.0",
-      "range": "^3.0.8",
+      "version": "3.2.0",
+      "range": "^3.1.1",
       "licenses": "MIT",
-      "repoUrl": "https://github.com/JedWatson/react-select",
-      "versionedRepoUrl": "https://github.com/JedWatson/react-select/tree/v3.1.0",
+      "repoUrl": "https://github.com/JedWatson/react-select/tree/master/packages/react-select",
+      "versionedRepoUrl": "https://github.com/JedWatson/react-select/tree/master/packages/react-select/tree/v3.2.0",
       "licenseFile": "node_modules/react-select/README.md",
-      "licenseUrl": "https://github.com/JedWatson/react-select/blob/v3.1.0/README.md",
+      "licenseUrl": "https://github.com/JedWatson/react-select/tree/master/packages/react-select/blob/v3.2.0/README.md",
       "licenseTextSource": "spdx",
       "publisher": "Jed Watson"
     },
@@ -124,17 +113,6 @@
       "publisher": "Fadi Khadra",
       "email": "fdkhadra@gmail.com",
       "url": "https://fkhadra.github.io"
-    },
-    "react@16.13.1": {
-      "name": "react",
-      "version": "16.13.1",
-      "range": "^16.6.3",
-      "licenses": "MIT",
-      "repoUrl": "https://github.com/facebook/react",
-      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.13.1",
-      "licenseFile": "node_modules/react/LICENSE",
-      "licenseUrl": "https://github.com/facebook/react/blob/v16.13.1/LICENSE",
-      "licenseTextSource": "file"
     },
     "semantic-ui-react@0.88.2": {
       "name": "semantic-ui-react",
@@ -162,40 +140,40 @@
     }
   },
   "devDependencies": {
-    "@newrelic/eslint-plugin-newrelic@0.3.0": {
+    "@newrelic/eslint-plugin-newrelic@0.3.1": {
       "name": "@newrelic/eslint-plugin-newrelic",
-      "version": "0.3.0",
-      "range": "^0.3.0",
+      "version": "0.3.1",
+      "range": "^0.3.1",
       "licenses": "Apache-2.0",
       "repoUrl": "https://github.com/NewRelic/eslint-plugin-newrelic",
-      "versionedRepoUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/tree/v0.3.0",
+      "versionedRepoUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/tree/v0.3.1",
       "licenseFile": "node_modules/@newrelic/eslint-plugin-newrelic/LICENSE",
-      "licenseUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/blob/v0.3.0/LICENSE",
+      "licenseUrl": "https://github.com/NewRelic/eslint-plugin-newrelic/blob/v0.3.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "New Relic"
     },
-    "@semantic-release/changelog@3.0.6": {
+    "@semantic-release/changelog@5.0.1": {
       "name": "@semantic-release/changelog",
-      "version": "3.0.6",
-      "range": "^3.0.5",
+      "version": "5.0.1",
+      "range": "^5.0.1",
       "licenses": "MIT",
       "repoUrl": "https://github.com/semantic-release/changelog",
-      "versionedRepoUrl": "https://github.com/semantic-release/changelog/tree/v3.0.6",
+      "versionedRepoUrl": "https://github.com/semantic-release/changelog/tree/v5.0.1",
       "licenseFile": "node_modules/@semantic-release/changelog/LICENSE",
-      "licenseUrl": "https://github.com/semantic-release/changelog/blob/v3.0.6/LICENSE",
+      "licenseUrl": "https://github.com/semantic-release/changelog/blob/v5.0.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Pierre Vanduynslager",
       "url": "https://github.com/pvdlg"
     },
-    "@semantic-release/git@7.0.18": {
+    "@semantic-release/git@9.0.0": {
       "name": "@semantic-release/git",
-      "version": "7.0.18",
-      "range": "^7.0.18",
+      "version": "9.0.0",
+      "range": "^9.0.0",
       "licenses": "MIT",
       "repoUrl": "https://github.com/semantic-release/git",
-      "versionedRepoUrl": "https://github.com/semantic-release/git/tree/v7.0.18",
+      "versionedRepoUrl": "https://github.com/semantic-release/git/tree/v9.0.0",
       "licenseFile": "node_modules/@semantic-release/git/LICENSE",
-      "licenseUrl": "https://github.com/semantic-release/git/blob/v7.0.18/LICENSE",
+      "licenseUrl": "https://github.com/semantic-release/git/blob/v9.0.0/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Pierre Vanduynslager",
       "url": "https://github.com/pvdlg"
@@ -224,6 +202,28 @@
       "licenseUrl": "https://github.com/prettier/prettier/blob/v1.19.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "James Long"
+    },
+    "react-dom@16.6.3": {
+      "name": "react-dom",
+      "version": "16.6.3",
+      "range": "16.6.3",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/facebook/react",
+      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.6.3",
+      "licenseFile": "node_modules/react-dom/LICENSE",
+      "licenseUrl": "https://github.com/facebook/react/blob/v16.6.3/LICENSE",
+      "licenseTextSource": "file"
+    },
+    "react@16.6.3": {
+      "name": "react",
+      "version": "16.6.3",
+      "range": "16.6.3",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/facebook/react",
+      "versionedRepoUrl": "https://github.com/facebook/react/tree/v16.6.3",
+      "licenseFile": "node_modules/react/LICENSE",
+      "licenseUrl": "https://github.com/facebook/react/blob/v16.6.3/LICENSE",
+      "licenseTextSource": "file"
     }
   }
 }

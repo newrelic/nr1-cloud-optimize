@@ -3,7 +3,7 @@ name: Pull Request
 on:
   pull_request:
     branches:
-      - master
+      - main
 
   repository_dispatch:
     types: [pull-request]
@@ -127,7 +127,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Validate Open Source Files
-        uses: newrelic/validate-nerdpack-action@v1.0.2
+        uses: newrelic/validate-nerdpack-action@v1
 
       - name: Install NR1 CLI
         run: |

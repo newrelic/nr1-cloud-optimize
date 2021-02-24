@@ -22,6 +22,7 @@ export default class InstanceCards extends React.PureComponent {
           );
 
           let groupData = null;
+
           return (
             <>
               <Card.Group centered>

@@ -20,10 +20,35 @@ export const timeRangeToNrql = timeRange => {
   }
 };
 
+export const rdsCountQuery = `{
+  actor {
+    entitySearch(query: "type = 'AWSRDSDBINSTANCE' AND reporting = 'true'") {
+      count
+    }
+  }
+}`;
+
+export const hostVmCountQuery = `{
+  actor {
+    entitySearch(query: "(domain IN ('INFRA') AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST')) AND reporting = 'true'") {
+      count
+    }
+  }
+}`;
+
+export const workloadCountQuery = `{
+  actor {
+    entitySearch(query: "type IN ('WORKLOAD')") {
+      count
+    }
+  }
+}`;
+
 // collect infra entities and apm entities
-export const entitySearchQuery = cursor => `{
+export const entitySearchQuery = (cursor, eSearchQuery) => `{
     actor {
-      entitySearch(query: "(domain IN ('INFRA') AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST')) OR (type IN ('WORKLOAD')) OR (domain IN ('APM') AND type IN ('APPLICATION')) AND reporting = 'true'") {
+      entitySearch(query: "(domain IN ('INFRA') AND type IN ('HOST', 'VSPHEREVM', 'VSPHEREHOST')) OR (type IN ('WORKLOAD')) OR (domain IN ('APM') AND type IN ('APPLICATION')) AND reporting = 'true' ${eSearchQuery ||
+        ''}") {
         count
         results${cursor ? `(cursor: "${cursor}")` : ''} {
           nextCursor

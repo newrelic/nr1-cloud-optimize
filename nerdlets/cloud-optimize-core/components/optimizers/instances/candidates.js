@@ -3,6 +3,7 @@ import { Icon, Segment } from 'semantic-ui-react';
 import { DataConsumer, categoryTypes } from '../../../context/data';
 import { adjustCost, formatValue } from '../../../../shared/lib/utils';
 import { getIcon } from '../../../strategies/entity-handler';
+import CsvDownload from 'react-json-to-csv';
 import {
   Table,
   TableHeader,
@@ -87,25 +88,11 @@ export default class InstanceCandidates extends React.PureComponent {
             </TableHeaderCell>
           );
 
-          const renderOptimizeRowHdrCell = (name, attr, order) => {
-            return (
-              <TableHeaderCell
-                value={({ item }) => getOptimizedData(item, attr)}
-                sortable
-                sortingType={this.state[`optimize_${attr}`]}
-                sortingOrder={order}
-                onClick={(e, d) =>
-                  this.onClickTableHeaderCell(`optimize_${attr}`, e, d)
-                }
-              >
-                {name}
-              </TableHeaderCell>
-            );
-          };
-
           const renderRowCell = (v, guid, cost) => (
             <TableRowCell
-              onClick={guid ? () => navigation.openStackedEntity(guid) : null}
+              onClick={
+                guid ? () => navigation.openStackedEntity(guid) : undefined
+              }
               style={{
                 fontSize: '12px',
                 cursor: guid ? 'pointer' : '',
@@ -118,166 +105,185 @@ export default class InstanceCandidates extends React.PureComponent {
             </TableRowCell>
           );
 
+          const entityItems = group.entities.filter(e =>
+            categoryTypes.instances.includes(e.type)
+          );
+
+          const tableData = entityItems.map(e => {
+            const s = getData('system', e);
+            const metric = attr => (s && s[attr] ? s[attr].toFixed(2) : '-');
+            const instance = attr =>
+              e.instanceResult ? e.instanceResult[attr] : '-';
+
+            const cpusPerVm = instance('cpusPerVm');
+            const memPerVm = instance('memPerVm');
+
+            return {
+              cloud: e.cloud,
+              spot: e.spot,
+              name: e.name,
+              'max.cpuPercent': metric('max.cpuPercent'),
+              'max.memoryPercent': metric('max.memoryPercent'),
+              'max.transmitBytesPerSecond': metric(
+                'max.transmitBytesPerSecond'
+              ),
+              'max.receiveBytesPerSecond': metric('max.receiveBytesPerSecond'),
+              coreCount: cpusPerVm || e.coreCount,
+              memoryGb: memPerVm || (e.memoryGb || 0).toFixed(2),
+              instanceType: instance('type'),
+              price: e.cloud
+                ? instance('onDemandPrice')
+                : e.currentSpend || '-',
+              suggestedType: getOptimizedData(e, 'type'),
+              suggestedPrice: getOptimizedData(e, 'onDemandPrice'),
+              potentialSavings: e.potentialSavings || '-',
+              potentialSavingsWithSpot: e.potentialSavingsWithSpot || '-'
+            };
+          });
+
           return (
-            <Segment raised>
-              {group.entities.length > 0 ? (
-                <Table
-                  items={group.entities.filter(e =>
-                    categoryTypes.instances.includes(e.type)
-                  )}
+            <>
+              <div style={{ paddingTop: '15px', paddingBottom: '30px' }}>
+                <CsvDownload
+                  style={{
+                    display: 'inline-block',
+                    fontSize: '12px',
+                    padding: '6px 24px',
+                    cursor: 'pointer',
+                    float: 'right'
+                  }}
+                  data={tableData}
                 >
-                  <TableHeader>
-                    <TableHeaderCell
-                      value={({ item }) => item.cloud}
-                      sortable
-                      sortingType={this.state.cloud}
-                      sortingOrder={0}
-                      onClick={(e, d) =>
-                        this.onClickTableHeaderCell('cloud', e, d)
-                      }
-                      style={{ paddingLeft: '10px' }}
-                      width="50px"
-                    />
+                  Export CSV
+                </CsvDownload>
+              </div>
+              <Segment raised>
+                {group.entities.length > 0 ? (
+                  <Table items={tableData}>
+                    <TableHeader>
+                      <TableHeaderCell
+                        value={({ item }) => item.cloud}
+                        sortable
+                        sortingType={this.state.cloud}
+                        sortingOrder={0}
+                        onClick={(e, d) =>
+                          this.onClickTableHeaderCell('cloud', e, d)
+                        }
+                        style={{ paddingLeft: '10px' }}
+                        width="55px"
+                      />
+                      {tableHdrCell('Spot?', null, 'spot', 2)}
+                      <TableHeaderCell
+                        value={({ item }) => item.name}
+                        sortable
+                        sortingType={this.state.name}
+                        sortingOrder={1}
+                        onClick={(e, d) =>
+                          this.onClickTableHeaderCell('name', e, d)
+                        }
+                        width="250px"
+                      >
+                        Name
+                      </TableHeaderCell>
+                      {tableHdrCell(
+                        'Max Cpu Percent',
+                        null,
+                        'max.cpuPercent',
+                        2
+                      )}
+                      {tableHdrCell(
+                        'Max Mem Percent',
+                        null,
+                        'max.memoryPercent',
+                        3
+                      )}
+                      {tableHdrCell(
+                        'Max Tx Bytes Per Second',
+                        null,
+                        'max.transmitBytesPerSecond',
+                        4
+                      )}
+                      {tableHdrCell(
+                        'Max Rx Bytes Per Second',
+                        null,
+                        'max.receiveBytesPerSecond',
+                        5
+                      )}
+                      {tableHdrCell('Num Cpu', null, 'coreCount', 6)}
+                      {tableHdrCell('Mem Gb', null, 'memoryGb', 7)}
+                      {tableHdrCell('Instance Type', null, 'instanceType', 8)}
+                      {tableHdrCell('Price', null, 'onDemandPrice', 9)}
+                      {tableHdrCell(
+                        'Suggested Instance Type',
+                        null,
+                        'suggestedType',
+                        10
+                      )}
+                      {tableHdrCell(
+                        'Suggested Price Type',
+                        null,
+                        'suggestedPrice',
+                        10
+                      )}
 
-                    <TableHeaderCell
-                      value={({ item }) => item.name}
-                      sortable
-                      sortingType={this.state.name}
-                      sortingOrder={1}
-                      onClick={(e, d) =>
-                        this.onClickTableHeaderCell('name', e, d)
-                      }
-                      width="250px"
-                    >
-                      Name
-                    </TableHeaderCell>
-                    {tableHdrCell(
-                      'Max Cpu Percent',
-                      'system',
-                      'max.cpuPercent',
-                      2
-                    )}
-                    {tableHdrCell(
-                      'Max Mem Percent',
-                      'system',
-                      'max.memoryPercent',
-                      3
-                    )}
-                    {tableHdrCell(
-                      'Max Tx Bytes Per Second',
-                      'system',
-                      'max.transmitBytesPerSecond',
-                      4
-                    )}
-                    {tableHdrCell(
-                      'Max Rx Bytes Per Second',
-                      'system',
-                      'max.receiveBytesPerSecond',
-                      5
-                    )}
-                    {tableHdrCell('Num Cpu', null, 'coreCount', 6)}
-                    {tableHdrCell('Mem Gb', null, 'memoryGb', 7)}
-                    {tableHdrCell(
-                      'Instance Type',
-                      'instanceResult',
-                      'instanceType',
-                      8
-                    )}
-                    {tableHdrCell(
-                      'Price',
-                      'instanceResult',
-                      'onDemandPrice',
-                      9
-                    )}
-                    {renderOptimizeRowHdrCell(
-                      'Suggested Instance Type',
-                      'type',
-                      10
-                    )}
-                    {renderOptimizeRowHdrCell(
-                      'Suggested Price',
-                      'onDemandPrice',
-                      11
-                    )}
-                    {tableHdrCell('Savings', null, 'potentialSavings', 12)}
-                    {tableHdrCell(
-                      'Savings w/Spot',
-                      null,
-                      'potentialSavingsWithSpot',
-                      12
-                    )}
-                  </TableHeader>
+                      {tableHdrCell('Savings', null, 'potentialSavings', 12)}
+                      {tableHdrCell(
+                        'Savings w/Spot',
+                        null,
+                        'potentialSavingsWithSpot',
+                        12
+                      )}
+                    </TableHeader>
 
-                  {({ item }) => {
-                    const s = getData('system', item);
-                    const metric = attr =>
-                      s && s[attr] ? s[attr].toFixed(2) : '-';
-                    const instance = attr =>
-                      item.instanceResult ? item.instanceResult[attr] : '-';
-                    const icon = getIcon(item);
+                    {({ item }) => {
+                      const icon = getIcon(item);
 
-                    return (
-                      <TableRow>
-                        {renderRowCell(
-                          icon ? (
-                            <img
-                              src={icon}
-                              height="25px"
-                              style={{ paddingLeft: '10px' }}
-                            />
-                          ) : (
-                            <>
-                              <Icon
-                                name="server"
-                                size="large"
+                      return (
+                        <TableRow>
+                          {renderRowCell(
+                            icon ? (
+                              <img
+                                src={icon}
+                                height="25px"
                                 style={{ paddingLeft: '10px' }}
                               />
-                            </>
-                          )
-                        )}
-                        {renderRowCell(item.name, item.guid)}
-                        {renderRowCell(metric('max.cpuPercent'))}
-                        {renderRowCell(metric('max.memoryPercent'))}
-                        {renderRowCell(metric('max.transmitBytesPerSecond'))}
-                        {renderRowCell(metric('max.receiveBytesPerSecond'))}
-                        {renderRowCell(item.coreCount)}
-                        {renderRowCell((item.memoryGb || 0).toFixed(2))}
-                        {renderRowCell(instance('type'))}
-                        {renderRowCell(
-                          item.cloud
-                            ? instance('onDemandPrice')
-                            : item.currentSpend || '-',
-                          null,
-                          true
-                        )}
-                        {renderRowCell(
-                          getOptimizedData(item, 'type'),
-                          null,
-                          true
-                        )}
-                        {renderRowCell(
-                          getOptimizedData(item, 'onDemandPrice'),
-                          null,
-                          true
-                        )}
-                        {renderRowCell(
-                          item.potentialSavings || '-',
-                          null,
-                          true
-                        )}
-                        {renderRowCell(
-                          item.potentialSavingsWithSpot || '-',
-                          null,
-                          true
-                        )}
-                      </TableRow>
-                    );
-                  }}
-                </Table>
-              ) : (
-                'No entities, check your tag filters.'
-              )}
-            </Segment>
+                            ) : (
+                              <>
+                                <Icon
+                                  name="server"
+                                  size="large"
+                                  style={{ paddingLeft: '10px' }}
+                                />
+                              </>
+                            )
+                          )}
+                          {renderRowCell(item.spot)}
+                          {renderRowCell(item.name, item.guid)}
+                          {renderRowCell(item['max.cpuPercent'])}
+                          {renderRowCell(item['max.memoryPercent'])}
+                          {renderRowCell(item['max.transmitBytesPerSecond'])}
+                          {renderRowCell(item['max.receiveBytesPerSecond'])}
+                          {renderRowCell(item.coreCount)}
+                          {renderRowCell(item.memoryGb)}
+                          {renderRowCell(item.instanceType)}
+                          {renderRowCell(item.price, null, true)}
+                          {renderRowCell(item.suggestedType, null, true)}
+                          {renderRowCell(item.suggestedPrice, null, true)}
+                          {renderRowCell(item.potentialSavings, null, true)}
+                          {renderRowCell(
+                            item.potentialSavingsWithSpot,
+                            null,
+                            true
+                          )}
+                        </TableRow>
+                      );
+                    }}
+                  </Table>
+                ) : (
+                  'No entities, check your tag filters.'
+                )}
+              </Segment>
+            </>
           );
         }}
       </DataConsumer>

@@ -25,7 +25,10 @@ import {
   entitySearchQuery,
   getWorkloadTags,
   workloadQueries,
-  getEntityDataQuery
+  getEntityDataQuery,
+  rdsCountQuery,
+  hostVmCountQuery,
+  workloadCountQuery
 } from '../../shared/lib/queries';
 import _ from 'lodash';
 import { addInstanceCostTotal } from '../strategies/instances';
@@ -81,7 +84,8 @@ export const successMsg = msg => (
 
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
-  workloads: ['WORKLOAD']
+  workloads: ['WORKLOAD'],
+  database: []
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
 };
@@ -144,7 +148,8 @@ export const optimizationDefaults = {
   azureRegion: 'westus',
   googleRegion: 'us-west1',
   alibabaRegion: 'us-east-1',
-  disableMenu: false
+  disableMenu: false,
+  entitySearchQuery: ''
 };
 
 export class DataProvider extends Component {
@@ -153,6 +158,7 @@ export class DataProvider extends Component {
 
     this.state = {
       selectedPage: 'home',
+      lastSelectedOptimizer: '',
       selectedWorkload: null,
       selectedGroup: null,
       updatingContext: false,
@@ -163,8 +169,8 @@ export class DataProvider extends Component {
       rawEntities: [],
       groupedEntities: [],
       workloadEntities: [],
-      fetchingEntities: true,
-      postProcessing: true,
+      fetchingEntities: false,
+      postProcessing: false,
       entityDataProgress: 0,
       accountConfigProgress: 0,
       cloudPricingProgress: 0,
@@ -176,37 +182,44 @@ export class DataProvider extends Component {
       processedWorkloads: [],
       cloudPricing: {},
       tags: [],
+      tagsRds: [],
       selectedTags: [],
       groupBy: { value: 'account', label: 'account' },
       sortBy: { value: 'currentSpend', label: 'Current Spend' },
       orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
+      groupByOptionsRds: [],
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
       cloudRegions: {},
       timeRange: null,
-      timepickerEnabled: false
+      timepickerEnabled: false,
+      instanceOptimizerRunComplete: false,
+      entityCountRds: 0,
+      entityCountHost: 0,
+      entityCountWorkload: 0
     };
   }
 
   async componentDidMount() {
+    console.log('mounting');
     this.checkVersion();
+    await this.fetchCloudRegions();
 
     let userConfig = await getCollection('optimizationConfig', 'main');
     if (!userConfig) {
       userConfig = { ...optimizationDefaults };
     }
 
-    await this.fetchCloudRegions();
+    this.getCounts();
 
-    this.setState({ userConfig }, () => {
-      // handle incoming props with postProcessEntities, else run fetchEntities for default view
-      this.fetchEntities();
-    });
+    this.setState({ userConfig });
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { timepickerEnabled } = this.state;
+    const { timepickerEnabled, lastSelectedOptimizer } = this.state;
+    const { selectedPage } = this.props;
+
     if (
       this.props.platformState &&
       prevProps.platformState &&
@@ -218,7 +231,76 @@ export class DataProvider extends Component {
         this.postProcessEntities();
       });
     }
+
+    if (selectedPage && selectedPage.includes('optimizer')) {
+      if (selectedPage !== lastSelectedOptimizer) {
+        // reset the selected group if the optimizer changes
+        console.log('reset');
+        this.setState({
+          lastSelectedOptimizer: selectedPage,
+          selectedGroup: null
+        });
+      }
+    }
   }
+
+  runInstanceOptimizer = selectedPage => {
+    const { fetchingEntities, postProcessing } = this.state;
+    const instanceOptimizerLoading =
+      fetchingEntities === true || postProcessing === true;
+
+    if (!instanceOptimizerLoading) {
+      this.setState(
+        {
+          fetchingEntities: true,
+          rawEntities: [],
+          entities: [],
+          groupedEntities: [],
+          workloadEntities: [],
+          originalWorkloadEntities: [],
+          entityDataProgress: 0,
+          accountConfigProgress: 0,
+          cloudPricingProgress: 0,
+          workloadCostProgress: 0,
+          workloadConfigProgress: 0,
+          workloadQueryProgress: 0,
+          entityMetricTotals: {}
+        },
+        async () => {
+          console.log('running instance optimizer');
+          this.fetchEntities(null, selectedPage);
+        }
+      );
+    }
+  };
+
+  getCounts = async () => {
+    const rdsCount = await NerdGraphQuery.query({
+      query: rdsCountQuery
+    });
+
+    const entityCountRds =
+      ((((rdsCount || {}).data || {}).actor || {}).entitySearch || {}).count ||
+      0;
+
+    const hostCount = await NerdGraphQuery.query({
+      query: hostVmCountQuery
+    });
+
+    const entityCountHost =
+      ((((hostCount || {}).data || {}).actor || {}).entitySearch || {}).count ||
+      0;
+
+    const workloadCount = await NerdGraphQuery.query({
+      query: workloadCountQuery
+    });
+
+    const entityCountWorkload =
+      ((((workloadCount || {}).data || {}).actor || {}).entitySearch || {})
+        .count || 0;
+
+    this.setState({ entityCountRds, entityCountHost, entityCountWorkload });
+  };
 
   fetchCloudRegions = async () => {
     const { cloudRegions } = this.state;
@@ -236,10 +318,15 @@ export class DataProvider extends Component {
     });
   };
 
-  fetchEntities = async nextCursor => {
+  fetchEntities = async (nextCursor, selectedPage) => {
+    const { userConfig } = this.state;
+    const searchQuery = userConfig.entitySearchQuery
+      ? ` AND ${userConfig.entitySearchQuery}`
+      : null;
+
     // intentionally do not query tags now, so that we can support incoming entities that only contain a guid and type
     const result = await NerdGraphQuery.query({
-      query: entitySearchQuery(nextCursor)
+      query: entitySearchQuery(nextCursor, searchQuery)
     });
     const entitySearchResult =
       ((((result || {}).data || {}).actor || {}).entitySearch || {}).results ||
@@ -252,19 +339,20 @@ export class DataProvider extends Component {
     }
 
     if (entitySearchResult.nextCursor) {
-      this.fetchEntities(entitySearchResult.nextCursor);
+      this.fetchEntities(entitySearchResult.nextCursor, selectedPage);
     } else if (
       !entitySearchResult.nextCursor ||
       entitySearchResult.entities.length === 0
     ) {
+      console.log('instance optimizer completed fetching entities');
       // completed
       this.setState({ fetchingEntities: false }, () =>
-        this.postProcessEntities()
+        this.postProcessEntities(null, selectedPage)
       );
     }
   };
 
-  postProcessEntities = async guids => {
+  postProcessEntities = async (guids, selectedPage) => {
     this.setState(
       {
         postProcessing: true,
@@ -301,7 +389,10 @@ export class DataProvider extends Component {
       workloadEntities = await this.processWorkloads(workloadEntities);
     }
 
-    const tempEntities = await this.getEntityData(nonWorkloadEntities);
+    let tempEntities = [];
+    if (nonWorkloadEntities.length > 0) {
+      tempEntities = await this.getEntityData(nonWorkloadEntities);
+    }
 
     // stitch relevant entities back into workloads so on prem cost/cu calculations can be made
     workloadEntities = this.addEntityDataToWorkload(
@@ -329,7 +420,10 @@ export class DataProvider extends Component {
         originalWorkloadEntities: workloadEntities,
         entityMetricTotals,
         postProcessing: false,
-        groupByOptions
+        groupByOptions,
+        selectedPage,
+        instanceOptimizerRunComplete: true,
+        selectedWorkload: null
       },
       () => {
         toast.update('processEntities', {
@@ -520,10 +614,11 @@ export class DataProvider extends Component {
       });
     });
 
+    console.log('checking account collections');
+
     let accountCfgCompleted = 0;
     let accountsToCheck = 0;
     const accountCfgQueue = queue((task, cb) => {
-      accountCfgCompleted++;
       getAccountCollection(task.id, 'optimizationConfig', 'main').then(v => {
         accountsObj[task.id].optimizationConfig = v;
         accountsObj[task.id].id = task.id;
@@ -546,6 +641,7 @@ export class DataProvider extends Component {
               `alibaba_${v.alibabaRegion || optimizationDefaults.alibabaRegion}`
             ] = [];
         }
+        accountCfgCompleted++;
         this.setState(
           {
             accountConfigProgress: (accountCfgCompleted / accountsToCheck) * 100
@@ -593,6 +689,7 @@ export class DataProvider extends Component {
 
     // fetch account optimization configs
     Object.keys(cloudPricing).forEach(cp => cloudPricingQueue.push({ cp }));
+
     // fetch account optimization configs
     Object.keys(accountsObj).forEach(id => {
       if (!accountsObj[id].optimizationConfig) {
@@ -601,7 +698,18 @@ export class DataProvider extends Component {
       }
     });
 
-    await Promise.all([cloudPricingQueue.drain(), accountCfgQueue.drain()]);
+    const drainPromises = [];
+
+    if (cloudPricingQueue.length > 0) {
+      drainPromises.push(cloudPricingQueue.drain());
+    }
+    if (accountCfgQueue.length > 0) {
+      drainPromises.push(accountCfgQueue.drain());
+    }
+
+    if (drainPromises.length > 0) {
+      await Promise.all(drainPromises);
+    }
 
     tags = _.chain(tags)
       .uniqBy(t => t.key)
@@ -614,6 +722,8 @@ export class DataProvider extends Component {
       cloudPricing,
       tags
     });
+
+    console.log('process entity promises');
 
     const processedEntityPromises = entities.map(e => {
       const {
@@ -632,6 +742,8 @@ export class DataProvider extends Component {
 
     await Promise.all(processedEntityPromises);
 
+    console.log('process entity promises - finished');
+
     return { entities, entityMetricTotals };
   };
 
@@ -646,12 +758,17 @@ export class DataProvider extends Component {
   processEntity = async (e, optimizationConfig, entityMetricTotals) => {
     // if system sample or vsphere get instance pricing
     if (e.systemSample || e.vsphereHostSample || e.vsphereVmSample) {
-      if (e.cloud && e.cloudRegion && e.systemSample['latest.instanceType']) {
+      const selectedType =
+        e.systemSample && e.systemSample['latest.instanceType']
+          ? e.systemSample['latest.instanceType']
+          : e['tag.instanceType'] || e['tag.type'];
+
+      if (e.cloud && e.cloudRegion && selectedType && selectedType !== 'HOST') {
         // assess cloud instance
         e.instanceResult = await this.getInstanceCloudPricing(
           e.cloud,
           e.cloudRegion,
-          e.systemSample['latest.instanceType']
+          selectedType
         );
       } else if (!e.cloud) {
         if (!isNaN(e.coreCount) && !isNaN(e.memoryGb)) {
@@ -795,10 +912,13 @@ export class DataProvider extends Component {
     let optimizedWith = null;
 
     // check if guid exists in a workload to pull optimization config
-    const workload = this.checkGuidInWorkload(e.guid, workloadEntities);
-    if (workload && workload.optimizationConfig) {
-      optimizationConfig = workload.optimizationConfig;
-      optimizedWith = 'workloadConfig';
+    let workload = null;
+    if (workloadEntities.length > 0) {
+      workload = this.checkGuidInWorkload(e.guid, workloadEntities);
+      if (workload && workload.optimizationConfig) {
+        optimizationConfig = workload.optimizationConfig;
+        optimizedWith = 'workloadConfig';
+      }
     }
 
     // if no workload config, check account storage
@@ -875,38 +995,19 @@ export class DataProvider extends Component {
   // get cloud pricing
   // checks cloud pricing in state, else will fetch and store
   getInstanceCloudPricing = (cloud, region, instanceType) => {
-    const { cloudPricing } = this.state;
     return new Promise(resolve => {
-      const pricingKey = `${cloud}_${region}`;
-      if (cloudPricing[pricingKey]) {
-        if (instanceType) {
+      this.getCloudPricing(cloud, region).then(value => {
+        if (instanceType && value) {
           // provide direct instance type price
-          for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
-            if (cloudPricing[pricingKey][z].type === instanceType) {
-              resolve(cloudPricing[pricingKey][z]);
+          for (let z = 0; z < value.length; z++) {
+            if (value[z].type === instanceType) {
+              resolve(value[z]);
             }
           }
-          resolve(null);
-        } else {
-          resolve(cloudPricing[pricingKey]);
+          resolve(value);
         }
-      } else {
-        this.getCloudPricing(cloud, region).then(value => {
-          cloudPricing[pricingKey] = value;
-          this.setState({ cloudPricing }, () => {
-            if (instanceType) {
-              for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
-                if (cloudPricing[pricingKey][z].type === instanceType) {
-                  resolve(cloudPricing[pricingKey][z]);
-                }
-              }
-              resolve(null);
-            } else {
-              resolve(value);
-            }
-          });
-        });
-      }
+        resolve(value);
+      });
     });
   };
 
@@ -923,8 +1024,6 @@ export class DataProvider extends Component {
     let chunksCompleted = 0;
 
     const q = queue((task, cb) => {
-      chunksCompleted++;
-
       NerdGraphQuery.query({
         query: getEntityDataQuery(timeRange),
         variables: { guids: task.chunk }
@@ -933,6 +1032,8 @@ export class DataProvider extends Component {
         if (entities.length > 0) {
           completeEntities = [...completeEntities, ...entities];
         }
+
+        chunksCompleted++;
         this.setState(
           { entityDataProgress: (chunksCompleted / guidChunks.length) * 100 },
           () => {
@@ -1013,7 +1114,19 @@ export class DataProvider extends Component {
       workloadCfgQueue.push({ guid: w.guid, i });
     });
 
-    await Promise.all([workloadCostQueue.drain(), workloadCfgQueue.drain()]);
+    const drainPromises = [];
+
+    if (workloadCostQueue.length > 0) {
+      drainPromises.push(workloadCostQueue.drain());
+    }
+
+    if (workloadCfgQueue.length > 0) {
+      drainPromises.push(workloadCfgQueue.drain());
+    }
+
+    if (drainPromises.length > 0) {
+      await Promise.all(drainPromises);
+    }
 
     // get queries
     const entityWorkloadQueryPromises = workloadGuids.map(wl =>
@@ -1023,35 +1136,40 @@ export class DataProvider extends Component {
       })
     );
 
-    await Promise.all(entityWorkloadQueryPromises).then(values => {
-      values.forEach(async (v, i) => {
-        const workload =
-          ((((v || {}).data || {}).actor || {}).account || {}).workload || null;
+    if (entityWorkloadQueryPromises.length > 0) {
+      await Promise.all(entityWorkloadQueryPromises).then(values => {
+        values.forEach(async (v, i) => {
+          const workload =
+            ((((v || {}).data || {}).actor || {}).account || {}).workload ||
+            null;
 
-        const collection = workload.collection || null;
+          const collection = workload.collection || null;
 
-        if (collection) {
-          workloadGuids[i].name = collection.name;
-          workloadGuids[i].entitySearchQuery = collection.entitySearchQuery; // <- evaluate this query
-          workloadGuids[i].entities = collection.entities;
-          workloadGuids[i].permalink = collection.permalink;
-        }
+          if (collection) {
+            workloadGuids[i].name = collection.name;
+            workloadGuids[i].entitySearchQuery = collection.entitySearchQuery; // <- evaluate this query
+            workloadGuids[i].entities = collection.entities;
+            workloadGuids[i].permalink = collection.permalink;
+          }
 
-        // if (!workloadGuids[i].entitySearchQuery) {
-        // }
+          // if (!workloadGuids[i].entitySearchQuery) {
+          // }
+        });
       });
-    });
+    }
 
     // stitch resolved entities
     const evaluateQueryPromises = workloadGuids.map(wl =>
       this.evaluateWorkloadEntitySearchQuery(wl.entitySearchQuery)
     );
 
-    await Promise.all(evaluateQueryPromises).then(values => {
-      values.forEach((v, i) => {
-        workloadGuids[i].evaluatedEntities = v;
+    if (evaluateQueryPromises.length > 0) {
+      await Promise.all(evaluateQueryPromises).then(values => {
+        values.forEach((v, i) => {
+          workloadGuids[i].evaluatedEntities = v;
+        });
       });
-    });
+    }
 
     // chunk and stitch tags
     const entityWorkloadChunks = chunk(workloadGuids, entitySearchChunkValue);
@@ -1062,44 +1180,46 @@ export class DataProvider extends Component {
       })
     );
 
-    await Promise.all(entityWorkloadTagPromises).then(values => {
-      const currentTags = this.state.tags;
-      let tags = [...currentTags];
+    if (entityWorkloadTagPromises.length > 0) {
+      await Promise.all(entityWorkloadTagPromises).then(values => {
+        const currentTags = this.state.tags;
+        let tags = [...currentTags];
 
-      values.forEach(v => {
-        const results = (((v || {}).data || {}).actor || {}).entities || [];
-        results.forEach(r => {
-          const checkIndex = existsInObjArray(workloadGuids, 'guid', r.guid);
-          if (checkIndex !== false) {
-            workloadGuids[checkIndex].tags = r.tags;
+        values.forEach(v => {
+          const results = (((v || {}).data || {}).actor || {}).entities || [];
+          results.forEach(r => {
+            const checkIndex = existsInObjArray(workloadGuids, 'guid', r.guid);
+            if (checkIndex !== false) {
+              workloadGuids[checkIndex].tags = r.tags;
 
-            workloadGuids[checkIndex].tags.forEach(t => {
-              // unpack tags for easy grouping
-              workloadGuids[checkIndex][`tag.${t.key}`] = t.values[0] || true;
+              workloadGuids[checkIndex].tags.forEach(t => {
+                // unpack tags for easy grouping
+                workloadGuids[checkIndex][`tag.${t.key}`] = t.values[0] || true;
 
-              // make tags available for selection
-              let ignoreTag = false;
-              for (let z = 0; z < ignoreTags.length; z++) {
-                if (t.key.toLowerCase().includes(ignoreTags[z])) {
-                  ignoreTag = true;
-                  break;
+                // make tags available for selection
+                let ignoreTag = false;
+                for (let z = 0; z < ignoreTags.length; z++) {
+                  if (t.key.toLowerCase().includes(ignoreTags[z])) {
+                    ignoreTag = true;
+                    break;
+                  }
                 }
-              }
 
-              if (!ignoreTag) {
-                const tag = `${t.key}: ${t.values[0]}`;
-                tags.push({ key: tag, value: tag, text: tag });
-              }
-            });
-          }
+                if (!ignoreTag) {
+                  const tag = `${t.key}: ${t.values[0]}`;
+                  tags.push({ key: tag, value: tag, text: tag });
+                }
+              });
+            }
+          });
         });
+        tags = _.chain(tags)
+          .uniqBy(t => t.key)
+          .sortBy('key')
+          .value();
+        this.setState({ tags });
       });
-      tags = _.chain(tags)
-        .uniqBy(t => t.key)
-        .sortBy('key')
-        .value();
-      this.setState({ tags });
-    });
+    }
 
     return workloadGuids;
   };
@@ -1388,9 +1508,11 @@ export class DataProvider extends Component {
       <DataContext.Provider
         value={{
           ...this.state,
+          storeState: this.storeState,
           updateDataState: this.updateDataState,
           postProcessEntities: this.postProcessEntities,
-          getWorkloadDocs: this.getWorkloadDocs
+          getWorkloadDocs: this.getWorkloadDocs,
+          runInstanceOptimizer: this.runInstanceOptimizer
         }}
       >
         {/* <ToastContainer

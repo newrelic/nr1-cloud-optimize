@@ -114,12 +114,14 @@ export const buildTags = (currentTags, newTags) => {
 };
 
 export const buildGroupByOptions = entities => {
+  const ignoreTags = ['aws.arn', 'guid', 'displayName'];
   const groupByOptions = [
     ...new Set(
       entities
         .map(e => e.tags)
         .flat()
         .map(t => t.key)
+        .filter(t => !ignoreTags.includes(t))
     )
   ]
     .sort()

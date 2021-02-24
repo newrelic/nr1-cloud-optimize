@@ -17,11 +17,22 @@ export default class FilterBar extends React.PureComponent {
           fetchingEntities,
           postProcessing,
           tags,
+          tagsRds,
           selectedTags,
+          selectedPage,
           updateDataState,
           selectedWorkload
         }) => {
           const isLoading = fetchingEntities || postProcessing;
+
+          // set default tags as instance tags
+          let tagSet = tags;
+
+          switch (selectedPage) {
+            case 'rds-optimizer': {
+              tagSet = tagsRds;
+            }
+          }
 
           return (
             <div
@@ -55,7 +66,7 @@ export default class FilterBar extends React.PureComponent {
                 selection
                 value={selectedTags}
                 onChange={(e, d) => updateDataState({ selectedTags: d.value })}
-                options={tags}
+                options={tagSet}
               />
             </div>
           );
