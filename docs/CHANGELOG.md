@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.7.0...v2.7.1) (2021-02-24)
+
+
+### Bug Fixes
+
+* upgrade js-base64 from 2.6.3 to 2.6.4 ([dc8806e](https://github.com/newrelic/nr1-cloud-optimize/commit/dc8806e72ec9483d18e354adf282e92884279e56))
+
 # [2.7.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.6.2...v2.7.0) (2021-02-04)
 
 
