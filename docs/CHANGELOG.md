@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.2...v2.1.3) (2021-03-09)
+
+
+### Bug Fixes
+
+* package.json & package-lock.json to reduce vulnerabilities ([b3c94d6](https://github.com/newrelic/nr1-cloud-optimize/commit/b3c94d6525249f5d626c11567e2374b3e9af4b43))
+
 ## [2.1.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.1...v2.1.2) (2020-08-24)
 
 
