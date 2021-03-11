@@ -68,7 +68,7 @@ THE SOFTWARE.
 
 ### graphql-tag
 
-This product includes source derived from [graphql-tag](https://github.com/apollographql/graphql-tag) ([v2.10.3](https://github.com/apollographql/graphql-tag/tree/v2.10.3)), distributed under the [MIT License](https://github.com/apollographql/graphql-tag/blob/v2.10.3/LICENSE):
+This product includes source derived from [graphql-tag](https://github.com/apollographql/graphql-tag) ([v2.11.0](https://github.com/apollographql/graphql-tag/tree/v2.11.0)), distributed under the [MIT License](https://github.com/apollographql/graphql-tag/blob/v2.11.0/LICENSE):
 
 ```
 The MIT License (MIT)
@@ -302,7 +302,7 @@ SOFTWARE.
 
 ### react-select
 
-This product includes source derived from [react-select](https://github.com/JedWatson/react-select) ([v3.1.0](https://github.com/JedWatson/react-select/tree/v3.1.0)), distributed under the [MIT License](https://github.com/JedWatson/react-select/blob/v3.1.0/README.md):
+This product includes source derived from [react-select](https://github.com/JedWatson/react-select/tree/master/packages/react-select) ([v3.2.0](https://github.com/JedWatson/react-select/tree/master/packages/react-select/tree/v3.2.0)), distributed under the [MIT License](https://github.com/JedWatson/react-select/tree/master/packages/react-select/blob/v3.2.0/README.md):
 
 ```
 MIT License
@@ -404,7 +404,7 @@ SOFTWARE.
 
 ### semver
 
-This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.2](https://github.com/npm/node-semver/tree/v7.3.2)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.2/LICENSE):
+This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.4](https://github.com/npm/node-semver/tree/v7.3.4)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.4/LICENSE):
 
 ```
 The ISC License
