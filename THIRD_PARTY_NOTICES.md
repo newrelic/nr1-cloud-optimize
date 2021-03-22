@@ -126,7 +126,7 @@ SOFTWARE.
 
 ### js-base64
 
-This product includes source derived from [js-base64](https://github.com/dankogai/js-base64) ([v2.6.3](https://github.com/dankogai/js-base64/tree/v2.6.3)), distributed under the [BSD-3-Clause License](https://github.com/dankogai/js-base64/blob/v2.6.3/LICENSE.md):
+This product includes source derived from [js-base64](https://github.com/dankogai/js-base64) ([v2.6.4](https://github.com/dankogai/js-base64/tree/v2.6.4)), distributed under the [BSD-3-Clause License](https://github.com/dankogai/js-base64/blob/v2.6.4/LICENSE.md):
 
 ```
 Copyright (c) 2014, Dan Kogai

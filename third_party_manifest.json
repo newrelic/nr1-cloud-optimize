@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Thu Mar 11 2021 02:06:56 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Mon Mar 22 2021 23:26:06 GMT+0000 (Coordinated Universal Time)",
   "projectName": "nr1-cloud-optimize",
   "projectUrl": "https://github.com/newrelic/nr1-cloud-optimize",
   "includeDev": true,
@@ -38,15 +38,15 @@
       "licenseUrl": "https://github.com/graphql/graphql-js/blob/v14.7.0/LICENSE",
       "licenseTextSource": "file"
     },
-    "js-base64@2.6.3": {
+    "js-base64@2.6.4": {
       "name": "js-base64",
-      "version": "2.6.3",
-      "range": "^2.6.0",
+      "version": "2.6.4",
+      "range": "^2.6.4",
       "licenses": "BSD-3-Clause",
       "repoUrl": "https://github.com/dankogai/js-base64",
-      "versionedRepoUrl": "https://github.com/dankogai/js-base64/tree/v2.6.3",
+      "versionedRepoUrl": "https://github.com/dankogai/js-base64/tree/v2.6.4",
       "licenseFile": "node_modules/js-base64/LICENSE.md",
-      "licenseUrl": "https://github.com/dankogai/js-base64/blob/v2.6.3/LICENSE.md",
+      "licenseUrl": "https://github.com/dankogai/js-base64/blob/v2.6.4/LICENSE.md",
       "licenseTextSource": "file",
       "publisher": "Dan Kogai"
     },
