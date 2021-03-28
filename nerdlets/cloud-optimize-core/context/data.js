@@ -8,7 +8,7 @@ react/no-did-update-set-state: 0
 
 import React, { Component } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { NerdGraphQuery } from 'nr1';
+import { NerdGraphQuery, AccountStorageQuery } from 'nr1';
 import { Icon } from 'semantic-ui-react';
 import {
   chunk,
@@ -28,7 +28,8 @@ import {
   getEntityDataQuery,
   rdsCountQuery,
   hostVmCountQuery,
-  workloadCountQuery
+  workloadCountQuery,
+  availableAccountsQuery
 } from '../../shared/lib/queries';
 import _ from 'lodash';
 import { addInstanceCostTotal } from '../strategies/instances';
@@ -57,6 +58,11 @@ const queueConcurrency = 5;
 
 // supported clouds
 const supportedClouds = ['amazon', 'azure', 'google', 'alibaba'];
+
+// cache controls
+const cacheBucketsPerAccount = 5;
+const cacheEntitiesPerBucket = 9900;
+const cacheDefaultHourTTL = 12;
 
 // ignore tags
 const ignoreTags = [
@@ -162,6 +168,8 @@ export class DataProvider extends Component {
       selectedWorkload: null,
       selectedGroup: null,
       updatingContext: false,
+      accountsAvailable: [],
+      accountCache: {},
       accounts: [],
       accountsObj: {},
       userConfig: null,
@@ -252,6 +260,7 @@ export class DataProvider extends Component {
     if (!instanceOptimizerLoading) {
       this.setState(
         {
+          fetchingAccountCache: false,
           fetchingEntities: true,
           rawEntities: [],
           entities: [],
@@ -275,31 +284,77 @@ export class DataProvider extends Component {
   };
 
   getCounts = async () => {
-    const rdsCount = await NerdGraphQuery.query({
-      query: rdsCountQuery
-    });
+    const results = await Promise.all([
+      NerdGraphQuery.query({
+        query: availableAccountsQuery
+      }),
+      NerdGraphQuery.query({
+        query: rdsCountQuery
+      }),
+      NerdGraphQuery.query({
+        query: hostVmCountQuery
+      }),
+      NerdGraphQuery.query({
+        query: workloadCountQuery
+      })
+    ]);
 
-    const entityCountRds =
-      ((((rdsCount || {}).data || {}).actor || {}).entitySearch || {}).count ||
-      0;
-
-    const hostCount = await NerdGraphQuery.query({
-      query: hostVmCountQuery
-    });
-
-    const entityCountHost =
-      ((((hostCount || {}).data || {}).actor || {}).entitySearch || {}).count ||
-      0;
-
-    const workloadCount = await NerdGraphQuery.query({
-      query: workloadCountQuery
-    });
-
+    const accountsAvailable = results[0]?.data?.actor?.accounts || [];
+    const entityCountRds = results[1]?.data?.actor?.entitySearch?.count || 0;
+    const entityCountHost = results[2]?.data?.actor?.entitySearch?.count || 0;
     const entityCountWorkload =
-      ((((workloadCount || {}).data || {}).actor || {}).entitySearch || {})
-        .count || 0;
+      results[3]?.data?.actor?.entitySearch?.count || 0;
 
-    this.setState({ entityCountRds, entityCountHost, entityCountWorkload });
+    this.setState(
+      {
+        fetchingAccountCache: true,
+        entityCountRds,
+        entityCountHost,
+        entityCountWorkload,
+        accountsAvailable
+      },
+      () => this.getAccountCache()
+    );
+  };
+
+  getAccountCache = () => {
+    const { accountsAvailable } = this.state;
+    return new Promise(resolve => {
+      const accountPromises = [];
+
+      accountsAvailable.forEach(account => {
+        for (let z = 0; z < cacheBucketsPerAccount; z++) {
+          accountPromises.push(
+            new Promise(resolve => {
+              const cacheId = `cache_${account.id}_${z}`;
+              AccountStorageQuery.query({
+                accountId: account.id,
+                collection: cacheId
+              }).then(v =>
+                resolve({
+                  accountId: account.id,
+                  bucketId: z,
+                  data: v?.data || []
+                })
+              );
+            })
+          );
+        }
+      });
+
+      Promise.all(accountPromises).then(results => {
+        const accountCache = {};
+        results.forEach(r => {
+          accountCache[r.accountId] = [
+            ...(accountCache[r.accountId] || []),
+            ...r.data
+          ];
+        });
+        this.setState({ accountCache, fetchingAccountCache: false }, () =>
+          resolve(accountCache)
+        );
+      });
+    });
   };
 
   fetchCloudRegions = async () => {
@@ -328,9 +383,8 @@ export class DataProvider extends Component {
     const result = await NerdGraphQuery.query({
       query: entitySearchQuery(nextCursor, searchQuery)
     });
-    const entitySearchResult =
-      ((((result || {}).data || {}).actor || {}).entitySearch || {}).results ||
-      {};
+
+    const entitySearchResult = result?.data?.actor?.entitySearch?.results || {};
 
     if ((entitySearchResult.entities || []).length > 0) {
       let { rawEntities } = this.state;
