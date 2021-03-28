@@ -106,7 +106,7 @@ export default class AccountCards extends React.Component {
                 <Card.Content
                   style={{ paddingTop: '5px', paddingBottom: '5px' }}
                 >
-                  <Table celled inverted={false} basic="very">
+                  <Table celled inverted={false} basic="very" ariaLabel=" ">
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell />

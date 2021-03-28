@@ -80,7 +80,7 @@ export default class OptimizationCandidates extends React.Component {
       >
         <Modal.Header>Alternate Suggestions</Modal.Header>
         <Modal.Content>
-          <Table inverted={false} striped compact>
+          <Table inverted={false} striped compact ariaLabel=" ">
             <Table.Header>
               <Table.HeaderCell>instanceType</Table.HeaderCell>
               <Table.HeaderCell>instanceFamily</Table.HeaderCell>
@@ -136,7 +136,13 @@ export default class OptimizationCandidates extends React.Component {
 
           <Grid.Row style={{ display: hasCloud ? '' : 'none' }}>
             <Grid.Column>
-              <Table inverted={false} striped sortable size="small">
+              <Table
+                inverted={false}
+                striped
+                sortable
+                size="small"
+                ariaLabel=""
+              >
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell

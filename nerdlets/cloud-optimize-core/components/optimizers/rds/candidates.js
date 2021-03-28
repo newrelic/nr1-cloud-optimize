@@ -71,7 +71,7 @@ export default class InstanceCandidates extends React.PureComponent {
           );
 
           return (
-            <Table items={tableData}>
+            <Table items={tableData} ariaLabel=" ">
               <TableHeader>
                 {tableHdrCell('Name', null, 'name')}
 

@@ -159,7 +159,7 @@ export default class InstanceCandidates extends React.PureComponent {
               </div>
               <Segment raised>
                 {group.entities.length > 0 ? (
-                  <Table items={tableData}>
+                  <Table items={tableData} ariaLabel=" ">
                     <TableHeader>
                       <TableHeaderCell
                         value={({ item }) => item.cloud}

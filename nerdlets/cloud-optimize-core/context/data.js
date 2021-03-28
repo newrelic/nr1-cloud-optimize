@@ -672,11 +672,11 @@ export class DataProvider extends Component {
     const cloudPricingQueue = queue((task, cb) => {
       cloudPricingCompleted++;
       const cloudRegion = task.cp.split('_');
-
       this.getCloudPricing(cloudRegion[0], cloudRegion[1]).then(v => {
         cloudPricing[task.cp] = v;
         this.setState(
           {
+            cloudPricing,
             cloudPricingProgress:
               (cloudPricingCompleted / Object.keys(cloudPricing).length) * 100
           },
@@ -725,7 +725,8 @@ export class DataProvider extends Component {
 
     console.log('process entity promises');
 
-    const processedEntityPromises = entities.map(e => {
+    const entityQueue = queue(async (task, cb) => {
+      const { e } = task;
       const {
         optimizationConfig,
         optimizedWith,
@@ -737,10 +738,16 @@ export class DataProvider extends Component {
       }
 
       e.optimizedWith = optimizedWith;
-      return this.processEntity(e, optimizationConfig, entityMetricTotals);
+      await this.processEntity(e, optimizationConfig, entityMetricTotals);
+    }, queueConcurrency);
+
+    entities.forEach(e => {
+      entityQueue.push({ e });
     });
 
-    await Promise.all(processedEntityPromises);
+    if (cloudPricingQueue.length > 0) {
+      await Promise.all([cloudPricingQueue.drain()]);
+    }
 
     console.log('process entity promises - finished');
 
@@ -971,24 +978,25 @@ export class DataProvider extends Component {
   };
 
   getCloudPricing = (cloud, region) => {
+    const { cloudPricing } = this.state;
     return new Promise(resolve => {
-      const cleanRegion = validateRegion(
-        cloud,
-        region,
-        this.state.cloudRegions,
-        this.state.userConfig
-      );
-      fetch(`${pricingURL}/${cloud}/compute/pricing/${cleanRegion}.json`)
-        .then(response => {
-          return response.json();
-        })
-        .then(json => {
-          if (json && json.products) {
-            resolve(json.products);
-          } else {
-            resolve(null);
-          }
-        });
+      const currentPricing = cloudPricing[`${cloud}_${region}`];
+      if (Object.keys(currentPricing).length === 0) {
+        const cleanRegion = validateRegion(
+          cloud,
+          region,
+          this.state.cloudRegions,
+          this.state.userConfig
+        );
+
+        fetch(`${pricingURL}/${cloud}/compute/pricing/${cleanRegion}.json`)
+          .then(response => response.json())
+          .then(json =>
+            json?.products ? resolve(json.products) : resolve(null)
+          );
+      } else {
+        resolve(currentPricing);
+      }
     });
   };
 

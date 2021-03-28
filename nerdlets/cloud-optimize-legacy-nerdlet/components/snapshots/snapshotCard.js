@@ -103,7 +103,7 @@ export default class SnapshotCard extends React.Component {
               Here they are below. If you&apos;re fine with this feel free to
               ignore.
             </span>
-            <Table inverted>
+            <Table inverted ariaLabel=" ">
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Current Config</Table.HeaderCell>
