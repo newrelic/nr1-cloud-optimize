@@ -51,7 +51,7 @@ export default class CostTables extends React.PureComponent {
 
               {/* Hours in a year === 8766 */}
 
-              <Table basic="very" celled collapsing ariaLabel=" ">
+              <Table basic="very" celled collapsing aria-label="table">
                 <Table.Body>
                   <Table.Row>
                     <Table.Cell>Estimated Total</Table.Cell>

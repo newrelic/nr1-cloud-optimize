@@ -119,6 +119,7 @@ export default class InstanceCandidates extends React.PureComponent {
             const memPerVm = instance('memPerVm');
 
             return {
+              guid: e.guid,
               cloud: e.cloud,
               spot: e.spot,
               name: e.name,
@@ -159,7 +160,7 @@ export default class InstanceCandidates extends React.PureComponent {
               </div>
               <Segment raised>
                 {group.entities.length > 0 ? (
-                  <Table items={tableData} ariaLabel=" ">
+                  <Table items={tableData} aria-label="table">
                     <TableHeader>
                       <TableHeaderCell
                         value={({ item }) => item.cloud}

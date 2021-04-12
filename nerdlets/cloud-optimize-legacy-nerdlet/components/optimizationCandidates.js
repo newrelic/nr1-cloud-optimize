@@ -61,7 +61,7 @@ export default class OptimizationCandidates extends React.Component {
       >
         <Modal.Header>Alternate Suggestions</Modal.Header>
         <Modal.Content>
-          <Table inverted={false} striped compact ariaLabel=" ">
+          <Table inverted={false} striped compact aria-label="table">
             <Table.Header>
               <Table.HeaderCell>instanceType</Table.HeaderCell>
               <Table.HeaderCell>instanceFamily</Table.HeaderCell>
@@ -156,7 +156,13 @@ export default class OptimizationCandidates extends React.Component {
           </span>
         </Modal.Header>
         <Modal.Content>
-          <Table inverted={false} striped sortable size="small" ariaLabel=" ">
+          <Table
+            inverted={false}
+            striped
+            sortable
+            size="small"
+            ariaLabel="table"
+          >
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell

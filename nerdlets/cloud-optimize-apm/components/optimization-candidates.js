@@ -80,7 +80,7 @@ export default class OptimizationCandidates extends React.Component {
       >
         <Modal.Header>Alternate Suggestions</Modal.Header>
         <Modal.Content>
-          <Table inverted={false} striped compact ariaLabel=" ">
+          <Table inverted={false} striped compact aria-label="table">
             <Table.Header>
               <Table.HeaderCell>instanceType</Table.HeaderCell>
               <Table.HeaderCell>instanceFamily</Table.HeaderCell>

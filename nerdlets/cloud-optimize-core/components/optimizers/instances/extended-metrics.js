@@ -34,7 +34,12 @@ export default class ExtendedMetrics extends React.PureComponent {
                 <Card.Content
                   style={{ paddingTop: '5px', paddingBottom: '5px' }}
                 >
-                  <Table celled inverted={false} basic="very" ariaLabel=" ">
+                  <Table
+                    celled
+                    inverted={false}
+                    basic="very"
+                    aria-label="table"
+                  >
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell />
@@ -64,7 +69,12 @@ export default class ExtendedMetrics extends React.PureComponent {
                 </Card.Content>
 
                 <Card.Content style={{ paddingTop: '5px' }}>
-                  <Table celled inverted={false} basic="very" ariaLabel=" ">
+                  <Table
+                    celled
+                    inverted={false}
+                    basic="very"
+                    aria-label="table"
+                  >
                     <Table.Header>
                       <Table.Row>
                         <Table.HeaderCell />
