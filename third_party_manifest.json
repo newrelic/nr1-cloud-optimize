@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Wed Feb 03 2021 12:53:10 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Mon Apr 12 2021 01:39:04 GMT+0000 (Coordinated Universal Time)",
   "projectName": "nr1-cloud-optimize",
   "projectUrl": "https://github.com/newrelic/nr1-cloud-optimize",
   "includeDev": true,
@@ -38,27 +38,27 @@
       "licenseUrl": "https://github.com/graphql/graphql-js/blob/v14.7.0/LICENSE",
       "licenseTextSource": "file"
     },
-    "js-base64@2.6.3": {
+    "js-base64@2.6.4": {
       "name": "js-base64",
-      "version": "2.6.3",
+      "version": "2.6.4",
       "range": "^2.6.0",
       "licenses": "BSD-3-Clause",
       "repoUrl": "https://github.com/dankogai/js-base64",
-      "versionedRepoUrl": "https://github.com/dankogai/js-base64/tree/v2.6.3",
+      "versionedRepoUrl": "https://github.com/dankogai/js-base64/tree/v2.6.4",
       "licenseFile": "node_modules/js-base64/LICENSE.md",
-      "licenseUrl": "https://github.com/dankogai/js-base64/blob/v2.6.3/LICENSE.md",
+      "licenseUrl": "https://github.com/dankogai/js-base64/blob/v2.6.4/LICENSE.md",
       "licenseTextSource": "file",
       "publisher": "Dan Kogai"
     },
-    "lodash@4.17.20": {
+    "lodash@4.17.21": {
       "name": "lodash",
-      "version": "4.17.20",
-      "range": "^4.17.20",
+      "version": "4.17.21",
+      "range": "^4.17.21",
       "licenses": "MIT",
       "repoUrl": "https://github.com/lodash/lodash",
-      "versionedRepoUrl": "https://github.com/lodash/lodash/tree/v4.17.20",
+      "versionedRepoUrl": "https://github.com/lodash/lodash/tree/v4.17.21",
       "licenseFile": "node_modules/lodash/LICENSE",
-      "licenseUrl": "https://github.com/lodash/lodash/blob/v4.17.20/LICENSE",
+      "licenseUrl": "https://github.com/lodash/lodash/blob/v4.17.21/LICENSE",
       "licenseTextSource": "file",
       "publisher": "John-David Dalton",
       "email": "john.david.dalton@gmail.com"
@@ -127,15 +127,15 @@
       "publisher": "Levi Thomason",
       "email": "me@levithomason.com"
     },
-    "semver@7.3.2": {
+    "semver@7.3.5": {
       "name": "semver",
-      "version": "7.3.2",
-      "range": "^7.3.2",
+      "version": "7.3.5",
+      "range": "^7.3.4",
       "licenses": "ISC",
       "repoUrl": "https://github.com/npm/node-semver",
-      "versionedRepoUrl": "https://github.com/npm/node-semver/tree/v7.3.2",
+      "versionedRepoUrl": "https://github.com/npm/node-semver/tree/v7.3.5",
       "licenseFile": "node_modules/semver/LICENSE",
-      "licenseUrl": "https://github.com/npm/node-semver/blob/v7.3.2/LICENSE",
+      "licenseUrl": "https://github.com/npm/node-semver/blob/v7.3.5/LICENSE",
       "licenseTextSource": "file"
     }
   },

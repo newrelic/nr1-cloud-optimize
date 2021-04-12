@@ -126,7 +126,7 @@ SOFTWARE.
 
 ### js-base64
 
-This product includes source derived from [js-base64](https://github.com/dankogai/js-base64) ([v2.6.3](https://github.com/dankogai/js-base64/tree/v2.6.3)), distributed under the [BSD-3-Clause License](https://github.com/dankogai/js-base64/blob/v2.6.3/LICENSE.md):
+This product includes source derived from [js-base64](https://github.com/dankogai/js-base64) ([v2.6.4](https://github.com/dankogai/js-base64/tree/v2.6.4)), distributed under the [BSD-3-Clause License](https://github.com/dankogai/js-base64/blob/v2.6.4/LICENSE.md):
 
 ```
 Copyright (c) 2014, Dan Kogai
@@ -161,7 +161,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### lodash
 
-This product includes source derived from [lodash](https://github.com/lodash/lodash) ([v4.17.20](https://github.com/lodash/lodash/tree/v4.17.20)), distributed under the [MIT License](https://github.com/lodash/lodash/blob/v4.17.20/LICENSE):
+This product includes source derived from [lodash](https://github.com/lodash/lodash) ([v4.17.21](https://github.com/lodash/lodash/tree/v4.17.21)), distributed under the [MIT License](https://github.com/lodash/lodash/blob/v4.17.21/LICENSE):
 
 ```
 Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
@@ -346,7 +346,7 @@ SOFTWARE.
 
 ### semver
 
-This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.2](https://github.com/npm/node-semver/tree/v7.3.2)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.2/LICENSE):
+This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.5](https://github.com/npm/node-semver/tree/v7.3.5)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.5/LICENSE):
 
 ```
 The ISC License
