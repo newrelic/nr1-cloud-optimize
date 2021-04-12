@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.7.1...v2.8.0) (2021-04-12)
+
+
+### Features
+
+* trigger release ([c04ff11](https://github.com/newrelic/nr1-cloud-optimize/commit/c04ff11e12a4f13a202d045bbfc9b5a23a7885ef))
+
 ## [2.7.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.7.0...v2.7.1) (2021-02-24)
 
 
