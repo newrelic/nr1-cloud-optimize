@@ -13,5 +13,5 @@
       "url": "https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936"
     }
   },
-  "whatsNew": "- Add RDS Optimizer"
+  "whatsNew": "- Fixes and additional handling"
 }

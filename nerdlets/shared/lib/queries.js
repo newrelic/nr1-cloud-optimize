@@ -20,6 +20,15 @@ export const timeRangeToNrql = timeRange => {
   }
 };
 
+export const availableAccountsQuery = `{
+  actor {
+    accounts {
+      id
+      name
+    }
+  }
+}`;
+
 export const rdsCountQuery = `{
   actor {
     entitySearch(query: "type = 'AWSRDSDBINSTANCE' AND reporting = 'true'") {

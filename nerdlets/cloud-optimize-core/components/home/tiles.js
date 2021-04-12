@@ -73,7 +73,7 @@ export default class Tiles extends React.PureComponent {
                     count = entityCountWorkload;
                   } else {
                     categoryTypes[o.cat].forEach(type => {
-                      count += (groupedEntities[type] || []).length;
+                      count += (groupedEntities?.[type] || []).length;
                     });
                   }
 
@@ -138,7 +138,7 @@ export default class Tiles extends React.PureComponent {
                         >
                           <Icon name="cubes" />
                           {count}&nbsp;
-                          {count.length === 1 ? 'Entity' : 'Entities'}
+                          {(count?.length || 0) === 1 ? 'Entity' : 'Entities'}
                         </span>
 
                         {o.link && o.linkName ? (

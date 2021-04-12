@@ -92,7 +92,7 @@ export default class WorkloadList extends React.PureComponent {
                 raised
                 style={{ display: items.length === 1 ? 'none' : '' }}
               >
-                <Table items={items}>
+                <Table items={items} aria-label="table">
                   <TableHeader>
                     <TableHeaderCell
                       width="50%"

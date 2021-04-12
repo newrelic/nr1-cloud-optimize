@@ -8,7 +8,11 @@ react/no-did-update-set-state: 0
 
 import React, { Component } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { NerdGraphQuery } from 'nr1';
+import {
+  NerdGraphQuery,
+  AccountStorageQuery,
+  AccountStorageMutation
+} from 'nr1';
 import { Icon } from 'semantic-ui-react';
 import {
   chunk,
@@ -28,7 +32,8 @@ import {
   getEntityDataQuery,
   rdsCountQuery,
   hostVmCountQuery,
-  workloadCountQuery
+  workloadCountQuery,
+  availableAccountsQuery
 } from '../../shared/lib/queries';
 import _ from 'lodash';
 import { addInstanceCostTotal } from '../strategies/instances';
@@ -57,6 +62,11 @@ const queueConcurrency = 5;
 
 // supported clouds
 const supportedClouds = ['amazon', 'azure', 'google', 'alibaba'];
+
+// cache controls
+const cacheBucketsPerAccount = 5;
+const cacheEntitiesPerBucket = 9900;
+const cacheDefaultHourTTL = 12;
 
 // ignore tags
 const ignoreTags = [
@@ -162,6 +172,8 @@ export class DataProvider extends Component {
       selectedWorkload: null,
       selectedGroup: null,
       updatingContext: false,
+      accountsAvailable: [],
+      accountCache: {},
       accounts: [],
       accountsObj: {},
       userConfig: null,
@@ -197,7 +209,8 @@ export class DataProvider extends Component {
       instanceOptimizerRunComplete: false,
       entityCountRds: 0,
       entityCountHost: 0,
-      entityCountWorkload: 0
+      entityCountWorkload: 0,
+      instanceOptimizerCompletionTime: 0
     };
   }
 
@@ -252,6 +265,7 @@ export class DataProvider extends Component {
     if (!instanceOptimizerLoading) {
       this.setState(
         {
+          fetchingAccountCache: false,
           fetchingEntities: true,
           rawEntities: [],
           entities: [],
@@ -264,7 +278,8 @@ export class DataProvider extends Component {
           workloadCostProgress: 0,
           workloadConfigProgress: 0,
           workloadQueryProgress: 0,
-          entityMetricTotals: {}
+          entityMetricTotals: {},
+          instanceOptimizerRunComplete: false
         },
         async () => {
           console.log('running instance optimizer');
@@ -275,31 +290,74 @@ export class DataProvider extends Component {
   };
 
   getCounts = async () => {
-    const rdsCount = await NerdGraphQuery.query({
-      query: rdsCountQuery
-    });
+    const results = await Promise.all(
+      [
+        availableAccountsQuery,
+        rdsCountQuery,
+        hostVmCountQuery,
+        workloadCountQuery
+      ].map(query => NerdGraphQuery.query({ query }))
+    );
 
-    const entityCountRds =
-      ((((rdsCount || {}).data || {}).actor || {}).entitySearch || {}).count ||
-      0;
-
-    const hostCount = await NerdGraphQuery.query({
-      query: hostVmCountQuery
-    });
-
-    const entityCountHost =
-      ((((hostCount || {}).data || {}).actor || {}).entitySearch || {}).count ||
-      0;
-
-    const workloadCount = await NerdGraphQuery.query({
-      query: workloadCountQuery
-    });
-
+    const accountsAvailable = results[0]?.data?.actor?.accounts || [];
+    const entityCountRds = results[1]?.data?.actor?.entitySearch?.count || 0;
+    const entityCountHost = results[2]?.data?.actor?.entitySearch?.count || 0;
     const entityCountWorkload =
-      ((((workloadCount || {}).data || {}).actor || {}).entitySearch || {})
-        .count || 0;
+      results[3]?.data?.actor?.entitySearch?.count || 0;
 
-    this.setState({ entityCountRds, entityCountHost, entityCountWorkload });
+    this.setState(
+      {
+        fetchingAccountCache: true,
+        entityCountRds,
+        entityCountHost,
+        entityCountWorkload,
+        accountsAvailable
+      },
+      () => this.getAccountCache()
+    );
+  };
+
+  getAccountCache = () => {
+    const { accountsAvailable } = this.state;
+    return new Promise(resolve => {
+      const accountPromises = [];
+
+      accountsAvailable.forEach(account => {
+        for (let z = 0; z < cacheBucketsPerAccount; z++) {
+          accountPromises.push(
+            new Promise(resolve => {
+              const cacheId = `cache_${account.id}_${z}`;
+              AccountStorageQuery.query({
+                accountId: account.id,
+                collection: cacheId
+              }).then(v =>
+                resolve({
+                  accountId: account.id,
+                  bucketId: z,
+                  data: v?.data || []
+                })
+              );
+            })
+          );
+        }
+      });
+
+      Promise.all(accountPromises).then(results => {
+        const accountCache = {};
+        results.forEach(r => {
+          accountCache[r.accountId] = [
+            ...(accountCache[r.accountId] || []),
+            ...r.data
+          ];
+          accountCache[`${r.accountId}_${r.bucketId}_count`] = (
+            r?.data || []
+          ).length;
+        });
+        this.setState({ accountCache, fetchingAccountCache: false }, () =>
+          resolve(accountCache)
+        );
+      });
+    });
   };
 
   fetchCloudRegions = async () => {
@@ -319,6 +377,8 @@ export class DataProvider extends Component {
   };
 
   fetchEntities = async (nextCursor, selectedPage) => {
+    const startTime = new Date().getTime();
+
     const { userConfig } = this.state;
     const searchQuery = userConfig.entitySearchQuery
       ? ` AND ${userConfig.entitySearchQuery}`
@@ -328,9 +388,8 @@ export class DataProvider extends Component {
     const result = await NerdGraphQuery.query({
       query: entitySearchQuery(nextCursor, searchQuery)
     });
-    const entitySearchResult =
-      ((((result || {}).data || {}).actor || {}).entitySearch || {}).results ||
-      {};
+
+    const entitySearchResult = result?.data?.actor?.entitySearch?.results || {};
 
     if ((entitySearchResult.entities || []).length > 0) {
       let { rawEntities } = this.state;
@@ -347,12 +406,12 @@ export class DataProvider extends Component {
       console.log('instance optimizer completed fetching entities');
       // completed
       this.setState({ fetchingEntities: false }, () =>
-        this.postProcessEntities(null, selectedPage)
+        this.postProcessEntities(null, selectedPage, startTime)
       );
     }
   };
 
-  postProcessEntities = async (guids, selectedPage) => {
+  postProcessEntities = async (guids, selectedPage, startTime) => {
     this.setState(
       {
         postProcessing: true,
@@ -412,6 +471,11 @@ export class DataProvider extends Component {
     const groupedEntities = _.groupBy(entities, e => e.type);
     const groupByOptions = buildGroupByOptions(entities);
 
+    const endTime = new Date().getTime();
+    const completionTime = endTime - startTime;
+
+    console.log(`instanceOptimizerCompletionTime: ${completionTime}`);
+
     this.setState(
       {
         entities,
@@ -423,11 +487,12 @@ export class DataProvider extends Component {
         groupByOptions,
         selectedPage,
         instanceOptimizerRunComplete: true,
-        selectedWorkload: null
+        selectedWorkload: null,
+        instanceOptimizerCompletionTime: completionTime
       },
       () => {
         toast.update('processEntities', {
-          autoClose: 3000,
+          autoClose: 1000,
           type: toast.TYPE.SUCCESS,
           containerId: 'C',
           render: successMsg('Finished processing entities.')
@@ -672,11 +737,11 @@ export class DataProvider extends Component {
     const cloudPricingQueue = queue((task, cb) => {
       cloudPricingCompleted++;
       const cloudRegion = task.cp.split('_');
-
       this.getCloudPricing(cloudRegion[0], cloudRegion[1]).then(v => {
         cloudPricing[task.cp] = v;
         this.setState(
           {
+            cloudPricing,
             cloudPricingProgress:
               (cloudPricingCompleted / Object.keys(cloudPricing).length) * 100
           },
@@ -725,7 +790,8 @@ export class DataProvider extends Component {
 
     console.log('process entity promises');
 
-    const processedEntityPromises = entities.map(e => {
+    const entityQueue = queue(async (task, cb) => {
+      const { e } = task;
       const {
         optimizationConfig,
         optimizedWith,
@@ -737,10 +803,17 @@ export class DataProvider extends Component {
       }
 
       e.optimizedWith = optimizedWith;
-      return this.processEntity(e, optimizationConfig, entityMetricTotals);
+      await this.processEntity(e, optimizationConfig, entityMetricTotals);
+      cb();
+    }, queueConcurrency);
+
+    entities.forEach(e => {
+      entityQueue.push({ e });
     });
 
-    await Promise.all(processedEntityPromises);
+    if (cloudPricingQueue.length > 0) {
+      await Promise.all([cloudPricingQueue.drain()]);
+    }
 
     console.log('process entity promises - finished');
 
@@ -803,6 +876,138 @@ export class DataProvider extends Component {
       // perform instance calculations
       addInstanceCostTotal(entityMetricTotals, e);
     }
+  };
+
+  // testProcessEntity = async (e, optimizationConfig, entityMetricTotals) => {
+  //   const { accountCache } = this.state;
+  //   const { id } = e.account;
+  //   const cacheData = accountCache[id];
+  //   const cachedEntity = cacheData.find(i => i.id === e.guid);
+
+  //   let useCache = null;
+
+  //   if (cachedEntity) {
+  //     const {
+  //       instanceResult,
+  //       matchedInstances,
+  //       datacenterSpend,
+  //       optimizedData,
+  //       processedAt
+  //     } = cachedEntity.document;
+
+  //     e.processedAt = processedAt;
+
+  //     const currentTimeMs = new Date().getTime();
+  //     const timeDiff = currentTimeMs - e.processedAt;
+  //     const cacheTime = cacheDefaultHourTTL * 3.6e6;
+
+  //     useCache = !(!e.processedAt || timeDiff > cacheTime);
+
+  //     if (useCache) {
+  //       useCache = false // test
+  //       console.log(
+  //         `${e.guid} using cache expires in ${cacheTime - timeDiff}ms`
+  //       );
+  //       e.instanceResult = instanceResult;
+  //       e.matchedInstances = matchedInstances;
+  //       e.datacenterSpend = datacenterSpend;
+  //       e.optimizedData = optimizedData;
+  //       addInstanceCostTotal(entityMetricTotals, e);
+  //     }
+  //   } else {
+  //     useCache = false;
+  //   }
+
+  //   if (
+  //     !useCache &&
+  //     (e.systemSample || e.vsphereHostSample || e.vsphereVmSample)
+  //   ) {
+  //     // if system sample or vsphere get instance pricing
+
+  //     const selectedType =
+  //       e.systemSample && e.systemSample['latest.instanceType']
+  //         ? e.systemSample['latest.instanceType']
+  //         : e['tag.instanceType'] || e['tag.type'];
+
+  //     if (e.cloud && e.cloudRegion && selectedType && selectedType !== 'HOST') {
+  //       // assess cloud instance
+  //       e.instanceResult = await this.getInstanceCloudPricing(
+  //         e.cloud,
+  //         e.cloudRegion,
+  //         selectedType
+  //       );
+  //     } else if (!e.cloud) {
+  //       if (!isNaN(e.coreCount) && !isNaN(e.memoryGb)) {
+  //         e.matchedInstances = await this.getCloudInstances(
+  //           e.cloud,
+  //           optimizationConfig,
+  //           e.coreCount,
+  //           Math.round(e.memoryGb)
+  //         );
+  //       }
+
+  //       // check if exists in workload and if DC costing is available
+  //       if (e.costPerCU >= 0) {
+  //         const instanceCU = Math.round(e.memoryGb + e.coreCount);
+  //         e.datacenterSpend = instanceCU * e.costPerCU;
+  //       }
+  //     }
+
+  //     // get optimized matches
+  //     if (!optimizationConfig) {
+  //       e.optimizedData = null;
+  //     } else {
+  //       e.optimizedData = await this.getOptimizedMatches(
+  //         e.instanceResult,
+  //         e.systemSample || e.vsphereVmSample || e.vsphereHostSample,
+  //         optimizationConfig,
+  //         e.cloud,
+  //         e.costPerCU
+  //       );
+  //     }
+
+  //     // perform instance calculations
+  //     addInstanceCostTotal(entityMetricTotals, e);
+  //     e.processedAt = new Date().getTime();
+  //     // await this.writeToCache(e);
+  //   }
+  // };
+
+  writeToCache = entity => {
+    return new Promise(resolve => {
+      const document = {
+        instanceResult: entity.instanceResult,
+        matchedInstances: entity.matchedInstances,
+        datacenterSpend: entity.datacenterSpend,
+        optimizedData: entity.optimizedData,
+        processedAt: entity.processedAt,
+        guid: entity.guid
+      };
+
+      const { accountCache } = this.state;
+      let selectedBucketId = null;
+
+      for (let z = 0; z < cacheBucketsPerAccount; z++) {
+        const entityCount = accountCache[`${entity.account.id}_${z}_count`];
+        if (entityCount < cacheEntitiesPerBucket) {
+          selectedBucketId = z;
+          break;
+        }
+      }
+
+      if (!isNaN(selectedBucketId)) {
+        AccountStorageMutation.mutate({
+          accountId: entity.account.id,
+          actionType: AccountStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+          collection: `cache_${entity.account.id}_${selectedBucketId}`,
+          documentId: entity.guid,
+          document
+        }).then(values => resolve(values));
+      } else {
+        console.log(`${entity.account.id} cache buckets maxed`);
+        resolve(null);
+      }
+    });
   };
 
   getCloudInstances = async (
@@ -971,43 +1176,62 @@ export class DataProvider extends Component {
   };
 
   getCloudPricing = (cloud, region) => {
+    const { cloudPricing } = this.state;
     return new Promise(resolve => {
-      const cleanRegion = validateRegion(
-        cloud,
-        region,
-        this.state.cloudRegions,
-        this.state.userConfig
-      );
-      fetch(`${pricingURL}/${cloud}/compute/pricing/${cleanRegion}.json`)
-        .then(response => {
-          return response.json();
-        })
-        .then(json => {
-          if (json && json.products) {
-            resolve(json.products);
-          } else {
-            resolve(null);
-          }
-        });
+      const currentPricing = cloudPricing[`${cloud}_${region}`];
+      if (Object.keys(currentPricing).length === 0) {
+        const cleanRegion = validateRegion(
+          cloud,
+          region,
+          this.state.cloudRegions,
+          this.state.userConfig
+        );
+
+        fetch(`${pricingURL}/${cloud}/compute/pricing/${cleanRegion}.json`)
+          .then(response => response.json())
+          .then(json =>
+            json?.products ? resolve(json.products) : resolve(null)
+          );
+      } else {
+        resolve(currentPricing);
+      }
     });
   };
 
-  // get cloud pricing
-  // checks cloud pricing in state, else will fetch and store
   getInstanceCloudPricing = (cloud, region, instanceType) => {
+    const { cloudPricing } = this.state;
     return new Promise(resolve => {
-      this.getCloudPricing(cloud, region).then(value => {
-        if (instanceType && value) {
+      const pricingKey = `${cloud}_${region}`;
+
+      if (cloudPricing[pricingKey] && cloudPricing[pricingKey].length > 0) {
+        if (instanceType) {
           // provide direct instance type price
-          for (let z = 0; z < value.length; z++) {
-            if (value[z].type === instanceType) {
-              resolve(value[z]);
+          for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
+            if (cloudPricing[pricingKey][z].type === instanceType) {
+              resolve(cloudPricing[pricingKey][z]);
             }
           }
-          resolve(value);
+          resolve(null);
+        } else {
+          resolve(cloudPricing[pricingKey]);
         }
-        resolve(value);
-      });
+      } else {
+        this.getCloudPricing(cloud, region).then(value => {
+          cloudPricing[pricingKey] = value;
+          this.setState({ cloudPricing }, () => {
+            if (instanceType) {
+              for (let z = 0; z < cloudPricing[pricingKey].length; z++) {
+                if (cloudPricing[pricingKey][z].type === instanceType) {
+                  resolve(cloudPricing[pricingKey][z]);
+                }
+              }
+              resolve(null);
+            } else {
+              resolve(value);
+            }
+          });
+        });
+      }
     });
   };
 
@@ -1028,7 +1252,7 @@ export class DataProvider extends Component {
         query: getEntityDataQuery(timeRange),
         variables: { guids: task.chunk }
       }).then(v => {
-        const entities = (((v || {}).data || {}).actor || {}).entities || [];
+        const entities = v?.data?.actor?.entities || [];
         if (entities.length > 0) {
           completeEntities = [...completeEntities, ...entities];
         }
@@ -1139,11 +1363,8 @@ export class DataProvider extends Component {
     if (entityWorkloadQueryPromises.length > 0) {
       await Promise.all(entityWorkloadQueryPromises).then(values => {
         values.forEach(async (v, i) => {
-          const workload =
-            ((((v || {}).data || {}).actor || {}).account || {}).workload ||
-            null;
-
-          const collection = workload.collection || null;
+          const workload = v?.data?.actor?.account?.workload;
+          const collection = workload?.collection;
 
           if (collection) {
             workloadGuids[i].name = collection.name;
@@ -1186,7 +1407,7 @@ export class DataProvider extends Component {
         let tags = [...currentTags];
 
         values.forEach(v => {
-          const results = (((v || {}).data || {}).actor || {}).entities || [];
+          const results = v?.data?.actor?.entities || [];
           results.forEach(r => {
             const checkIndex = existsInObjArray(workloadGuids, 'guid', r.guid);
             if (checkIndex !== false) {
@@ -1247,15 +1468,14 @@ export class DataProvider extends Component {
       NerdGraphQuery.query({
         query: ngQuery
       }).then(async v => {
-        const results =
-          ((((v || {}).data || {}).actor || {}).entitySearch || {}).results ||
-          [];
+        const results = v?.data?.actor?.entitySearch?.results || [];
 
         if (results.entities && results.entities.length > 0) {
           entities = [...entities, ...results.entities];
         }
 
         if (results.nextCursor) {
+          // if (results.nextCursor) {
           // seems to work as intended
           console.log('recursing');
           const recursedEntities = await this.evaluateWorkloadEntitySearchQuery(
@@ -1275,9 +1495,7 @@ export class DataProvider extends Component {
     fetch(
       'https://raw.githubusercontent.com/newrelic/nr1-cloud-optimize/master/package.json'
     )
-      .then(response => {
-        return response.json();
-      })
+      .then(response => response.json())
       .then(repoPackage => {
         if (pkg.version === repoPackage.version) {
           console.log(`Running latest version: ${pkg.version}`);
@@ -1491,8 +1709,7 @@ export class DataProvider extends Component {
       values.forEach((value, i) => {
         switch (content[i]) {
           case 'accounts':
-            data.accounts =
-              (((value || {}).data || {}).actor || {}).accounts || [];
+            data.accounts = value?.data?.actor?.accounts || [];
             break;
         }
       });

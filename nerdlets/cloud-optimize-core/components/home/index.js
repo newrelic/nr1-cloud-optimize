@@ -15,10 +15,12 @@ export default class Home extends React.PureComponent {
           accountConfigProgress,
           cloudPricingProgress,
           workloadCostProgress,
-          workloadConfigProgress
+          workloadConfigProgress,
+          instanceOptimizerRunComplete
         }) => {
           const isLoading =
-            fetchingEntities === true || postProcessing === true;
+            (fetchingEntities === true || postProcessing === true) &&
+            instanceOptimizerRunComplete === false;
 
           return (
             <>
