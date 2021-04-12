@@ -12,8 +12,8 @@
   "ids": {
     "o": "39d3665c-8670-4f9f-aa79-1a18f23d3960",
     "dv2": "ec734258-b5ca-41b2-84ef-d97352e0ea19",
-    "xps": "e84e5818-7009-4b76-af86-105e1f6abb87",
-    "tls": "0197dff1-7829-4663-b21e-196eafbe2c33"
+    "tls": "0197dff1-7829-4663-b21e-196eafbe2c33",
+    "xps": "e84e5818-7009-4b76-af86-105e1f6abb87"
   },
   "bugs": {
     "email": "opensource@newrelic.com"
