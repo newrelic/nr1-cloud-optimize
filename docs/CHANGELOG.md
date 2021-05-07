@@ -1,3 +1,15 @@
+## [2.1.3](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.2...v2.1.3) (2021-05-07)
+
+
+### Bug Fixes
+
+* package.json & package-lock.json to reduce vulnerabilities ([b3c94d6](https://github.com/newrelic/nr1-cloud-optimize/commit/b3c94d6525249f5d626c11567e2374b3e9af4b43))
+* upgrade graphql-tag from 2.10.3 to 2.11.0 ([8888d9b](https://github.com/newrelic/nr1-cloud-optimize/commit/8888d9b6bbf2a7caca34e4def9590a5d4f7280b7))
+* upgrade js-base64 from 2.6.3 to 2.6.4 ([93a54a9](https://github.com/newrelic/nr1-cloud-optimize/commit/93a54a92cc5a53efe6b1dfd3eea2531cf9f500d4))
+* upgrade react-select from 3.1.0 to 3.2.0 ([393ff27](https://github.com/newrelic/nr1-cloud-optimize/commit/393ff27050d230c4363c94c28ae8063057ab7a9d))
+* upgrade semver from 7.3.2 to 7.3.4 ([4d67160](https://github.com/newrelic/nr1-cloud-optimize/commit/4d67160f9778dd57bab305de657ceb1dc895eeca))
+* upgrade semver from 7.3.4 to 7.3.5 ([b9c2b8f](https://github.com/newrelic/nr1-cloud-optimize/commit/b9c2b8f1afad9a9d4b6a14be51bd55d5dc9156f6))
+
 ## [2.1.3](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.1.2...v2.1.3) (2021-03-22)
 
 
