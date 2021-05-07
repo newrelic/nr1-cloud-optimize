@@ -404,7 +404,7 @@ SOFTWARE.
 
 ### semver
 
-This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.4](https://github.com/npm/node-semver/tree/v7.3.4)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.4/LICENSE):
+This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.5](https://github.com/npm/node-semver/tree/v7.3.5)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.5/LICENSE):
 
 ```
 The ISC License
