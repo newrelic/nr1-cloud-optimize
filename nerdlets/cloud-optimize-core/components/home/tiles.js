@@ -48,6 +48,19 @@ export default class Tiles extends React.PureComponent {
               link:
                 'https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-rds-monitoring-integration',
               linkName: 'Integration Docs'
+            },
+            {
+              name: 'Amazon EC2',
+              optimizer: 'ec2',
+              desc: 'Optimize EC2 instances without the infrastructure agent',
+              cat: 'server',
+              icon: 'server',
+              cloudIcon: awsIcon,
+              link:
+                'https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-ec2-monitoring-integration',
+              linkName: 'Integration Docs',
+              ignoreCount: true,
+              hideEntityCount: true
             }
           ];
 
@@ -72,7 +85,7 @@ export default class Tiles extends React.PureComponent {
                   } else if (o.optimizer === 'workload') {
                     count = entityCountWorkload;
                   } else {
-                    categoryTypes[o.cat].forEach(type => {
+                    (categoryTypes?.[o.cat] || []).forEach(type => {
                       count += (groupedEntities?.[type] || []).length;
                     });
                   }
@@ -81,9 +94,11 @@ export default class Tiles extends React.PureComponent {
                     <Card key={i}>
                       <Card.Content>
                         <Card.Header
-                          style={{ cursor: count > 0 ? 'pointer' : '' }}
+                          style={{
+                            cursor: count > 0 || o.ignoreCount ? 'pointer' : ''
+                          }}
                           onClick={
-                            count > 0
+                            count > 0 || o.ignoreCount
                               ? () => {
                                   if (o.run) {
                                     o.run(`${o.optimizer}-optimizer`);

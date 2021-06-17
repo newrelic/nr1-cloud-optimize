@@ -4,6 +4,7 @@ import { Segment } from 'semantic-ui-react';
 import Home from '../home';
 import InstanceOptimizer from '../optimizers/instances';
 import RdsOptimizer from '../optimizers/rds';
+import Ec2Optimizer from '../optimizers/ec2';
 import OptimizationConfigs from '../optimization-configs';
 import Setup from '../setup';
 import WorkloadCosts from '../workload-costs';
@@ -24,6 +25,8 @@ export default class ContentContainer extends React.PureComponent {
                 return <InstanceOptimizer />;
               case 'rds-optimizer':
                 return <RdsOptimizer height={height} />;
+              case 'ec2-optimizer':
+                return <Ec2Optimizer height={height} />;
               case 'optimization-configs':
                 return <OptimizationConfigs />;
               case 'setup':

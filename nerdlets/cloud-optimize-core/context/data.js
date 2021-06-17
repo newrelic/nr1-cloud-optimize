@@ -95,7 +95,8 @@ export const successMsg = msg => (
 export const categoryTypes = {
   instances: ['HOST', 'VSPHEREVM', 'VSPHEREHOST'],
   workloads: ['WORKLOAD'],
-  database: []
+  database: [],
+  ec2: []
   // database: ['APPLICATION'],
   // application: ['APPLICATION']
 };
