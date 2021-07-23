@@ -4,7 +4,7 @@ no-console: 0
 
 import _ from 'lodash';
 
-export const getInstance = (region, type, engine, index) => {
+export const getInstance = (region, type, engine, index, multiAz) => {
   if (engine === 'postgres') engine = 'postgresql';
   return new Promise(resolve => {
     fetch(
@@ -16,7 +16,15 @@ export const getInstance = (region, type, engine, index) => {
       .then(json => {
         if (json) {
           json.index = index;
-          resolve(json);
+          if (multiAz === 'true') {
+            resolve(
+              json.filter(p => p.attributes.deploymentOption === 'Multi-AZ')
+            );
+          } else {
+            resolve(
+              json.filter(p => p.attributes.deploymentOption !== 'Multi-AZ')
+            );
+          }
         } else {
           resolve(null);
         }

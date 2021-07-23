@@ -8,6 +8,7 @@ import OptimizationConfigs from '../optimization-configs';
 import Setup from '../setup';
 import WorkloadCosts from '../workload-costs';
 import WorkloadOptimizer from '../optimizers/workloads';
+import WorkloadsOptimizer from '../optimizers/workloads2';
 import FAQ from '../faq';
 
 export default class ContentContainer extends React.PureComponent {
@@ -32,6 +33,8 @@ export default class ContentContainer extends React.PureComponent {
                 return <WorkloadCosts />;
               case 'workload-optimizer':
                 return <WorkloadOptimizer />;
+              case 'workloads-optimizer':
+                return <WorkloadsOptimizer height={height} />;
               case 'faq':
                 return <FAQ />;
               default:

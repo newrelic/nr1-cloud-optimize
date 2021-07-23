@@ -48,6 +48,15 @@ export default class Tiles extends React.PureComponent {
               link:
                 'https://docs.newrelic.com/docs/integrations/amazon-integrations/aws-integrations-list/aws-rds-monitoring-integration',
               linkName: 'Integration Docs'
+            },
+            {
+              name: 'Workload Cost Analyzer',
+              optimizer: 'workloads',
+              desc: 'Analyze the running cost of your workload',
+              cat: 'workloads',
+              img: workloadsIcon,
+              link: 'https://one.newrelic.com/launcher/workloads.home',
+              linkName: 'Create Workloads'
             }
           ];
 
@@ -69,7 +78,10 @@ export default class Tiles extends React.PureComponent {
                     count = entityCountRds;
                   } else if (o.optimizer === 'instance') {
                     count = entityCountHost;
-                  } else if (o.optimizer === 'workload') {
+                  } else if (
+                    o.optimizer === 'workload' ||
+                    o.optimizer === 'workloads'
+                  ) {
                     count = entityCountWorkload;
                   } else {
                     categoryTypes[o.cat].forEach(type => {
