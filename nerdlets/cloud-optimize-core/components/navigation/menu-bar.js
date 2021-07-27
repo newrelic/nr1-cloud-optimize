@@ -145,10 +145,18 @@ export default class MenuBar extends React.PureComponent {
                           timepickerEnabled: !timepickerEnabled
                         });
                         if (!timepickerEnabled === false) {
-                          postProcessEntities();
-                          toast.info('Resetting to 7 day window.', {
-                            containerId: 'C'
-                          });
+                          switch (selectedPage) {
+                            case 'workload-cost-analyzer-optimizer': {
+                              //
+                              break;
+                            }
+                            default:
+                              console.log(selectedPage);
+                              postProcessEntities();
+                              toast.info('Resetting to 7 day window.', {
+                                containerId: 'C'
+                              });
+                          }
                         } else {
                           toast.info(
                             'Time Picker enabled, please select a time range to update.',

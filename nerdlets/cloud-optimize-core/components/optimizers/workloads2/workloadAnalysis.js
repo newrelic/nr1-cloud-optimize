@@ -11,6 +11,7 @@ import {
   NerdGraphQuery
 } from 'nr1';
 import { adjustCost, getTagValue } from '../../../../shared/lib/utils';
+import { timeRangeToNrql } from '../../../../shared/lib/queries';
 import { getInstance as getRdsInstance } from '../rds/utils';
 
 const nrqlQuery = (accountId, query) => `{
@@ -23,26 +24,41 @@ const nrqlQuery = (accountId, query) => `{
   }
 }`;
 
+const loadBalancerQuery = (guid, timeRange) =>
+  `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.estimatedProcessedBytes.Maximum), latest(provider.estimatedAlbActiveConnectionCount.Maximum), latest(provider.estimatedAlbNewConnectionCount.Maximum) WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 export default class WorkloadAnalysis extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { pricedEntities: null, costPeriod: null, AWSELB: null };
+    this.state = {
+      pricedEntities: null,
+      costPeriod: null,
+      timeRange: null,
+      AWSELB: null
+    };
   }
 
   componentDidMount() {
-    const { selectedWorkload, costPeriod } = this.props;
-    this.setState({ costPeriod, selectedWorkload }, async () => {
+    const { selectedWorkload, costPeriod, timeRange } = this.props;
+    this.setState({ costPeriod, selectedWorkload, timeRange }, async () => {
       await this.fetchCloudPricing();
       this.fetchEntityPricing(selectedWorkload);
     });
   }
 
   componentDidUpdate() {
-    const { selectedWorkload, costPeriod } = this.props;
+    const { selectedWorkload, costPeriod, timeRange } = this.props;
 
-    if (JSON.stringify(costPeriod) !== JSON.stringify(this.state.costPeriod)) {
+    if (
+      JSON.stringify(costPeriod) !== JSON.stringify(this.state.costPeriod) ||
+      JSON.stringify(timeRange) !== JSON.stringify(this.state.timeRange)
+    ) {
       // eslint-disable-next-line
-      this.setState({ costPeriod },() => this.fetchEntityPricing(selectedWorkload));
+      this.setState({ costPeriod, timeRange }, () =>
+        this.fetchEntityPricing(selectedWorkload)
+      );
     }
   }
 
@@ -76,7 +92,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
   };
 
   getCloudPricing = entity => {
-    const { costPeriod } = this.state;
+    const { costPeriod, timeRange } = this.state;
 
     // eslint-disable-next-line
     return new Promise(async resolve => {
@@ -85,7 +101,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
           const ngData = await NerdGraphQuery.query({
             query: nrqlQuery(
               entity.account.id,
-              `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.estimatedProcessedBytes.Maximum), latest(provider.estimatedAlbActiveConnectionCount.Maximum), latest(provider.estimatedAlbNewConnectionCount.Maximum) WHERE entityGuid = '${entity.guid}' LIMIT 1 SINCE 7 days ago`
+              loadBalancerQuery(entity.guid, timeRange)
             )
           });
           const data = ngData?.data?.actor?.account?.nrql?.results?.[0] || null;

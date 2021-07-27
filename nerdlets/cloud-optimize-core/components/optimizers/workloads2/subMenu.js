@@ -1,6 +1,6 @@
 import React from 'react';
 import { WorkloadsConsumer } from './context';
-import { Button, AccountPicker } from 'nr1';
+import { Button, AccountPicker, navigation } from 'nr1';
 
 export default class SubMenu extends React.PureComponent {
   render() {
@@ -19,6 +19,16 @@ export default class SubMenu extends React.PureComponent {
               &nbsp;
               {selectedWorkload && (
                 <>
+                  <Button
+                    onClick={() =>
+                      navigation.openStackedEntity(selectedWorkload.guid)
+                    }
+                    type={Button.TYPE.PRIMARY}
+                    sizeType={Button.SIZE_TYPE.SMALL}
+                  >
+                    {selectedWorkload.name}
+                  </Button>
+                  &nbsp;
                   <Button
                     onClick={() => updateDataState({ selectedWorkload: null })}
                     type={Button.TYPE.PRIMARY}

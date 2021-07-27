@@ -230,8 +230,12 @@ export class DataProvider extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { timepickerEnabled, lastSelectedOptimizer } = this.state;
-    const { selectedPage } = this.props;
+    const {
+      timepickerEnabled,
+      lastSelectedOptimizer,
+      selectedPage
+    } = this.state;
+    const page = selectedPage || this.props.selectedPage;
 
     if (
       this.props.platformState &&
@@ -241,20 +245,31 @@ export class DataProvider extends Component {
     ) {
       this.setState({ timeRange: this.props.platformState.timeRange }, () => {
         console.log('post process with time');
-        this.postProcessEntities();
+        switch (page) {
+          case 'workload-cost-analyzer-optimizer': {
+            //
+            break;
+          }
+          default:
+            console.log(page);
+            this.postProcessEntities();
+        }
       });
     }
 
-    if (selectedPage && selectedPage.includes('optimizer')) {
-      if (selectedPage !== lastSelectedOptimizer) {
-        // reset the selected group if the optimizer changes
-        console.log('reset');
-        this.setState({
-          lastSelectedOptimizer: selectedPage,
-          selectedGroup: null
-        });
-      }
-    }
+    // if (
+    //   selectedPage &&
+    //   (selectedPage.includes('optimizer') || selectedPage.includes('analyzer'))
+    // ) {
+    //   if (selectedPage !== lastSelectedOptimizer) {
+    //     // reset the selected group if the optimizer changes
+    //     console.log('reset');
+    //     this.setState({
+    //       lastSelectedOptimizer: selectedPage,
+    //       selectedGroup: null
+    //     });
+    //   }
+    // }
   }
 
   runInstanceOptimizer = selectedPage => {

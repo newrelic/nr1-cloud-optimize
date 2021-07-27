@@ -51,7 +51,7 @@ export default class Tiles extends React.PureComponent {
             },
             {
               name: 'Workload Cost Analyzer',
-              optimizer: 'workloads',
+              optimizer: 'workload-cost-analyzer',
               desc: 'Analyze the running cost of your workload',
               cat: 'workloads',
               img: workloadsIcon,
@@ -80,7 +80,8 @@ export default class Tiles extends React.PureComponent {
                     count = entityCountHost;
                   } else if (
                     o.optimizer === 'workload' ||
-                    o.optimizer === 'workloads'
+                    o.optimizer === 'workloads' ||
+                    o.optimizer === 'workload-cost-analyzer'
                   ) {
                     count = entityCountWorkload;
                   } else {

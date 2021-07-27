@@ -7,7 +7,7 @@ import WorkloadAnalysis from './workloadAnalysis';
 
 export default class WorkloadsOptimizations extends React.PureComponent {
   render() {
-    const { height, setAccount, costPeriod } = this.props;
+    const { height, setAccount, costPeriod, timeRange } = this.props;
 
     return (
       <WorkloadsConsumer>
@@ -53,6 +53,7 @@ export default class WorkloadsOptimizations extends React.PureComponent {
 
           return selectedWorkload ? (
             <WorkloadAnalysis
+              timeRange={timeRange}
               selectedWorkload={selectedWorkload}
               costPeriod={costPeriod}
               selectWorkload={() => updateDataState({ selectedWorkload: null })}

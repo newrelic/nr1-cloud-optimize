@@ -48,6 +48,7 @@ export default class WorkloadsOptimizer extends React.PureComponent {
                   selectedTags={selectedTags}
                   setAccount={accountId => this.setState({ accountId })}
                   costPeriod={costPeriod}
+                  timeRange={timepickerEnabled ? timeRange : null}
                 />
               </WorkloadsProvider>
             </>

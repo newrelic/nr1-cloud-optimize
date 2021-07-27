@@ -33,7 +33,7 @@ export default class ContentContainer extends React.PureComponent {
                 return <WorkloadCosts />;
               case 'workload-optimizer':
                 return <WorkloadOptimizer />;
-              case 'workloads-optimizer':
+              case 'workload-cost-analyzer-optimizer':
                 return <WorkloadsOptimizer height={height} />;
               case 'faq':
                 return <FAQ />;

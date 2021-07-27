@@ -110,24 +110,6 @@ const subQuery = (guids, end_time, cursor) => {
   }`;
 };
 
-export const timeRangeToNrql = timeRange => {
-  if (!timeRange) {
-    return 'SINCE 7 DAYS AGO';
-  }
-
-  if (timeRange.beginTime && timeRange.endTime) {
-    return `SINCE ${timeRange.beginTime} UNTIL ${timeRange.endTime}`;
-  } else if (timeRange.begin_time && timeRange.end_time) {
-    return `SINCE ${timeRange.begin_time} UNTIL ${timeRange.end_time}`;
-  } else if (timeRange.duration <= HOUR) {
-    return `SINCE ${timeRange.duration / MINUTE} MINUTES AGO`;
-  } else if (timeRange.duration <= DAY) {
-    return `SINCE ${timeRange.duration / HOUR} HOURS AGO`;
-  } else {
-    return `SINCE ${timeRange.duration / DAY} DAYS AGO`;
-  }
-};
-
 export const computeQuery = (accountId, keys) => `{
   actor {
     account(id: ${accountId}) {
@@ -277,7 +259,7 @@ export class WorkloadsProvider extends Component {
         price: pricing.onDemandPrice,
         currentSpend: pricing.onDemandPrice
       };
-      await processOptimizationSuggestions(newSample, rules);
+      // await processOptimizationSuggestions(newSample, rules);
       processedData.push(newSample);
       cb();
     }, 5);
