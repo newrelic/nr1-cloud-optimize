@@ -13,6 +13,7 @@ import {
 import { adjustCost, getTagValue } from '../../../../shared/lib/utils';
 import { timeRangeToNrql } from '../../../../shared/lib/queries';
 import { getInstance as getRdsInstance } from '../rds/utils';
+import SummaryBar from './summary-bar';
 
 const nrqlQuery = (accountId, query) => `{
   actor {
@@ -36,7 +37,8 @@ export default class WorkloadAnalysis extends React.PureComponent {
       pricedEntities: null,
       costPeriod: null,
       timeRange: null,
-      AWSELB: null
+      AWSELB: null,
+      costTotals: { data: 0, period: 0, rate: 0 }
     };
   }
 
@@ -79,16 +81,21 @@ export default class WorkloadAnalysis extends React.PureComponent {
   };
 
   fetchEntityPricing = async selectedWorkload => {
+    const costTotals = { data: 0, period: 0, rate: 0 };
     const results = selectedWorkload?.relatedEntities?.results || [];
     const entities = results.map(e => e.target.entity);
     const pricingPromises = entities.map(e => this.getCloudPricing(e));
     const pricingData = await Promise.all(pricingPromises);
 
     pricingData.forEach((cost, i) => {
+      if (cost?.dataCost) costTotals.data += parseFloat(cost?.dataCost || 0);
+      if (cost?.periodCost)
+        costTotals.period += parseFloat(cost?.periodCost || 0);
+      if (cost?.rateCost) costTotals.rate += parseFloat(cost?.rateCost || 0);
       entities[i].cost = cost;
     });
 
-    this.setState({ pricedEntities: entities });
+    this.setState({ pricedEntities: entities, costTotals });
   };
 
   getCloudPricing = entity => {
@@ -170,33 +177,37 @@ export default class WorkloadAnalysis extends React.PureComponent {
     const { height, selectedWorkload } = this.props;
     const results = selectedWorkload?.relatedEntities?.results || [];
     const entities = results.map(e => e.target.entity);
-    const { pricedEntities } = this.state;
+    const { pricedEntities, costTotals } = this.state;
 
     return (
       <WorkloadsConsumer>
         {({ completeEntities }) => {
           return (
-            <Table items={pricedEntities || entities} style={{ height }}>
-              <TableHeader>
-                <TableHeaderCell>Entity</TableHeaderCell>
-                <TableHeaderCell>Type</TableHeaderCell>
-                <TableHeaderCell>Data Cost</TableHeaderCell>
-                <TableHeaderCell>Period Cost</TableHeaderCell>
-              </TableHeader>
+            <>
+              <SummaryBar costTotals={costTotals} />
 
-              {({ item }) => (
-                <TableRow>
-                  <EntityTitleTableRowCell
-                    value={item}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => navigation.openStackedEntity(item.guid)}
-                  />
-                  <TableRowCell>{item.type}</TableRowCell>
-                  <TableRowCell>{item?.cost?.dataCost || ''}</TableRowCell>
-                  <TableRowCell>{item?.cost?.periodCost || ''}</TableRowCell>
-                </TableRow>
-              )}
-            </Table>
+              <Table items={pricedEntities || entities} style={{ height }}>
+                <TableHeader>
+                  <TableHeaderCell>Entity</TableHeaderCell>
+                  <TableHeaderCell>Type</TableHeaderCell>
+                  <TableHeaderCell>Data Cost</TableHeaderCell>
+                  <TableHeaderCell>Period Cost</TableHeaderCell>
+                </TableHeader>
+
+                {({ item }) => (
+                  <TableRow>
+                    <EntityTitleTableRowCell
+                      value={item}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigation.openStackedEntity(item.guid)}
+                    />
+                    <TableRowCell>{item.type}</TableRowCell>
+                    <TableRowCell>{item?.cost?.dataCost || ''}</TableRowCell>
+                    <TableRowCell>{item?.cost?.periodCost || ''}</TableRowCell>
+                  </TableRow>
+                )}
+              </Table>
+            </>
           );
         }}
       </WorkloadsConsumer>
