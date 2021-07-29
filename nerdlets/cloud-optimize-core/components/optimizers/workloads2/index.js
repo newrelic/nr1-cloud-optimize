@@ -32,7 +32,6 @@ export default class WorkloadsOptimizer extends React.PureComponent {
               <WorkloadsProvider
                 cloudRegions={cloudRegions}
                 accountId={accountId}
-                storeState={storeState}
                 timeRange={timeRange}
                 timepickerEnabled={timepickerEnabled}
               >
@@ -43,6 +42,7 @@ export default class WorkloadsOptimizer extends React.PureComponent {
                 <WorkloadsOptimizations
                   height={height}
                   groupBy={groupBy}
+                  storeState={storeState}
                   sortBy={sortBy}
                   orderBy={orderBy}
                   selectedTags={selectedTags}

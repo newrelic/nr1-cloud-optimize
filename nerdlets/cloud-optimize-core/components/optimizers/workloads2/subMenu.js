@@ -25,6 +25,9 @@ export default class SubMenu extends React.PureComponent {
                     }
                     type={Button.TYPE.PRIMARY}
                     sizeType={Button.SIZE_TYPE.SMALL}
+                    iconType={
+                      Button.ICON_TYPE.INTERFACE__VIEW__HIGH_DENSITY_VIEW
+                    }
                   >
                     {selectedWorkload.name}
                   </Button>

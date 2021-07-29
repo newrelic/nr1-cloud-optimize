@@ -24,6 +24,7 @@ export default class MenuBar extends React.PureComponent {
           groupBy,
           groupByOptions,
           groupByOptionsRds,
+          groupByOptionsWLCA,
           sortBy,
           orderBy,
           fetchingEntities,
@@ -39,6 +40,11 @@ export default class MenuBar extends React.PureComponent {
           switch (selectedPage) {
             case 'rds-optimizer': {
               groupByOptionsSet = groupByOptionsRds;
+              break;
+            }
+            case 'workload-cost-analyzer-optimizer': {
+              groupByOptionsSet = groupByOptionsWLCA;
+              break;
             }
           }
 

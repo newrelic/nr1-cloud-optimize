@@ -1,6 +1,7 @@
 import React from 'react';
 import { WorkloadsConsumer } from './context';
 import {
+  HeadingText,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -10,10 +11,16 @@ import {
   navigation, // View more documentation at https://developer.newrelic.com/components/nrql-query/
   NerdGraphQuery
 } from 'nr1';
-import { adjustCost, getTagValue } from '../../../../shared/lib/utils';
+import {
+  adjustCost,
+  getTagValue,
+  buildGroupByOptions
+} from '../../../../shared/lib/utils';
 import { timeRangeToNrql } from '../../../../shared/lib/queries';
 import { getInstance as getRdsInstance } from '../rds/utils';
 import SummaryBar from './summary-bar';
+import _ from 'lodash';
+import { Divider } from 'semantic-ui-react';
 
 const nrqlQuery = (accountId, query) => `{
   actor {
@@ -43,7 +50,14 @@ export default class WorkloadAnalysis extends React.PureComponent {
   }
 
   componentDidMount() {
-    const { selectedWorkload, costPeriod, timeRange } = this.props;
+    const { selectedWorkload, costPeriod, timeRange, storeState } = this.props;
+    const entities = (selectedWorkload?.relatedEntities?.results || []).map(
+      e => e.target.entity
+    );
+
+    const groupByOptionsWLCA = buildGroupByOptions(entities);
+    storeState({ groupByOptionsWLCA });
+
     this.setState({ costPeriod, selectedWorkload, timeRange }, async () => {
       await this.fetchCloudPricing();
       this.fetchEntityPricing(selectedWorkload);
@@ -174,10 +188,22 @@ export default class WorkloadAnalysis extends React.PureComponent {
   };
 
   render() {
-    const { height, selectedWorkload } = this.props;
-    const results = selectedWorkload?.relatedEntities?.results || [];
-    const entities = results.map(e => e.target.entity);
+    const { height, selectedWorkload, groupBy } = this.props;
     const { pricedEntities, costTotals } = this.state;
+    const results = selectedWorkload?.relatedEntities?.results || [];
+    const entities = pricedEntities || results.map(e => e.target.entity);
+
+    const menuGroupedEntities = _.groupBy(entities, e => {
+      const foundKey = e.tags.find(t => t.key === groupBy.value);
+      if (foundKey) {
+        return foundKey.values[0] || undefined;
+      }
+      return undefined;
+    });
+
+    console.log(groupBy);
+
+    console.log(menuGroupedEntities);
 
     return (
       <WorkloadsConsumer>
@@ -186,27 +212,45 @@ export default class WorkloadAnalysis extends React.PureComponent {
             <>
               <SummaryBar costTotals={costTotals} />
 
-              <Table items={pricedEntities || entities} style={{ height }}>
-                <TableHeader>
-                  <TableHeaderCell>Entity</TableHeaderCell>
-                  <TableHeaderCell>Type</TableHeaderCell>
-                  <TableHeaderCell>Data Cost</TableHeaderCell>
-                  <TableHeaderCell>Period Cost</TableHeaderCell>
-                </TableHeader>
+              {Object.keys(menuGroupedEntities).map(group => {
+                return (
+                  <>
+                    {group || 'Unknown'}
 
-                {({ item }) => (
-                  <TableRow>
-                    <EntityTitleTableRowCell
-                      value={item}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => navigation.openStackedEntity(item.guid)}
-                    />
-                    <TableRowCell>{item.type}</TableRowCell>
-                    <TableRowCell>{item?.cost?.dataCost || ''}</TableRowCell>
-                    <TableRowCell>{item?.cost?.periodCost || ''}</TableRowCell>
-                  </TableRow>
-                )}
-              </Table>
+                    <Table
+                      items={menuGroupedEntities[group]}
+                      style={{ height }}
+                    >
+                      <TableHeader>
+                        <TableHeaderCell>Entity</TableHeaderCell>
+                        <TableHeaderCell>Type</TableHeaderCell>
+                        <TableHeaderCell>Data Cost (GB)</TableHeaderCell>
+                        <TableHeaderCell>Period Cost</TableHeaderCell>
+                      </TableHeader>
+
+                      {({ item }) => (
+                        <TableRow>
+                          <EntityTitleTableRowCell
+                            value={item}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() =>
+                              navigation.openStackedEntity(item.guid)
+                            }
+                          />
+                          <TableRowCell>{item.type}</TableRowCell>
+                          <TableRowCell>
+                            {item?.cost?.dataCost || ''}
+                          </TableRowCell>
+                          <TableRowCell>
+                            {item?.cost?.periodCost || ''}
+                          </TableRowCell>
+                        </TableRow>
+                      )}
+                    </Table>
+                    <Divider />
+                  </>
+                );
+              })}
             </>
           );
         }}

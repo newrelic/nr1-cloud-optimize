@@ -201,6 +201,7 @@ export class DataProvider extends Component {
       orderBy: { value: 'desc', label: 'Descending' },
       groupByOptions: [],
       groupByOptionsRds: [],
+      groupByOptionsWLCA: [],
       sortByOptions: [],
       costPeriod: { key: 3, label: 'MONTHLY', value: 'M' },
       cloudRegions: {},
