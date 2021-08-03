@@ -8,7 +8,7 @@ import {
   TableRow,
   TableRowCell,
   EntityTitleTableRowCell,
-  navigation, // View more documentation at https://developer.newrelic.com/components/nrql-query/
+  navigation,
   NerdGraphQuery
 } from 'nr1';
 import {
@@ -33,7 +33,12 @@ const nrqlQuery = (accountId, query) => `{
 }`;
 
 const loadBalancerQuery = (guid, timeRange) =>
-  `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.estimatedProcessedBytes.Maximum), latest(provider.estimatedAlbActiveConnectionCount.Maximum), latest(provider.estimatedAlbNewConnectionCount.Maximum) WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+  `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.ruleEvaluations.Sum), latest(provider.estimatedProcessedBytes.Maximum), latest(provider.estimatedAlbActiveConnectionCount.Maximum), latest(provider.estimatedAlbNewConnectionCount.Maximum) WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
+const applicationLoadBalancerQuery = (guid, timeRange) =>
+  `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.ruleEvaluations.Sum), latest(provider.processedBytes.Maximum), latest(provider.newConnectionCount.Sum), latest(procider.activeConnectionCount.Sum) WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
     timeRange
   )}`;
 
@@ -118,6 +123,68 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSALB': {
+          const ngData = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              applicationLoadBalancerQuery(entity.guid, timeRange)
+            )
+          });
+          const data = ngData?.data?.actor?.account?.nrql?.results?.[0] || null;
+          const pricingData = this.state.AWSELB;
+
+          if (data && pricingData) {
+            const awsRegion = data['latest.awsRegion'];
+
+            // LCU Cost
+            // You are charged only on the dimension with the highest usage. An LCU contains:
+            // 25 new connections per second.
+            // 3,000 active connections per minute.
+            // 1 GB per hour for EC2 instances, containers and IP addresses as targets and 0.4 GB per hour for Lambda functions as targets
+
+            // work on 1 connection per second
+            const newConnLCUs = data['latest.provider.newConnectionCount.Sum']
+              ? 1 / data['latest.provider.newConnectionCount.Sum']
+              : 0;
+
+            // work on 1 new connection per second, each lasting 2 minutes
+            const activeConnLCUs = data[
+              'latest.provider.activeConnectionCount.Sum'
+            ]
+              ? 120 / data['latest.provider.activeConnectionCount.Sum']
+              : 0;
+
+            const processedGbLCUs = data['latest.provider.processedBytes.Sum']
+              ? data['latest.provider.processedBytes.Sum'] / 1e9 / 1
+              : 0;
+
+            // Rule Evaluations (per second): For simplicity, assume that all configured rules are processed for a request.
+            // Each LCU provides 1,000 rule evaluations per second (averaged over the hour).
+            // Since your application receives 5 requests/sec, 60 processed rules for each request results
+            // in a maximum 250 rule evaluations per second (60 processed rules – 10 free rules) * 5 or 0.25 LCU (250 rule evaluations per second / 1,000 rule evaluations per second)
+            const rulesSum = data['latest.provider.ruleEvaluations.Sum'];
+            const rulesEvalLCUs = rulesSum > 10 ? (rulesSum - 10) * 5 : 0;
+
+            const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
+            const lcuRate =
+              parseFloat(pricing['Application Load Balancer LCU Hours'].price) *
+              (newConnLCUs + activeConnLCUs + processedGbLCUs + rulesEvalLCUs);
+            const hourRate = parseFloat(
+              pricing['Application Load Balancer Hours'].price
+            );
+
+            // https://aws.amazon.com/elasticloadbalancing/pricing/
+
+            const periodCost = adjustCost(costPeriod, hourRate);
+            const lcuCost = adjustCost(costPeriod, lcuRate);
+
+            resolve({ periodCost: periodCost + lcuCost });
+          }
+
+          resolve(null);
+
+          break;
+        }
         case 'AWSELB': {
           const ngData = await NerdGraphQuery.query({
             query: nrqlQuery(
@@ -200,10 +267,6 @@ export default class WorkloadAnalysis extends React.PureComponent {
       }
       return undefined;
     });
-
-    console.log(groupBy);
-
-    console.log(menuGroupedEntities);
 
     return (
       <WorkloadsConsumer>
