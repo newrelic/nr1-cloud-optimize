@@ -25,7 +25,7 @@ import { Divider } from 'semantic-ui-react';
 const nrqlQuery = (accountId, query) => `{
   actor {
     account(id: ${accountId}) {
-      nrql(query: "${query}") {
+      nrql(query: "${query}", timeout: 60) {
         results
       }
     }
@@ -42,6 +42,11 @@ const applicationLoadBalancerQuery = (guid, timeRange) =>
     timeRange
   )}`;
 
+const queueSampleQuery = (guid, timeRange) =>
+  `FROM QueueSample SELECT latest(awsRegion), latest(provider.numberOfMessagesSent.Sum + provider.numberOfMessagesReceived.Sum + provider.numberOfMessagesDeleted.Sum) as 'numberOfMessages' WHERE entityGuid = '${guid}' AND dataSourceName = 'SQS' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 export default class WorkloadAnalysis extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -50,6 +55,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
       costPeriod: null,
       timeRange: null,
       AWSELB: null,
+      AWSSQSQUEUE: null,
       costTotals: { data: 0, period: 0, rate: 0 }
     };
   }
@@ -95,6 +101,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
         .then(response => response.json())
         .then(json => (stateUpdate.AWSELB = json));
 
+      // AWSSQSQUEUE
+      await fetch(
+        'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/sqs/pricing.json'
+      )
+        .then(response => response.json())
+        .then(json => (stateUpdate.AWSSQSQUEUE = json));
+
       this.setState(stateUpdate, () => resolve());
     });
   };
@@ -123,6 +136,33 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSSQSQUEUE': {
+          const ngData = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              queueSampleQuery(entity.guid, timeRange)
+            )
+          });
+          const data = ngData?.data?.actor?.account?.nrql?.results?.[0] || null;
+          const pricingData = this.state[entity.type];
+
+          if (data && pricingData) {
+            const awsRegion = data['latest.awsRegion'];
+            const messages = data.numberOfMessages || 0;
+
+            const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
+
+            const messageRate = adjustCost(
+              costPeriod,
+              parseFloat(pricing['Standard per Requests'].price) * messages
+            );
+
+            resolve({ rateCost: messageRate });
+          }
+          resolve(null);
+
+          break;
+        }
         case 'AWSALB': {
           const ngData = await NerdGraphQuery.query({
             query: nrqlQuery(
@@ -288,6 +328,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
                         <TableHeaderCell>Entity</TableHeaderCell>
                         <TableHeaderCell>Type</TableHeaderCell>
                         <TableHeaderCell>Data Cost (GB)</TableHeaderCell>
+                        <TableHeaderCell>Rate Cost</TableHeaderCell>
                         <TableHeaderCell>Period Cost</TableHeaderCell>
                       </TableHeader>
 
@@ -303,6 +344,9 @@ export default class WorkloadAnalysis extends React.PureComponent {
                           <TableRowCell>{item.type}</TableRowCell>
                           <TableRowCell>
                             {item?.cost?.dataCost || ''}
+                          </TableRowCell>
+                          <TableRowCell>
+                            {item?.cost?.rateCost || ''}
                           </TableRowCell>
                           <TableRowCell>
                             {item?.cost?.periodCost || ''}
