@@ -4,10 +4,20 @@ import { Divider } from 'semantic-ui-react';
 
 export default class SummaryBar extends React.PureComponent {
   render() {
-    const { costTotals } = this.props;
+    const { costTotals, fetchingPricing } = this.props;
     return (
       <>
         <br />
+        {fetchingPricing && (
+          <Button
+            iconType={Button.ICON_TYPE.DOCUMENTS__DOCUMENTS__NOTES__A_ADD}
+            sizeType={Button.SIZE_TYPE.SMALL}
+            loading
+            type={Button.TYPE.PRIMARY}
+          >
+            Fetching pricing data...
+          </Button>
+        )}
         <Button
           style={{ cursor: 'text' }}
           type={Button.TYPE.OUTLINE}
@@ -16,7 +26,7 @@ export default class SummaryBar extends React.PureComponent {
           Total: ${costTotals.data + costTotals.rate + costTotals.period}
         </Button>
         &nbsp;
-        <Popover openOnHover>
+        {/* <Popover openOnHover>
           <PopoverTrigger>
             <Button
               style={{ cursor: 'text' }}
@@ -66,7 +76,7 @@ export default class SummaryBar extends React.PureComponent {
             </BlockText>
           </PopoverBody>
         </Popover>
-        &nbsp;
+        &nbsp; */}
         <Divider />
       </>
     );

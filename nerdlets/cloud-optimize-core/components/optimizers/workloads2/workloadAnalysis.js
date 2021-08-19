@@ -1,7 +1,7 @@
 import React from 'react';
 import { WorkloadsConsumer } from './context';
 import {
-  HeadingText,
+  Button,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -56,7 +56,8 @@ export default class WorkloadAnalysis extends React.PureComponent {
       timeRange: null,
       AWSELB: null,
       AWSSQSQUEUE: null,
-      costTotals: { data: 0, period: 0, rate: 0 }
+      costTotals: { data: 0, period: 0, rate: 0 },
+      fetchingPricing: false
     };
   }
 
@@ -112,22 +113,28 @@ export default class WorkloadAnalysis extends React.PureComponent {
     });
   };
 
-  fetchEntityPricing = async selectedWorkload => {
-    const costTotals = { data: 0, period: 0, rate: 0 };
-    const results = selectedWorkload?.relatedEntities?.results || [];
-    const entities = results.map(e => e.target.entity);
-    const pricingPromises = entities.map(e => this.getCloudPricing(e));
-    const pricingData = await Promise.all(pricingPromises);
+  fetchEntityPricing = selectedWorkload => {
+    this.setState({ fetchingPricing: true }, async () => {
+      const costTotals = { data: 0, period: 0, rate: 0 };
+      const results = selectedWorkload?.relatedEntities?.results || [];
+      const entities = results.map(e => e.target.entity);
+      const pricingPromises = entities.map(e => this.getCloudPricing(e));
+      const pricingData = await Promise.all(pricingPromises);
 
-    pricingData.forEach((cost, i) => {
-      if (cost?.dataCost) costTotals.data += parseFloat(cost?.dataCost || 0);
-      if (cost?.periodCost)
-        costTotals.period += parseFloat(cost?.periodCost || 0);
-      if (cost?.rateCost) costTotals.rate += parseFloat(cost?.rateCost || 0);
-      entities[i].cost = cost;
+      pricingData.forEach((cost, i) => {
+        if (cost?.dataCost) costTotals.data += parseFloat(cost?.dataCost || 0);
+        if (cost?.periodCost)
+          costTotals.period += parseFloat(cost?.periodCost || 0);
+        if (cost?.rateCost) costTotals.rate += parseFloat(cost?.rateCost || 0);
+        entities[i].cost = cost;
+      });
+
+      this.setState({
+        pricedEntities: entities,
+        costTotals,
+        fetchingPricing: false
+      });
     });
-
-    this.setState({ pricedEntities: entities, costTotals });
   };
 
   getCloudPricing = entity => {
@@ -157,7 +164,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
               parseFloat(pricing['Standard per Requests'].price) * messages
             );
 
-            resolve({ rateCost: messageRate });
+            resolve({ rateCost: messageRate, totalCost: messageRate });
           }
           resolve(null);
 
@@ -217,8 +224,9 @@ export default class WorkloadAnalysis extends React.PureComponent {
 
             const periodCost = adjustCost(costPeriod, hourRate);
             const lcuCost = adjustCost(costPeriod, lcuRate);
+            const totalCost = periodCost + lcuCost;
 
-            resolve({ periodCost: periodCost + lcuCost });
+            resolve({ periodCost: periodCost + lcuCost, totalCost });
           }
 
           resolve(null);
@@ -258,7 +266,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
             ).toFixed(20);
             const periodCost = adjustCost(costPeriod, hourRate);
 
-            resolve({ dataCost, periodCost });
+            resolve({ dataCost, periodCost, totalCost: periodCost + dataCost });
           }
 
           resolve(null);
@@ -296,7 +304,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
 
   render() {
     const { height, selectedWorkload, groupBy } = this.props;
-    const { pricedEntities, costTotals } = this.state;
+    const { pricedEntities, costTotals, fetchingPricing } = this.state;
     const results = selectedWorkload?.relatedEntities?.results || [];
     const entities = pricedEntities || results.map(e => e.target.entity);
 
@@ -313,13 +321,26 @@ export default class WorkloadAnalysis extends React.PureComponent {
         {({ completeEntities }) => {
           return (
             <>
-              <SummaryBar costTotals={costTotals} />
+              <SummaryBar
+                costTotals={costTotals}
+                fetchingPricing={fetchingPricing}
+              />
 
               {Object.keys(menuGroupedEntities).map(group => {
+                let groupCost = 0;
+                menuGroupedEntities[group].forEach(e => {
+                  groupCost += e?.cost?.totalCost || 0;
+                });
                 return (
                   <>
-                    {group || 'Unknown'}
-
+                    {group || 'Unknown'} &nbsp;
+                    <Button
+                      style={{ cursor: 'text' }}
+                      type={Button.TYPE.OUTLINE}
+                      sizeType={Button.SIZE_TYPE.SMALL}
+                    >
+                      Total: ${groupCost}
+                    </Button>
                     <Table
                       items={menuGroupedEntities[group]}
                       style={{ height }}
@@ -327,9 +348,10 @@ export default class WorkloadAnalysis extends React.PureComponent {
                       <TableHeader>
                         <TableHeaderCell>Entity</TableHeaderCell>
                         <TableHeaderCell>Type</TableHeaderCell>
-                        <TableHeaderCell>Data Cost (GB)</TableHeaderCell>
+                        <TableHeaderCell>Estimated Cost</TableHeaderCell>
+                        {/* <TableHeaderCell>Data Cost (GB)</TableHeaderCell>
                         <TableHeaderCell>Rate Cost</TableHeaderCell>
-                        <TableHeaderCell>Period Cost</TableHeaderCell>
+                        <TableHeaderCell>Period Cost</TableHeaderCell> */}
                       </TableHeader>
 
                       {({ item }) => (
@@ -343,6 +365,10 @@ export default class WorkloadAnalysis extends React.PureComponent {
                           />
                           <TableRowCell>{item.type}</TableRowCell>
                           <TableRowCell>
+                            {item?.cost?.totalCost || ''}
+                          </TableRowCell>
+                          {/* 
+                          <TableRowCell>
                             {item?.cost?.dataCost || ''}
                           </TableRowCell>
                           <TableRowCell>
@@ -350,7 +376,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
                           </TableRowCell>
                           <TableRowCell>
                             {item?.cost?.periodCost || ''}
-                          </TableRowCell>
+                          </TableRowCell> */}
                         </TableRow>
                       )}
                     </Table>
