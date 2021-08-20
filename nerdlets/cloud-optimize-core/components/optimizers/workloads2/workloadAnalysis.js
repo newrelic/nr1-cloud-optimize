@@ -57,7 +57,9 @@ export default class WorkloadAnalysis extends React.PureComponent {
       AWSELB: null,
       AWSSQSQUEUE: null,
       costTotals: { data: 0, period: 0, rate: 0 },
-      fetchingPricing: false
+      fetchingPricing: false,
+      sortColumn: 2,
+      sortDirection: TableHeaderCell.SORTING_TYPE.DESCENDING
     };
   }
 
@@ -89,6 +91,14 @@ export default class WorkloadAnalysis extends React.PureComponent {
       );
     }
   }
+
+  onClickTableHeaderCell = (column, { nextSortingType }) => {
+    if (column === this.state.sortColumn) {
+      this.setState({ sortDirection: nextSortingType });
+    } else {
+      this.setState({ sortColumn: column, sortDirection: nextSortingType });
+    }
+  };
 
   fetchCloudPricing = () => {
     // eslint-disable-next-line
@@ -229,7 +239,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
             resolve({ periodCost: periodCost + lcuCost, totalCost });
           }
 
-          resolve(null);
+          resolve({ error: 'Pricing unavailable' });
 
           break;
         }
@@ -269,7 +279,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
             resolve({ dataCost, periodCost, totalCost: periodCost + dataCost });
           }
 
-          resolve(null);
+          resolve({ error: 'Pricing unavailable' });
           break;
         }
         case 'AWSRDSDBINSTANCE': {
@@ -293,23 +303,29 @@ export default class WorkloadAnalysis extends React.PureComponent {
             }
           }
 
-          resolve(null);
+          resolve({ error: 'Pricing unavailable' });
           break;
         }
         default:
-          resolve(null);
+          resolve({ error: 'Pricing for this service is not supported yet' });
       }
     });
   };
 
   render() {
     const { height, selectedWorkload, groupBy } = this.props;
-    const { pricedEntities, costTotals, fetchingPricing } = this.state;
+    const {
+      pricedEntities,
+      costTotals,
+      fetchingPricing,
+      sortColumn,
+      sortDirection
+    } = this.state;
     const results = selectedWorkload?.relatedEntities?.results || [];
     const entities = pricedEntities || results.map(e => e.target.entity);
 
     const menuGroupedEntities = _.groupBy(entities, e => {
-      const foundKey = e.tags.find(t => t.key === groupBy.value);
+      const foundKey = (e?.tags || []).find(t => t.key === groupBy.value);
       if (foundKey) {
         return foundKey.values[0] || undefined;
       }
@@ -346,9 +362,48 @@ export default class WorkloadAnalysis extends React.PureComponent {
                       style={{ height }}
                     >
                       <TableHeader>
-                        <TableHeaderCell>Entity</TableHeaderCell>
-                        <TableHeaderCell>Type</TableHeaderCell>
-                        <TableHeaderCell>Estimated Cost</TableHeaderCell>
+                        <TableHeaderCell
+                          value={({ item }) => item.name}
+                          sortable
+                          sortingType={
+                            sortColumn === 0
+                              ? sortDirection
+                              : TableHeaderCell.SORTING_TYPE.NONE
+                          }
+                          onClick={(event, data) =>
+                            this.onClickTableHeaderCell(0, data)
+                          }
+                        >
+                          Entity
+                        </TableHeaderCell>
+                        <TableHeaderCell
+                          value={({ item }) => item.typw}
+                          sortable
+                          sortingType={
+                            sortColumn === 1
+                              ? sortDirection
+                              : TableHeaderCell.SORTING_TYPE.NONE
+                          }
+                          onClick={(event, data) =>
+                            this.onClickTableHeaderCell(1, data)
+                          }
+                        >
+                          Type
+                        </TableHeaderCell>
+                        <TableHeaderCell
+                          value={({ item }) => item?.cost?.totalCost || ''}
+                          sortable
+                          sortingType={
+                            sortColumn === 2
+                              ? sortDirection
+                              : TableHeaderCell.SORTING_TYPE.NONE
+                          }
+                          onClick={(event, data) =>
+                            this.onClickTableHeaderCell(2, data)
+                          }
+                        >
+                          Estimated Cost
+                        </TableHeaderCell>
                         {/* <TableHeaderCell>Data Cost (GB)</TableHeaderCell>
                         <TableHeaderCell>Rate Cost</TableHeaderCell>
                         <TableHeaderCell>Period Cost</TableHeaderCell> */}
