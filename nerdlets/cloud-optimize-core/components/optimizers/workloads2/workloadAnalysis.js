@@ -3,6 +3,7 @@ import { WorkloadsConsumer } from './context';
 import {
   Button,
   Table,
+  Spinner,
   TableHeader,
   TableHeaderCell,
   TableRow,
