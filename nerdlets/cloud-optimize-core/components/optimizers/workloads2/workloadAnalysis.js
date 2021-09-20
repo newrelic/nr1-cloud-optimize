@@ -326,12 +326,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
     const entities = pricedEntities || results.map(e => e.target.entity);
 
     const menuGroupedEntities = _.groupBy(entities, e => {
-      const foundKey = (e?.tags || []).find(t => t.key === groupBy.value);
+      const foundKey = (e?.tags || []).find(t => t?.key === groupBy?.value);
       if (foundKey) {
         return foundKey.values[0] || undefined;
       }
       return undefined;
     });
+
 
     return (
       <WorkloadsConsumer>

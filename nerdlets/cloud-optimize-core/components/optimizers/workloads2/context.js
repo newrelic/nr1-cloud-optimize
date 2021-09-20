@@ -80,7 +80,8 @@ const subQuery = (guids, end_time, cursor) => {
         ... on WorkloadEntity {
           guid
           name
-          relatedEntities {
+          relatedEntities${cursor ? `(cursor: "${cursor}")` : ''} {
+            nextCursor
             results {
               target {
                 entity {
@@ -409,6 +410,7 @@ export class WorkloadsProvider extends Component {
               const nerdGraphResult = await NerdGraphQuery.query({
                 query: subQuery(guids, end_time)
               });
+
               resolve(nerdGraphResult);
             });
           });

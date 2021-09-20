@@ -118,9 +118,9 @@ export const buildGroupByOptions = entities => {
   const groupByOptions = [
     ...new Set(
       entities
-        .map(e => e.tags)
+        .map(e => e.tags || [])
         .flat()
-        .map(t => t.key)
+        .map(t => t?.key)
         .filter(t => !ignoreTags.includes(t))
     )
   ]
