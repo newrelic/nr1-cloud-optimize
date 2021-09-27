@@ -19,6 +19,7 @@ import {
 } from '../../../../shared/lib/utils';
 import { timeRangeToNrql } from '../../../../shared/lib/queries';
 import { getInstance as getRdsInstance } from '../rds/utils';
+import { getEc2Instance } from '../ec2/utils';
 import SummaryBar from './summary-bar';
 import _ from 'lodash';
 import { Divider } from 'semantic-ui-react';
@@ -139,6 +140,8 @@ export default class WorkloadAnalysis extends React.PureComponent {
         if (cost?.rateCost) costTotals.rate += parseFloat(cost?.rateCost || 0);
         entities[i].cost = cost;
       });
+
+      console.log(entities);
 
       this.setState({
         pricedEntities: entities,
@@ -300,11 +303,35 @@ export default class WorkloadAnalysis extends React.PureComponent {
             if (pricing && pricing[0]) {
               const hourRate = pricing[0].onDemandPrice.pricePerUnit.USD;
               const periodCost = adjustCost(costPeriod, hourRate);
-              resolve({ periodCost });
+              resolve({ periodCost, totalCost: periodCost });
             }
           }
 
           resolve({ error: 'Pricing unavailable' });
+          break;
+        }
+        case 'HOST': {
+          const region = getTagValue(entity.tags, 'aws.awsRegion');
+          const awsEc2InstanceType = getTagValue(
+            entity.tags,
+            'aws.ec2InstanceType'
+          );
+          const defaultInstanceType = getTagValue(entity.tags, 'instanceType');
+          const instanceType =
+            awsEc2InstanceType || defaultInstanceType || null;
+
+          if (region && instanceType) {
+            const pricing = await getEc2Instance(region, instanceType);
+
+            if (pricing && pricing[0]) {
+              const hourRate = pricing[0].onDemandPrice;
+              const periodCost = adjustCost(costPeriod, hourRate);
+              resolve({ periodCost, totalCost: periodCost });
+            }
+          } else {
+            resolve({ error: 'Pricing unavailable' });
+          }
+
           break;
         }
         default:
@@ -332,7 +359,6 @@ export default class WorkloadAnalysis extends React.PureComponent {
       }
       return undefined;
     });
-
 
     return (
       <WorkloadsConsumer>
