@@ -49,6 +49,11 @@ const queueSampleQuery = (guid, timeRange) =>
     timeRange
   )}`;
 
+const lambdaSampleQuery = (guid, timeRange) =>
+  `SELECT average(provider.duration.Maximum), sum(provider.invocations.Sum), latest(provider.memorySize) FROM ServerlessSample WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 export default class WorkloadAnalysis extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -58,6 +63,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
       timeRange: null,
       AWSELB: null,
       AWSSQSQUEUE: null,
+      AWSLAMBDAFUNCTION: null,
       costTotals: { data: 0, period: 0, rate: 0 },
       fetchingPricing: false,
       sortColumn: 2,
@@ -107,6 +113,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
     return new Promise(async resolve => {
       const stateUpdate = {};
 
+      // AWSLAMBDAFUNCTION
+      await fetch(
+        'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/lambda/pricing.json'
+      )
+        .then(response => response.json())
+        .then(json => (stateUpdate.AWSLAMBDAFUNCTION = json));
+
       // AWSELB
       await fetch(
         'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/elb/pricing.json'
@@ -141,8 +154,6 @@ export default class WorkloadAnalysis extends React.PureComponent {
         entities[i].cost = cost;
       });
 
-      console.log(entities);
-
       this.setState({
         pricedEntities: entities,
         costTotals,
@@ -157,6 +168,45 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSLAMBDAFUNCTION': {
+          const ngData = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              lambdaSampleQuery(entity.guid, timeRange)
+            )
+          });
+          const data = ngData?.data?.actor?.account?.nrql?.results?.[0] || null;
+          const pricingData = this.state[entity.type];
+
+          if (data && pricingData) {
+            const awsRegion = getTagValue(entity.tags, 'aws.awsRegion');
+            const invocations = data['sum.provider.invocations.Sum'];
+            const averageDurationMs = data['average.provider.duration.Maximum'];
+
+            const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
+
+            const lambdaDurationCost = pricing?.['Lambda Duration'].price;
+            const lambdRequestCost = pricing?.['Lambda Requests'].price;
+
+            if (invocations && averageDurationMs) {
+              const durationCost = averageDurationMs * lambdaDurationCost;
+              const requestCost = invocations * lambdRequestCost;
+
+              const adjustedCost = adjustCost(
+                costPeriod,
+                parseFloat(durationCost + requestCost)
+              );
+
+              resolve({ totalCost: adjustedCost });
+            } else {
+              resolve({ totalCost: 0 });
+            }
+          }
+
+          resolve(null);
+
+          break;
+        }
         case 'AWSSQSQUEUE': {
           const ngData = await NerdGraphQuery.query({
             query: nrqlQuery(
