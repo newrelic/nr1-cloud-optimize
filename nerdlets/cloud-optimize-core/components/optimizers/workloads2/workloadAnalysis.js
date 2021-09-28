@@ -3,7 +3,6 @@ import { WorkloadsConsumer } from './context';
 import {
   Button,
   Table,
-  Spinner,
   TableHeader,
   TableHeaderCell,
   TableRow,
@@ -20,6 +19,7 @@ import {
 import { timeRangeToNrql } from '../../../../shared/lib/queries';
 import { getInstance as getRdsInstance } from '../rds/utils';
 import { getEc2Instance } from '../ec2/utils';
+import { getElasticsearchNodePricing } from '../elasticsearch/utils';
 import SummaryBar from './summary-bar';
 import _ from 'lodash';
 import { Divider } from 'semantic-ui-react';
@@ -33,6 +33,16 @@ const nrqlQuery = (accountId, query) => `{
     }
   }
 }`;
+
+const elasticsearchGetClusterQuery = (guid, timeRange) =>
+  `SELECT latest(provider.domainName) FROM DatastoreSample WHERE provider='ElasticsearchNode' AND entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
+const elasticsearchGetClusterData = (clusterName, timeRange) =>
+  `SELECT latest(awsRegion), latest(provider.instanceType)  FROM DatastoreSample WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
 
 const loadBalancerQuery = (guid, timeRange) =>
   `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.ruleEvaluations.Sum), latest(provider.estimatedProcessedBytes.Maximum), latest(provider.estimatedAlbActiveConnectionCount.Maximum), latest(provider.estimatedAlbNewConnectionCount.Maximum) WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
@@ -64,6 +74,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
       AWSELB: null,
       AWSSQSQUEUE: null,
       AWSLAMBDAFUNCTION: null,
+      AWSELASTICSEARCHNODE: null,
       costTotals: { data: 0, period: 0, rate: 0 },
       fetchingPricing: false,
       sortColumn: 2,
@@ -112,6 +123,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       const stateUpdate = {};
+
+      // AWSELASTICSEARCHNODE
+      await fetch(
+        'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/elasticsearch/pricing.json'
+      )
+        .then(response => response.json())
+        .then(json => (stateUpdate.AWSELASTICSEARCHNODE = json));
 
       // AWSLAMBDAFUNCTION
       await fetch(
@@ -168,6 +186,42 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSELASTICSEARCHNODE': {
+          const ngClusterName = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              elasticsearchGetClusterQuery(entity.guid, timeRange)
+            )
+          });
+
+          const clusterName =
+            ngClusterName?.data?.actor?.account?.nrql?.results?.[0]?.[
+              'latest.provider.domainName'
+            ] || null;
+
+          if (clusterName) {
+            const ngClusterData = await NerdGraphQuery.query({
+              query: nrqlQuery(
+                entity.account.id,
+                elasticsearchGetClusterData(clusterName, timeRange)
+              )
+            });
+
+            const pricingData = this.state[entity.type];
+            const nodePricing = getElasticsearchNodePricing(
+              ngClusterData,
+              pricingData,
+              adjustCost,
+              costPeriod
+            );
+
+            resolve(nodePricing);
+          } else {
+            resolve(null);
+          }
+
+          break;
+        }
         case 'AWSLAMBDAFUNCTION': {
           const ngData = await NerdGraphQuery.query({
             query: nrqlQuery(
@@ -184,7 +238,6 @@ export default class WorkloadAnalysis extends React.PureComponent {
             const averageDurationMs = data['average.provider.duration.Maximum'];
 
             const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
-
             const lambdaDurationCost = pricing?.['Lambda Duration'].price;
             const lambdRequestCost = pricing?.['Lambda Requests'].price;
 
