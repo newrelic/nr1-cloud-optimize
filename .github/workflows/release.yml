@@ -170,7 +170,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 14
 
       - name: Download Cached Deps
         id: cache-node-modules
@@ -214,7 +214,7 @@ jobs:
           GIT_COMMITTER_NAME: "nr-opensource-bot"
           GIT_COMMITTER_EMAIL: "opensource+bot@newrelic.com"
           GITHUB_TOKEN: ${{ secrets.OPENSOURCE_BOT_TOKEN }}
-        run: npx semantic-release
+        run: npx semantic-release@^18.0.0
 
       - name: Re-enable "required_pull_request_reviews" branch protection
         id: enable-branch-protection
