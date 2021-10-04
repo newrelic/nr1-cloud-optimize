@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.8.0...v2.9.0) (2021-10-04)
+
+
+### Features
+
+* update semantic release with node ([45c5248](https://github.com/newrelic/nr1-cloud-optimize/commit/45c5248317a15c2407b807110efaba98a776dc2a))
+
 # [2.8.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.7.1...v2.8.0) (2021-04-12)
 
 
