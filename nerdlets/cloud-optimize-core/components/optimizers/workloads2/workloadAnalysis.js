@@ -23,6 +23,7 @@ import { getElasticsearchNodePricing } from '../elasticsearch/utils';
 import SummaryBar from './summary-bar';
 import _ from 'lodash';
 import { Divider } from 'semantic-ui-react';
+import CostModal from './costModal';
 
 const nrqlQuery = (accountId, query) => `{
   actor {
@@ -76,6 +77,8 @@ export default class WorkloadAnalysis extends React.PureComponent {
       AWSLAMBDAFUNCTION: null,
       AWSELASTICSEARCHNODE: null,
       costTotals: { data: 0, period: 0, rate: 0 },
+      costModalHidden: true,
+      costMessages: [],
       fetchingPricing: false,
       sortColumn: 2,
       sortDirection: TableHeaderCell.SORTING_TYPE.DESCENDING
@@ -250,7 +253,17 @@ export default class WorkloadAnalysis extends React.PureComponent {
                 parseFloat(durationCost + requestCost)
               );
 
-              resolve({ totalCost: adjustedCost });
+              const messages = [
+                `Region: ${awsRegion}`,
+                `Invocations: ${invocations}`,
+                `Average duration (ms): ${averageDurationMs}`,
+                `Duration Cost: ${lambdaDurationCost}`,
+                `Request Cost: ${lambdRequestCost}`,
+                `Cost Period: ${costPeriod.label}`,
+                `Total Cost (Duration + Request Cost for the defined cost period): ${adjustedCost}`
+              ];
+
+              resolve({ totalCost: adjustedCost, messages });
             } else {
               resolve({ totalCost: 0 });
             }
@@ -276,13 +289,29 @@ export default class WorkloadAnalysis extends React.PureComponent {
 
             const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
 
+            const messageCostStandard = parseFloat(
+              pricing['Standard per Requests'].price
+            );
+
             if (pricing) {
               const messageRate = adjustCost(
                 costPeriod,
-                parseFloat(pricing['Standard per Requests'].price) * messages
+                messageCostStandard * messages
               );
 
-              resolve({ rateCost: messageRate, totalCost: messageRate });
+              const costMessages = [
+                `Region: ${awsRegion}`,
+                `Message Count: ${messages}`,
+                `Message Cost (Standard per requests): ${messageCostStandard}`,
+                `Cost Period: ${costPeriod.label}`,
+                `Total Cost (Message Count x Message Cost): ${messageRate}`
+              ];
+
+              resolve({
+                rateCost: messageRate,
+                totalCost: messageRate,
+                messages: costMessages
+              });
             }
           }
           resolve(null);
@@ -332,8 +361,11 @@ export default class WorkloadAnalysis extends React.PureComponent {
             const rulesEvalLCUs = rulesSum > 10 ? (rulesSum - 10) * 5 : 0;
 
             const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
+            const lcuPricingCost = parseFloat(
+              pricing['Application Load Balancer LCU Hours'].price
+            );
             const lcuRate =
-              parseFloat(pricing['Application Load Balancer LCU Hours'].price) *
+              lcuPricingCost *
               (newConnLCUs + activeConnLCUs + processedGbLCUs + rulesEvalLCUs);
             const hourRate = parseFloat(
               pricing['Application Load Balancer Hours'].price
@@ -345,7 +377,24 @@ export default class WorkloadAnalysis extends React.PureComponent {
             const lcuCost = adjustCost(costPeriod, lcuRate);
             const totalCost = periodCost + lcuCost;
 
-            resolve({ periodCost: periodCost + lcuCost, totalCost });
+            const messages = [
+              `This calculation uses LCUs to determine cost, it is based on several factors as listed below.`,
+              `See https://aws.amazon.com/elasticloadbalancing/pricing/ for more detail.`,
+              `New Connections: ${data['latest.provider.newConnectionCount.Sum']}`,
+              `Active Connections: ${data[
+                'latest.provider.activeConnectionCount.Sum'
+              ] || 0}`,
+              `Rules: ${data['latest.provider.ruleEvaluations.Sum']}`,
+              `Cost per LCU: ${lcuPricingCost}`,
+              `Hourly Rate: ${hourRate}`,
+              `LCU Cost (Cost per LCU x LCUs): ${lcuCost}`,
+              `Cost Period: ${costPeriod.label}`,
+              `Total Period Cost: ${periodCost}`,
+              `Total Cost (LCU Cost + Total Period Cost): ${periodCost +
+                lcuCost}`
+            ];
+
+            resolve({ periodCost: periodCost + lcuCost, totalCost, messages });
           }
 
           resolve({ error: 'Pricing unavailable' });
@@ -385,7 +434,24 @@ export default class WorkloadAnalysis extends React.PureComponent {
             ).toFixed(20);
             const periodCost = adjustCost(costPeriod, hourRate);
 
-            resolve({ dataCost, periodCost, totalCost: periodCost + dataCost });
+            const messages = [
+              `Region: ${awsRegion}`,
+              `Estimated Processed Bytes: ${estimatedProcessedBytes}`,
+              `Data Rate /GB: ${dataRate}`,
+              `Hourly Rate: ${hourRate}`,
+              `Cost Period: ${costPeriod.label}`,
+              `Data Cost (Data Rate x ProcessedBytes): ${dataCost}`,
+              `Total Period Cost: ${periodCost}`,
+              `Total Cost (Data Cost + Total Period Cost): ${periodCost +
+                dataCost}`
+            ];
+
+            resolve({
+              dataCost,
+              periodCost,
+              totalCost: periodCost + dataCost,
+              messages
+            });
           }
 
           resolve({ error: 'Pricing unavailable' });
@@ -408,7 +474,19 @@ export default class WorkloadAnalysis extends React.PureComponent {
             if (pricing && pricing[0]) {
               const hourRate = pricing[0].onDemandPrice.pricePerUnit.USD;
               const periodCost = adjustCost(costPeriod, hourRate);
-              resolve({ periodCost, totalCost: periodCost });
+
+              const messages = [
+                `Type: ${instanceType}`,
+                `Engine: ${engine}`,
+                `MultiAZ: ${multiAz}`,
+                `Region: ${region}`,
+                `Cost Period: ${costPeriod.label}`,
+                `Hourly Rate: ${hourRate}`,
+                `Total Cost: ${periodCost}`,
+                `Total cost based on the entire cost period using the hourly rate.`
+              ];
+
+              resolve({ periodCost, totalCost: periodCost, messages });
             }
           }
 
@@ -431,7 +509,17 @@ export default class WorkloadAnalysis extends React.PureComponent {
             if (pricing && pricing[0]) {
               const hourRate = pricing[0].onDemandPrice;
               const periodCost = adjustCost(costPeriod, hourRate);
-              resolve({ periodCost, totalCost: periodCost });
+
+              const messages = [
+                `Type: ${instanceType}`,
+                `Region: ${region}`,
+                `Cost Period: ${costPeriod.label}`,
+                `Hourly Rate: ${hourRate}`,
+                `Total Cost: ${periodCost}`,
+                `Total cost based on the entire cost period using the hourly rate.`
+              ];
+
+              resolve({ periodCost, totalCost: periodCost, messages });
             }
           } else {
             resolve({ error: 'Pricing unavailable' });
@@ -448,11 +536,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
   render() {
     const { height, selectedWorkload, groupBy } = this.props;
     const {
+      costModalHidden,
       pricedEntities,
       costTotals,
       fetchingPricing,
       sortColumn,
-      sortDirection
+      sortDirection,
+      costMessages
     } = this.state;
     const results = selectedWorkload?.relatedEntities?.results || [];
     const entities = pricedEntities || results.map(e => e.target.entity);
@@ -470,6 +560,11 @@ export default class WorkloadAnalysis extends React.PureComponent {
         {({ completeEntities }) => {
           return (
             <>
+              <CostModal
+                hidden={costModalHidden}
+                messages={costMessages}
+                onClose={() => this.setState({ costModalHidden: true })}
+              />
               <SummaryBar
                 costTotals={costTotals}
                 fetchingPricing={fetchingPricing}
@@ -542,31 +637,36 @@ export default class WorkloadAnalysis extends React.PureComponent {
                         <TableHeaderCell>Period Cost</TableHeaderCell> */}
                       </TableHeader>
 
-                      {({ item }) => (
-                        <TableRow>
-                          <EntityTitleTableRowCell
-                            value={item}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() =>
-                              navigation.openStackedEntity(item.guid)
-                            }
-                          />
-                          <TableRowCell>{item.type}</TableRowCell>
-                          <TableRowCell>
-                            {item?.cost?.totalCost || ''}
-                          </TableRowCell>
-                          {/* 
-                          <TableRowCell>
-                            {item?.cost?.dataCost || ''}
-                          </TableRowCell>
-                          <TableRowCell>
-                            {item?.cost?.rateCost || ''}
-                          </TableRowCell>
-                          <TableRowCell>
-                            {item?.cost?.periodCost || ''}
-                          </TableRowCell> */}
-                        </TableRow>
-                      )}
+                      {({ item }) => {
+                        const totalCost = item?.cost?.totalCost || '';
+                        const messages = item?.cost?.messages || [];
+
+                        return (
+                          <TableRow>
+                            <EntityTitleTableRowCell
+                              value={item}
+                              style={{ cursor: 'pointer' }}
+                              onClick={() =>
+                                navigation.openStackedEntity(item.guid)
+                              }
+                            />
+                            <TableRowCell>{item.type}</TableRowCell>
+                            <TableRowCell
+                              onClick={
+                                messages.length > 0
+                                  ? () =>
+                                      this.setState({
+                                        costModalHidden: false,
+                                        costMessages: messages
+                                      })
+                                  : undefined
+                              }
+                            >
+                              {totalCost}
+                            </TableRowCell>
+                          </TableRow>
+                        );
+                      }}
                     </Table>
                     <Divider />
                   </>

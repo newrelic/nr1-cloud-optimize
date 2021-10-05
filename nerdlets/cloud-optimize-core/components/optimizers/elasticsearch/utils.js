@@ -30,7 +30,16 @@ export const getElasticsearchNodePricing = (
       const hourRate = firstPrice.price;
       const periodCost = adjustCost(costPeriod, hourRate);
 
-      return { periodCost, totalCost: periodCost };
+      const messages = [
+        `Type: ${instanceType}`,
+        `Region: ${awsRegion}`,
+        `Cost Period: ${costPeriod.label}`,
+        `Hourly Rate: ${hourRate}`,
+        `Total Cost: ${periodCost}`,
+        `Total cost based on the entire cost period using the hourly rate.`
+      ];
+
+      return { periodCost, totalCost: periodCost, messages };
     }
   }
 
