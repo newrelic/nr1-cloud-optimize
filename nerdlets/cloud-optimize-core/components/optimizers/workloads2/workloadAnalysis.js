@@ -18,8 +18,8 @@ import {
 } from '../../../../shared/lib/utils';
 import { timeRangeToNrql } from '../../../../shared/lib/queries';
 import { getInstance as getRdsInstance } from '../rds/utils';
-import { getEc2Instance } from '../ec2/utils';
-import { getElasticsearchNodePricing } from '../elasticsearch/utils';
+import { getEc2Instance } from '../aws/ec2/utils';
+import { getElasticsearchNodePricing } from '../aws/elasticsearch/utils';
 import SummaryBar from './summary-bar';
 import _ from 'lodash';
 import { Divider } from 'semantic-ui-react';
@@ -65,6 +65,11 @@ const lambdaSampleQuery = (guid, timeRange) =>
     timeRange
   )}`;
 
+const awsApiGatewayQuery = (guid, timeRange) =>
+  `SELECT sum(provider.count.SampleCount) as 'requests' FROM ApiGatewaySample WHERE provider='ApiGatewayApi' WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 export default class WorkloadAnalysis extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -76,6 +81,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
       AWSSQSQUEUE: null,
       AWSLAMBDAFUNCTION: null,
       AWSELASTICSEARCHNODE: null,
+      AWSAPIGATEWAYAPI: null,
       costTotals: { data: 0, period: 0, rate: 0 },
       costModalHidden: true,
       costMessages: [],
@@ -134,6 +140,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
         .then(response => response.json())
         .then(json => (stateUpdate.AWSELASTICSEARCHNODE = json));
 
+      // AWSAPIGATEWAYAPI
+      await fetch(
+        'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/apigateway/pricing.json'
+      )
+        .then(response => response.json())
+        .then(json => (stateUpdate.AWSAPIGATEWAYAPI = json));
+
       // AWSLAMBDAFUNCTION
       await fetch(
         'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/lambda/pricing.json'
@@ -189,6 +202,51 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSAPIGATEWAYAPI': {
+          const ngData = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              awsApiGatewayQuery(entity.guid, timeRange)
+            )
+          });
+
+          const data = ngData?.data?.actor?.account?.nrql?.results?.[0] || null;
+          const pricingData = this.state[entity.type];
+
+          if (data && pricingData) {
+            //
+
+            const awsRegion = getTagValue(entity.tags, 'aws.awsRegion');
+            const requests = data.requests || 0;
+            const apiCallPrice =
+              pricingData.regions[pricingData.mapping[awsRegion]]?.[
+                'API Calls Number of up to 333 million'
+              ]?.price;
+
+            if (apiCallPrice) {
+              const requestCost = apiCallPrice * requests;
+
+              const adjustedCost = adjustCost(
+                costPeriod,
+                parseFloat(requestCost)
+              );
+
+              const messages = [
+                `Region: ${awsRegion}`,
+                `Requests: ${requests}`,
+                `API Call Price: ${apiCallPrice}`,
+                `Cost Period: ${costPeriod.label}`,
+                `Total Cost (Call Price x Requests): ${adjustedCost}`,
+                `https://aws.amazon.com/api-gateway/pricing/`
+              ];
+
+              resolve({ totalCost: adjustedCost, messages });
+            }
+          }
+
+          resolve(null);
+          break;
+        }
         case 'AWSELASTICSEARCHNODE': {
           const ngClusterName = await NerdGraphQuery.query({
             query: nrqlQuery(
