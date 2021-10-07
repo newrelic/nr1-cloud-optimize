@@ -297,7 +297,8 @@ export class RdsProvider extends Component {
       }).then(v => {
         const entities = (((v || {}).data || {}).actor || {}).entities || [];
         if (entities.length > 0) {
-          completeEntities = [...completeEntities, ...entities];
+          const completeEntitiesOriginal = [...completeEntities, ...entities];
+          completeEntities = _.cloneDeep(completeEntitiesOriginal);
         }
         this.setState(
           { entityDataProgress: (chunksCompleted / guidChunks.length) * 100 },
@@ -334,14 +335,14 @@ export class RdsProvider extends Component {
       let engine = datastoreSample['latest.provider.engine'];
       const engineVersion = datastoreSample['latest.provider.engineVersion'];
 
-      if (engine.includes('aurora')) {
+      if (engine?.includes('aurora')) {
         datastoreSample.aurora = true;
         engine = engine.replace('aurora-', '');
       }
 
-      if (engine.includes('sqlserver')) engine = 'sqlserver';
-      if (engine.includes('oracle')) engine = 'oracle';
-      if (engine.includes('postgres')) engine = 'postgresql';
+      if (engine?.includes('sqlserver')) engine = 'sqlserver';
+      if (engine?.includes('oracle')) engine = 'oracle';
+      if (engine?.includes('postgres')) engine = 'postgresql';
 
       if (engine === 'aurora') {
         if (engineVersion.includes('mysql')) {

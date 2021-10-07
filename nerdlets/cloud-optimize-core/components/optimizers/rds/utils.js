@@ -6,26 +6,28 @@ import _ from 'lodash';
 
 export const getInstance = (region, type, engine, index) => {
   if (engine === 'postgres') engine = 'postgresql';
-  return new Promise(resolve => {
-    fetch(
-      `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`
-    )
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        if (json) {
-          json.index = index;
-          resolve(json);
-        } else {
+  if (region && type && engine) {
+    return new Promise(resolve => {
+      fetch(
+        `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`
+      )
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+          if (json) {
+            json.index = index;
+            resolve(json);
+          } else {
+            resolve(null);
+          }
+        })
+        .catch(() => {
+          console.log('error');
           resolve(null);
-        }
-      })
-      .catch(() => {
-        console.log('error');
-        resolve(null);
-      });
-  });
+        });
+    });
+  }
 };
 
 export const processOptimizationSuggestions = (entity, index, rules) => {
