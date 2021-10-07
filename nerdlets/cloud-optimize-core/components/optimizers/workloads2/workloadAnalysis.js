@@ -70,6 +70,11 @@ const awsApiGatewayQuery = (guid, timeRange) =>
     timeRange
   )}`;
 
+const elasticacheGetNodeType = (clusterId, timeRange) =>
+  `SELECT latest(provider.cacheNodeType) as 'nodeType' FROM DatastoreSample WHERE provider='ElastiCacheRedisCluster' AND provider.cacheClusterId = '${clusterId}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 export default class WorkloadAnalysis extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -82,6 +87,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
       AWSLAMBDAFUNCTION: null,
       AWSELASTICSEARCHNODE: null,
       AWSAPIGATEWAYAPI: null,
+      AWSELASTICACHEREDISNODE: null,
       costTotals: { data: 0, period: 0, rate: 0 },
       costModalHidden: true,
       costMessages: [],
@@ -132,6 +138,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       const stateUpdate = {};
+
+      // AWSELASTICACHEREDISNODE
+      await fetch(
+        'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/elasticache/pricing.json'
+      )
+        .then(response => response.json())
+        .then(json => (stateUpdate.AWSELASTICACHEREDISNODE = json));
 
       // AWSELASTICSEARCHNODE
       await fetch(
@@ -202,6 +215,57 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSELASTICACHEREDISNODE': {
+          const awsRegion = getTagValue(entity.tags, 'aws.awsRegion');
+          const cacheClusterId = getTagValue(entity.tags, 'aws.cacheClusterId');
+
+          if (awsRegion && cacheClusterId) {
+            const ngData = await NerdGraphQuery.query({
+              query: nrqlQuery(
+                entity.account.id,
+                elasticacheGetNodeType(cacheClusterId, timeRange)
+              )
+            });
+
+            const data =
+              ngData?.data?.actor?.account?.nrql?.results?.[0] || null;
+            const pricingData = this.state[entity.type];
+
+            if (data && pricingData) {
+              const regionPricing =
+                pricingData.regions[pricingData.mapping[awsRegion]] || {};
+
+              const prices = [];
+
+              Object.keys(regionPricing).forEach(instance => {
+                const price = regionPricing[instance];
+
+                if (price['Instance Type'] === data.nodeType) {
+                  prices.push(price);
+                }
+              });
+
+              if (prices.length > 0) {
+                const hourRate = prices[0].price;
+                const periodCost = adjustCost(costPeriod, hourRate);
+
+                const messages = [
+                  `Type: ${data.name}`,
+                  `Region: ${awsRegion}`,
+                  `Cost Period: ${costPeriod.label}`,
+                  `Hourly Rate: ${hourRate}`,
+                  `Total Cost: ${periodCost}`,
+                  `Total cost based on the entire cost period using the hourly rate.`
+                ];
+
+                resolve({ periodCost, totalCost: periodCost, messages });
+              }
+            }
+          }
+
+          resolve(null);
+          break;
+        }
         case 'AWSAPIGATEWAYAPI': {
           const ngData = await NerdGraphQuery.query({
             query: nrqlQuery(
