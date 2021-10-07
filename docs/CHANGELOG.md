@@ -1,3 +1,10 @@
+## [2.9.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.9.0...v2.9.1) (2021-10-07)
+
+
+### Bug Fixes
+
+* Add optional chaining to engine var ([dcf948b](https://github.com/newrelic/nr1-cloud-optimize/commit/dcf948bed566631c6929dad4b381eba71849d69e))
+
 # [2.9.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.8.0...v2.9.0) (2021-10-04)
 
 
