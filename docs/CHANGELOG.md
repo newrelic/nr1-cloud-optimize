@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.9.1...v2.10.0) (2021-10-15)
+
+
+### Features
+
+* add Nerdpack-item level screenshots ([659121e](https://github.com/newrelic/nr1-cloud-optimize/commit/659121ec7e9a749e561c1c9b2a95b81c463f23ea))
+
 ## [2.9.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.9.0...v2.9.1) (2021-10-07)
 
 
