@@ -1,0 +1,6 @@
+{
+    "schemaType": "NERDLET",
+    "id": "k8s-container-optimize",
+    "displayName": "K8sContainerOptimize",
+    "description": ""
+}

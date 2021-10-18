@@ -75,6 +75,11 @@ const elasticacheGetNodeType = (clusterId, timeRange) =>
     timeRange
   )}`;
 
+const getK8sContainerCount = (hostname, timeRange) =>
+  `FROM K8sContainerSample SELECT uniqueCount(containerID) as 'containerCount' WHERE hostname = '${hostname}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 export default class WorkloadAnalysis extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -616,6 +621,18 @@ export default class WorkloadAnalysis extends React.PureComponent {
           break;
         }
         case 'HOST': {
+          const hostname = getTagValue(entity.tags, 'hostname');
+
+          const ngData = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              getK8sContainerCount(hostname, timeRange)
+            )
+          });
+          const k8sContainerCount =
+            ngData?.data?.actor?.account?.nrql?.results?.[0]?.containerCount ||
+            0;
+
           const region = getTagValue(entity.tags, 'aws.awsRegion');
           const awsEc2InstanceType = getTagValue(
             entity.tags,
@@ -641,7 +658,12 @@ export default class WorkloadAnalysis extends React.PureComponent {
                 `Total cost based on the entire cost period using the hourly rate.`
               ];
 
-              resolve({ periodCost, totalCost: periodCost, messages });
+              resolve({
+                periodCost,
+                totalCost: periodCost,
+                messages,
+                k8sContainerCount
+              });
             }
           } else {
             resolve({ error: 'Pricing unavailable' });
@@ -757,11 +779,34 @@ export default class WorkloadAnalysis extends React.PureComponent {
                         {/* <TableHeaderCell>Data Cost (GB)</TableHeaderCell>
                         <TableHeaderCell>Rate Cost</TableHeaderCell>
                         <TableHeaderCell>Period Cost</TableHeaderCell> */}
+                        <TableHeaderCell />
                       </TableHeader>
 
                       {({ item }) => {
                         const totalCost = item?.cost?.totalCost || '';
                         const messages = item?.cost?.messages || [];
+                        const k8sContainerCount =
+                          item?.cost?.k8sContainerCount || null;
+                        const hostname = getTagValue(item.tags, 'hostname');
+                        const systemMemoryBytes = getTagValue(
+                          item.tags,
+                          'systemMemoryBytes'
+                        );
+                        const coreCount = getTagValue(item.tags, 'coreCount');
+
+                        const nerdlet = {
+                          id: 'k8s-container-optimize',
+                          urlState: {
+                            guid: item.guid,
+                            account: item.account,
+                            name: item.name,
+                            k8sContainerCount,
+                            cost: item.cost,
+                            hostname,
+                            coreCount,
+                            systemMemoryBytes
+                          }
+                        };
 
                         return (
                           <TableRow>
@@ -785,6 +830,23 @@ export default class WorkloadAnalysis extends React.PureComponent {
                               }
                             >
                               {totalCost}
+                            </TableRowCell>
+                            <TableRowCell>
+                              {k8sContainerCount && (
+                                <Button
+                                  onClick={() =>
+                                    navigation.openStackedNerdlet(nerdlet)
+                                  }
+                                  type={Button.TYPE.PRIMARY}
+                                  sizeType={Button.SIZE_TYPE.SMALL}
+                                  iconType={
+                                    Button.ICON_TYPE
+                                      .INTERFACE__VIEW__HIGH_DENSITY_VIEW
+                                  }
+                                >
+                                  {k8sContainerCount} Kubernetes Containers
+                                </Button>
+                              )}
                             </TableRowCell>
                           </TableRow>
                         );
