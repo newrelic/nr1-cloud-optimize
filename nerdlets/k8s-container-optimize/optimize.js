@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ChartGroup,
   Button,
   Table,
   TableHeader,
@@ -15,7 +16,10 @@ import {
   StackItem,
   HeadingText,
   Card,
-  CardBody
+  CardBody,
+  AreaChart,
+  LineChart,
+  BillboardChart
 } from 'nr1';
 import { timeRangeToNrql } from '../shared/lib/queries';
 import CostModal from './costModal';
@@ -75,7 +79,14 @@ export default class K8sContainerOptimize extends React.Component {
 
   render() {
     const { costModalHidden, costMessages } = this.state;
-    const { hostname, systemMemoryBytes, coreCount, cost } = this.props;
+    const {
+      hostname,
+      systemMemoryBytes,
+      coreCount,
+      cost,
+      account,
+      timeRange
+    } = this.props;
     const { totalCost } = cost;
     const hostComputeUnits =
       coreCount * (systemMemoryBytes / 1000 / 1000 / 1000);
@@ -118,6 +129,16 @@ export default class K8sContainerOptimize extends React.Component {
       )
       .sort((a, b) => b.cpuLimitCores - a.cpuLimitCores);
 
+    const query =
+      'SELECT count(*) FROM `Synthetics` SINCE 1 DAY AGO TIMESERIES AUTO FACET jobType';
+    const chartStyle = {
+      height: 200,
+      width: '32%',
+      display: 'inline-block',
+      paddingRight: '10px',
+      paddingBottom: '0px'
+    };
+
     return (
       <div style={{ paddingLeft: '10px' }}>
         <CostModal
@@ -139,6 +160,40 @@ export default class K8sContainerOptimize extends React.Component {
                 >
                   {hostname}&nbsp;-&nbsp;Containers
                 </HeadingText>
+
+                <Card>
+                  <CardBody>
+                    <div style={{ textAlign: 'center', paddingTop: '15px' }}>
+                      <ChartGroup
+                        style={{ width: '100%', paddingBottom: '0px' }}
+                      >
+                        <BillboardChart
+                          style={chartStyle}
+                          accountId={account.id}
+                          query={`FROM K8sContainerSample SELECT uniqueCount(containerID) as 'Container Count' WHERE hostname = '${hostname}' ${timeRangeToNrql(
+                            timeRange
+                          )}`}
+                        />
+
+                        <LineChart
+                          style={chartStyle}
+                          accountId={account.id}
+                          query={`FROM SystemSample SELECT max(cpuPercent), max(memoryUsedPercent) TIMESERIES ${timeRangeToNrql(
+                            timeRange
+                          )}`}
+                        />
+
+                        <BillboardChart
+                          style={chartStyle}
+                          accountId={account.id}
+                          query={`FROM SystemSample SELECT max(cpuPercent), max(memoryUsedPercent), latest(coreCount), latest(numeric(systemMemoryBytes)/1000/1000/1000) as 'Memory GB' ${timeRangeToNrql(
+                            timeRange
+                          )}`}
+                        />
+                      </ChartGroup>
+                    </div>
+                  </CardBody>
+                </Card>
 
                 <Card>
                   <CardBody>
