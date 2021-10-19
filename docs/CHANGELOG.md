@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.10.0...v2.10.1) (2021-10-19)
+
+
+### Bug Fixes
+
+* deprecated platform parameters ([fa68558](https://github.com/newrelic/nr1-cloud-optimize/commit/fa685584d935c8056cb18b05dc5806d0b3e85976))
+
 # [2.10.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.9.1...v2.10.0) (2021-10-15)
 
 
