@@ -100,12 +100,25 @@ export default class K8sContainerOptimize extends React.Component {
       fetchingData
     } = this.state;
 
+    let totalContainerCost = 0;
+    let totalContainerCostConfigured = 0;
+
     const containers = (containerData || [])
       .map(c => {
         const { maxCpuUsedCores } = c;
         const memoryUsedGb = c.maxMemoryUsedBytes / 1000 / 1000 / 1000;
+        const memoryLimitGb = (c.memoryLimitBytes || 0) / 1000 / 1000 / 1000;
+
         const estimatedComputeUnits = maxCpuUsedCores * memoryUsedGb;
+
+        const estimatedComputeUnitsConfigured =
+          c.cpuLimitCores || 0 * memoryLimitGb || 0;
+
         const estimatedCost = estimatedComputeUnits * costPerComputeUnit;
+
+        const estimatedCostConfigured =
+          estimatedComputeUnitsConfigured * costPerComputeUnit;
+
         const messages = [
           `Host compute units (CPU Cores x Memory (GB)): ${hostComputeUnits}`,
           `Host cost: ${totalCost}`,
@@ -116,21 +129,24 @@ export default class K8sContainerOptimize extends React.Component {
           `Estimated cost (container compute units x cost per compute unit ): ${estimatedCost}`
         ];
 
+        totalContainerCost += estimatedCost || 0;
+        totalContainerCostConfigured +=
+          estimatedCostConfigured || estimatedCost || 0;
+
         return {
           ...c,
           memoryUsedGb,
           estimatedComputeUnits,
           estimatedCost,
+          estimatedCostConfigured,
           messages
         };
       })
       .filter(c =>
         c.containerName.toLowerCase().includes(searchText.toLowerCase())
       )
-      .sort((a, b) => b.cpuLimitCores - a.cpuLimitCores);
+      .sort((a, b) => b.estimatedCost - a.estimatedCost);
 
-    const query =
-      'SELECT count(*) FROM `Synthetics` SINCE 1 DAY AGO TIMESERIES AUTO FACET jobType';
     const chartStyle = {
       height: 200,
       width: '32%',
@@ -138,6 +154,41 @@ export default class K8sContainerOptimize extends React.Component {
       paddingRight: '10px',
       paddingBottom: '0px'
     };
+
+    const data = [
+      {
+        metadata: {
+          id: 'series-1',
+          name: 'Container Count',
+          viz: 'main'
+        },
+        data: [{ y: containers.length }]
+      },
+      {
+        metadata: {
+          id: 'series-2',
+          name: 'Host Cost',
+          viz: 'main'
+        },
+        data: [{ y: totalCost }]
+      },
+      {
+        metadata: {
+          id: 'series-3',
+          name: 'Estimated Container Cost (usage)',
+          viz: 'main'
+        },
+        data: [{ y: totalContainerCost }]
+      },
+      {
+        metadata: {
+          id: 'series-4',
+          name: 'Estimated Container Cost (limit)',
+          viz: 'main'
+        },
+        data: [{ y: totalContainerCostConfigured }]
+      }
+    ];
 
     return (
       <div style={{ paddingLeft: '10px' }}>
@@ -170,15 +221,13 @@ export default class K8sContainerOptimize extends React.Component {
                         <BillboardChart
                           style={chartStyle}
                           accountId={account.id}
-                          query={`FROM K8sContainerSample SELECT uniqueCount(containerID) as 'Container Count' WHERE hostname = '${hostname}' ${timeRangeToNrql(
-                            timeRange
-                          )}`}
+                          data={data}
                         />
 
                         <LineChart
                           style={chartStyle}
                           accountId={account.id}
-                          query={`FROM SystemSample SELECT max(cpuPercent), max(memoryUsedPercent) TIMESERIES ${timeRangeToNrql(
+                          query={`FROM SystemSample SELECT max(cpuPercent), max(memoryUsedPercent) TIMESERIES WHERE hostname = '${hostname}' ${timeRangeToNrql(
                             timeRange
                           )}`}
                         />
@@ -186,7 +235,7 @@ export default class K8sContainerOptimize extends React.Component {
                         <BillboardChart
                           style={chartStyle}
                           accountId={account.id}
-                          query={`FROM SystemSample SELECT max(cpuPercent), max(memoryUsedPercent), latest(coreCount), latest(numeric(systemMemoryBytes)/1000/1000/1000) as 'Memory GB' ${timeRangeToNrql(
+                          query={`FROM SystemSample SELECT max(cpuPercent), max(memoryUsedPercent), latest(coreCount), latest(numeric(systemMemoryBytes)/1000/1000/1000) as 'Memory GB' WHERE hostname = '${hostname}' ${timeRangeToNrql(
                             timeRange
                           )}`}
                         />
