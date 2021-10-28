@@ -119,6 +119,10 @@ export default class K8sContainerOptimize extends React.Component {
         const estimatedCostConfigured =
           estimatedComputeUnitsConfigured * costPerComputeUnit;
 
+        totalContainerCost += estimatedCost || 0;
+        totalContainerCostConfigured +=
+          estimatedCostConfigured || estimatedCost || 0;
+
         const messages = [
           `Host compute units (CPU Cores x Memory (GB)): ${hostComputeUnits}`,
           `Host cost: ${totalCost}`,
@@ -128,10 +132,6 @@ export default class K8sContainerOptimize extends React.Component {
           `Container compute units (CPU Cores x Memory (GB)): ${estimatedComputeUnits}`,
           `Estimated cost (container compute units x cost per compute unit ): ${estimatedCost}`
         ];
-
-        totalContainerCost += estimatedCost || 0;
-        totalContainerCostConfigured +=
-          estimatedCostConfigured || estimatedCost || 0;
 
         return {
           ...c,
@@ -387,7 +387,23 @@ export default class K8sContainerOptimize extends React.Component {
                             value={({ item }) => item.estimatedCost}
                             alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
                           >
-                            Estimated Cost
+                            Estimated Cost (usage)
+                          </TableHeaderCell>
+
+                          <TableHeaderCell
+                            sortable
+                            sortingType={
+                              column === 8
+                                ? sortDirection
+                                : TableHeaderCell.SORTING_TYPE.NONE
+                            }
+                            onClick={(event, data) =>
+                              this.onClickTableHeaderCell(8, data)
+                            }
+                            value={({ item }) => item.estimatedCost}
+                            alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
+                          >
+                            Estimated Cost (limit)
                           </TableHeaderCell>
                         </TableHeader>
                         {({ item }) => (
@@ -436,6 +452,20 @@ export default class K8sContainerOptimize extends React.Component {
                               }
                               type={MetricTableRowCell.TYPE.COUNT}
                               value={item.estimatedCost}
+                            />
+
+                            <MetricTableRowCell
+                              onClick={
+                                item.messages.length > 0
+                                  ? () =>
+                                      this.setState({
+                                        costModalHidden: false,
+                                        costMessages: item.messages
+                                      })
+                                  : undefined
+                              }
+                              type={MetricTableRowCell.TYPE.COUNT}
+                              value={item.estimatedCostConfigured}
                             />
                           </TableRow>
                         )}
