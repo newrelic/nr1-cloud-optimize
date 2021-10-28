@@ -417,7 +417,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
             const pricing = pricingData.regions[pricingData.mapping[awsRegion]];
 
             const messageCostStandard = parseFloat(
-              pricing['Standard per Requests'].price
+              pricing?.['Standard per Requests']?.price || 0
             );
 
             if (pricing) {
