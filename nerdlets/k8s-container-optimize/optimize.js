@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   ChartGroup,
-  Button,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -17,7 +16,6 @@ import {
   HeadingText,
   Card,
   CardBody,
-  AreaChart,
   LineChart,
   BillboardChart
 } from 'nr1';
@@ -78,6 +76,7 @@ export default class K8sContainerOptimize extends React.Component {
   };
 
   render() {
+    const coreMultiplier = 16;
     const { costModalHidden, costMessages } = this.state;
     const {
       hostname,
@@ -89,7 +88,7 @@ export default class K8sContainerOptimize extends React.Component {
     } = this.props;
     const { totalCost } = cost;
     const hostComputeUnits =
-      coreCount * (systemMemoryBytes / 1000 / 1000 / 1000);
+      coreCount * coreMultiplier + systemMemoryBytes / 1000 / 1000 / 1000;
     const costPerComputeUnit = totalCost / hostComputeUnits;
 
     const {
@@ -109,28 +108,56 @@ export default class K8sContainerOptimize extends React.Component {
         const memoryUsedGb = c.maxMemoryUsedBytes / 1000 / 1000 / 1000;
         const memoryLimitGb = (c.memoryLimitBytes || 0) / 1000 / 1000 / 1000;
 
-        const estimatedComputeUnits = maxCpuUsedCores * memoryUsedGb;
+        // original calculation
+        // const estimatedComputeUnits = maxCpuUsedCores * memoryUsedGb;
 
-        const estimatedComputeUnitsConfigured =
-          c.cpuLimitCores || 0 * memoryLimitGb || 0;
+        // const estimatedComputeUnitsConfigured =
+        //   c.cpuLimitCores || 0 * memoryLimitGb || 0;
 
-        const estimatedCost = estimatedComputeUnits * costPerComputeUnit;
+        // const estimatedCost = estimatedComputeUnits * costPerComputeUnit;
 
-        const estimatedCostConfigured =
-          estimatedComputeUnitsConfigured * costPerComputeUnit;
+        // const estimatedCostConfigured =
+        //   estimatedComputeUnitsConfigured * costPerComputeUnit;
 
+        // totalContainerCost += estimatedCost || 0;
+        // totalContainerCostConfigured +=
+        //   estimatedCostConfigured || estimatedCost || 0;
+
+        // const messages = [
+        //   `Host compute units ((CPU Cores * ${coreMultiplier}) x Memory (GB)): ${hostComputeUnits}`,
+        //   `Host cost: ${totalCost}`,
+        //   `Estimated cost per computer unit (host cost/compute units): ${costPerComputeUnit}`,
+        //   `Container memory used GB: ${memoryUsedGb}`,
+        //   `Container memory cores used: ${maxCpuUsedCores}`,
+        //   `Container compute units ((CPU Cores * ${coreMultiplier}) x Memory (GB)): ${estimatedComputeUnits}`,
+        //   `Estimated cost (container compute units x cost per compute unit ): ${estimatedCost}`
+        // ];
+
+        const estimatedComputeUnits =
+          maxCpuUsedCores * coreMultiplier + memoryUsedGb;
+        const cpuCost = maxCpuUsedCores * coreMultiplier * costPerComputeUnit;
+        const memCost = memoryUsedGb * costPerComputeUnit;
+        const estimatedCost = cpuCost + memCost;
         totalContainerCost += estimatedCost || 0;
+
+        //
+        const confCpuCost =
+          (c.cpuLimitCores * coreMultiplier || 0) * costPerComputeUnit;
+        const confMemCost = (memoryLimitGb || 0) * costPerComputeUnit;
+        const estimatedCostConfigured = confCpuCost + confMemCost;
+
         totalContainerCostConfigured +=
           estimatedCostConfigured || estimatedCost || 0;
 
         const messages = [
-          `Host compute units (CPU Cores x Memory (GB)): ${hostComputeUnits}`,
+          `Host compute units ((CPU Cores * ${coreMultiplier}) + Memory (GB)): ${hostComputeUnits}`,
           `Host cost: ${totalCost}`,
           `Estimated cost per computer unit (host cost/compute units): ${costPerComputeUnit}`,
           `Container memory used GB: ${memoryUsedGb}`,
           `Container memory cores used: ${maxCpuUsedCores}`,
-          `Container compute units (CPU Cores x Memory (GB)): ${estimatedComputeUnits}`,
-          `Estimated cost (container compute units x cost per compute unit ): ${estimatedCost}`
+          `CPU Cost ((CPU Cores * ${coreMultiplier}) * cost per compute unit)): ${cpuCost}`,
+          `Memory Cost (Memory GB * cost per compute unit)): ${memCost}`,
+          `Estimated cost (CPU Cost + Memory Cost): ${estimatedCost}`
         ];
 
         return {

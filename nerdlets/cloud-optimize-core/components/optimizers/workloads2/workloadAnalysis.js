@@ -70,6 +70,11 @@ const awsApiGatewayQuery = (guid, timeRange) =>
     timeRange
   )}`;
 
+const awsSnsTopicQuery = (guid, timeRange) =>
+  `SELECT sum(provider.numberOfMessagesPublished.Sum) as 'publishedMessages' FROM QueueSample WHERE provider='SnsTopic' WHERE entityGuid = '${guid}' LIMIT 1 ${timeRangeToNrql(
+    timeRange
+  )}`;
+
 const elasticacheGetNodeType = (clusterId, timeRange) =>
   `SELECT latest(provider.cacheNodeType) as 'nodeType' FROM DatastoreSample WHERE provider='ElastiCacheRedisCluster' AND provider.cacheClusterId = '${clusterId}' LIMIT 1 ${timeRangeToNrql(
     timeRange
@@ -93,6 +98,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
       AWSELASTICSEARCHNODE: null,
       AWSAPIGATEWAYAPI: null,
       AWSELASTICACHEREDISNODE: null,
+      AWSSNSTOPIC: null,
       costTotals: { data: 0, period: 0, rate: 0 },
       costModalHidden: true,
       costMessages: [],
@@ -172,6 +178,13 @@ export default class WorkloadAnalysis extends React.PureComponent {
         .then(response => response.json())
         .then(json => (stateUpdate.AWSLAMBDAFUNCTION = json));
 
+      // AWSSNSTOPIC
+      await fetch(
+        'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/sns/pricing.json'
+      )
+        .then(response => response.json())
+        .then(json => (stateUpdate.AWSSNSTOPIC = json));
+
       // AWSELB
       await fetch(
         'https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/elb/pricing.json'
@@ -220,6 +233,53 @@ export default class WorkloadAnalysis extends React.PureComponent {
     // eslint-disable-next-line
     return new Promise(async resolve => {
       switch (entity.type) {
+        case 'AWSSNSTOPIC': {
+          console.log(entity);
+          const ngData = await NerdGraphQuery.query({
+            query: nrqlQuery(
+              entity.account.id,
+              awsSnsTopicQuery(entity.guid, timeRange)
+            )
+          });
+
+          const data = ngData?.data?.actor?.account?.nrql?.results?.[0] || null;
+          const pricingData = this.state[entity.type];
+          console.log(data);
+
+          if (data && pricingData) {
+            //
+
+            const awsRegion = getTagValue(entity.tags, 'aws.awsRegion');
+            // const requests = data.requests || 0;
+            // const apiCallPrice =
+            //   pricingData.regions[pricingData.mapping[awsRegion]]?.[
+            //     'API Calls Number of up to 333 million'
+            //   ]?.price;
+
+            // if (apiCallPrice) {
+            //   const requestCost = apiCallPrice * requests;
+
+            //   const adjustedCost = adjustCost(
+            //     costPeriod,
+            //     parseFloat(requestCost)
+            //   );
+
+            //   const messages = [
+            //     `Region: ${awsRegion}`,
+            //     `Requests: ${requests}`,
+            //     `API Call Price: ${apiCallPrice}`,
+            //     `Cost Period: ${costPeriod.label}`,
+            //     `Total Cost (Call Price x Requests): ${adjustedCost}`,
+            //     `https://aws.amazon.com/api-gateway/pricing/`
+            //   ];
+
+            //   resolve({ totalCost: adjustedCost, messages });
+            // }
+          }
+
+          resolve(null);
+          break;
+        }
         case 'AWSELASTICACHEREDISNODE': {
           const awsRegion = getTagValue(entity.tags, 'aws.awsRegion');
           const cacheClusterId = getTagValue(entity.tags, 'aws.cacheClusterId');
