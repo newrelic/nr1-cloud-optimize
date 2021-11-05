@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.10.1...v2.11.0) (2021-11-05)
+
+
+### Features
+
+* add catalog keywords and categoryTerms ([8d463d7](https://github.com/newrelic/nr1-cloud-optimize/commit/8d463d7503b0a9b2a6264cfb56cb8dccf2681565))
+
 ## [2.10.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.10.0...v2.10.1) (2021-10-19)
 
 
