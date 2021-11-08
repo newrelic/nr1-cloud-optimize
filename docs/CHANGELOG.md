@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.11.0...v2.12.0) (2021-11-08)
+
+
+### Features
+
+* fix spacing issue in readme ([eb93aea](https://github.com/newrelic/nr1-cloud-optimize/commit/eb93aea2fee65c397538411f8e66925b08e4c421))
+
 # [2.11.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.10.1...v2.11.0) (2021-11-05)
 
 
