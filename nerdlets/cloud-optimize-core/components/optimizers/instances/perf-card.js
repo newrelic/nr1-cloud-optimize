@@ -88,19 +88,19 @@ export default class InstancePerformanceCard extends React.PureComponent {
         if (i === 0) {
           arr.forEach(v => {
             if (v.data) {
-              cpuChartData = [...cpuChartData, ...v.data.chart];
+              cpuChartData = [...cpuChartData, ...v.data];
             }
           });
         } else if (i === 1) {
           arr.forEach(v => {
             if (v.data) {
-              memChartData = [...memChartData, ...v.data.chart];
+              memChartData = [...memChartData, ...v.data];
             }
           });
         } else if (i === 2) {
           arr.forEach(v => {
             if (v.data) {
-              nwChartData = [...nwChartData, ...v.data.chart];
+              nwChartData = [...nwChartData, ...v.data];
             }
           });
         }

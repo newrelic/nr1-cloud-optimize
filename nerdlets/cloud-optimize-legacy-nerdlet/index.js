@@ -152,9 +152,9 @@ export default class CloudOptimize extends React.Component {
         query: getSystemSampleKeySetNRQL,
         formatType: NrqlQuery.FORMAT_TYPE.RAW
       });
-      const labelAttributes = systemSampleKeySetResults.data.raw.results[0].allKeys.filter(
-        isCloudLabel
-      );
+      const labelAttributes = (
+        systemSampleKeySetResults?.data?.results?.[0]?.allKeys || []
+      ).filter(isCloudLabel);
       const newGroups = new Set(this.state.cloudLabelGroups);
       labelAttributes.forEach(att => newGroups.add(att));
       await this.setState({ cloudLabelGroups: Array.from(newGroups) });
@@ -165,15 +165,11 @@ export default class CloudOptimize extends React.Component {
         console.log('get instance data error', results.errors); // eslint-disable-line no-console
       } else {
         const systemSamples =
-          (
-            ((((results || {}).data || {}).actor || {}).account || {}).system ||
-            {}
-          ).results || [];
+          results?.data?.actor?.account?.system?.results || [];
+
         const networkSamples =
-          (
-            ((((results || {}).data || {}).actor || {}).account || {})
-              .network || {}
-          ).results || [];
+          results?.data?.actor?.account?.network?.results || [];
+
         systemSamples.forEach(sample => {
           const instance = processSample(
             account,

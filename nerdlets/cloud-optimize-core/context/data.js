@@ -9,6 +9,7 @@ react/no-did-update-set-state: 0
 import React, { Component } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import {
+  ngql,
   NerdGraphQuery,
   AccountStorageQuery,
   AccountStorageMutation
@@ -1465,29 +1466,34 @@ export class DataProvider extends Component {
       }
     }`;
 
-      NerdGraphQuery.query({
-        query: ngQuery
-      }).then(async v => {
-        const results = v?.data?.actor?.entitySearch?.results || [];
+      try {
+        NerdGraphQuery.query({
+          query: ngql(ngQuery)
+        }).then(async v => {
+          const results = v?.data?.actor?.entitySearch?.results || [];
 
-        if (results.entities && results.entities.length > 0) {
-          entities = [...entities, ...results.entities];
-        }
+          if (results.entities && results.entities.length > 0) {
+            entities = [...entities, ...results.entities];
+          }
 
-        if (results.nextCursor) {
-          // if (results.nextCursor) {
-          // seems to work as intended
-          console.log('recursing');
-          const recursedEntities = await this.evaluateWorkloadEntitySearchQuery(
-            query,
-            results.nextCursor,
-            entities
-          );
-          resolve(recursedEntities);
-        } else {
-          resolve(entities);
-        }
-      });
+          if (results.nextCursor) {
+            // if (results.nextCursor) {
+            // seems to work as intended
+            console.log('recursing');
+            const recursedEntities = await this.evaluateWorkloadEntitySearchQuery(
+              query,
+              results.nextCursor,
+              entities
+            );
+            resolve(recursedEntities);
+          } else {
+            resolve(entities);
+          }
+        });
+      } catch (e) {
+        console.log(`nerdgraph query failed`, query, e);
+        resolve(entities);
+      }
     });
   };
 
