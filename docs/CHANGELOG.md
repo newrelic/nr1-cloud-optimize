@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.12.0...v2.12.1) (2021-11-09)
+
+
+### Bug Fixes
+
+* handle ngql error and data deprecations ([81f1d43](https://github.com/newrelic/nr1-cloud-optimize/commit/81f1d43ad2f1c4efdaa676977db0703d8fba81e8))
+
 # [2.12.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.11.0...v2.12.0) (2021-11-08)
 
 
