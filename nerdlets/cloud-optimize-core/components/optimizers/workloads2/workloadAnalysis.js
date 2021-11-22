@@ -777,7 +777,7 @@ export default class WorkloadAnalysis extends React.PureComponent {
               {Object.keys(menuGroupedEntities).map(group => {
                 let groupCost = 0;
                 menuGroupedEntities[group].forEach(e => {
-                  groupCost += e?.cost?.totalCost || 0;
+                  groupCost += parseFloat(e?.cost?.totalCost || 0);
                 });
                 return (
                   <>
