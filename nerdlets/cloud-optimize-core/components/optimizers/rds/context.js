@@ -317,12 +317,10 @@ export class RdsProvider extends Component {
 
     completeEntities.forEach((e, index) => {
       // simply datastoreSample access
-      const datastoreSample =
-        (((e || {}).datastoreSample || {}).results || {})[0] || {};
+      const datastoreSample = e?.datastoreSample?.results?.[0] || {};
       completeEntities[index].datastoreSample = datastoreSample;
 
-      const recentEvents =
-        ((((e || {}).recentSample || {}).results || {})[0] || {}).count || 0;
+      const recentEvents = e?.recentSample?.results?.[0]?.count || 0;
       completeEntities[index].recentEvents = recentEvents;
 
       completeEntities[index].datastoreSample.storageUsage =
