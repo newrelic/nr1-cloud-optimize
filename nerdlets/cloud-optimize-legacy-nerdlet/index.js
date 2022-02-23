@@ -148,7 +148,7 @@ export default class CloudOptimize extends React.Component {
     let { config, completedAccounts, cloudData } = this.state;
     accounts.forEach(async account => {
       const systemSampleKeySetResults = await NrqlQuery.query({
-        accountId: account.id,
+        accountIds: [account.id],
         query: getSystemSampleKeySetNRQL,
         formatType: NrqlQuery.FORMAT_TYPE.RAW
       });
@@ -161,8 +161,8 @@ export default class CloudOptimize extends React.Component {
       const results = await NerdGraphQuery.query({
         query: getInstanceData(account.id, labelAttributes)
       });
-      if (results.errors) {
-        console.log('get instance data error', results.errors); // eslint-disable-line no-console
+      if (results.error) {
+        console.log('get instance data error', results.error.graphQLErrors); // eslint-disable-line no-console
       } else {
         const systemSamples =
           results?.data?.actor?.account?.system?.results || [];

@@ -59,15 +59,15 @@ export default class InstancePerformanceCard extends React.PureComponent {
         cpuQuery += ` WHERE entityGuid IN (${guids})`;
         memQuery += ` WHERE entityGuid IN (${guids})`;
         cpuQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: cpuQuery })
+          NrqlQuery.query({ accountIds: [id], query: cpuQuery })
         );
         memQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: memQuery })
+          NrqlQuery.query({ accountIds: [id], query: memQuery })
         );
         if (type === 'HOST') {
           const networkQuery = `${networkSample} WHERE entityGuid IN (${guids})`;
           nwQueryPromises.push(
-            NrqlQuery.query({ accountId: id, query: networkQuery })
+            NrqlQuery.query({ accountIds: [id], query: networkQuery })
           );
         }
       });

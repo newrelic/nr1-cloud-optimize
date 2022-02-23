@@ -44,16 +44,16 @@ export default class ExtendedMetrics extends React.PureComponent {
         rwThroughputQuery += ` WHERE entityGuid IN (${guids})`;
 
         cpuQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: cpuQuery })
+          NrqlQuery.query({ accountIds: [id], query: cpuQuery })
         );
         connQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: connQuery })
+          NrqlQuery.query({ accountIds: [id], query: connQuery })
         );
         nwQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: throughputQuery })
+          NrqlQuery.query({ accountIds: [id], query: throughputQuery })
         );
         rwQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: rwThroughputQuery })
+          NrqlQuery.query({ accountIds: [id], query: rwThroughputQuery })
         );
       });
     });
