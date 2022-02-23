@@ -69,7 +69,7 @@ export default class InstanceCards extends React.PureComponent {
                           celled
                           inverted={false}
                           basic="very"
-                          ariaLabel=""
+                          aria-label=""
                         >
                           <Table.Header>
                             <Table.Row>

@@ -161,7 +161,7 @@ export default class OptimizationCandidates extends React.Component {
             striped
             sortable
             size="small"
-            ariaLabel="table"
+            aria-label="table"
           >
             <Table.Header>
               <Table.Row>
