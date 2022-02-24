@@ -44,16 +44,16 @@ export default class ExtendedMetrics extends React.PureComponent {
         rwThroughputQuery += ` WHERE entityGuid IN (${guids})`;
 
         cpuQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: cpuQuery })
+          NrqlQuery.query({ accountIds: [id], query: cpuQuery })
         );
         connQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: connQuery })
+          NrqlQuery.query({ accountIds: [id], query: connQuery })
         );
         nwQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: throughputQuery })
+          NrqlQuery.query({ accountIds: [id], query: throughputQuery })
         );
         rwQueryPromises.push(
-          NrqlQuery.query({ accountId: id, query: rwThroughputQuery })
+          NrqlQuery.query({ accountIds: [id], query: rwThroughputQuery })
         );
       });
     });
@@ -75,25 +75,25 @@ export default class ExtendedMetrics extends React.PureComponent {
         if (i === 0) {
           arr.forEach(v => {
             if (v.data) {
-              cpuChartData = [...cpuChartData, ...v.data.chart];
+              cpuChartData = [...cpuChartData, ...v.data];
             }
           });
         } else if (i === 1) {
           arr.forEach(v => {
             if (v.data) {
-              connChartData = [...connChartData, ...v.data.chart];
+              connChartData = [...connChartData, ...v.data];
             }
           });
         } else if (i === 2) {
           arr.forEach(v => {
             if (v.data) {
-              nwChartData = [...nwChartData, ...v.data.chart];
+              nwChartData = [...nwChartData, ...v.data];
             }
           });
         } else if (i === 3) {
           arr.forEach(v => {
             if (v.data) {
-              rwChartData = [...rwChartData, ...v.data.chart];
+              rwChartData = [...rwChartData, ...v.data];
             }
           });
         }

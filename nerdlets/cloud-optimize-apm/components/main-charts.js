@@ -26,7 +26,7 @@ export default class MainCharts extends React.Component {
               {entityData && entityData.account && entityData.account.id ? (
                 <LineChart
                   style={chartStyle}
-                  accountId={entityData.account.id}
+                  accountIds={[entityData.account.id]}
                   query={`SELECT max(cpuPercent) as 'CpuPerc', max(memoryUsedBytes/memoryTotalBytes) as 'MemPerc' FROM SystemSample FACET hostname WHERE hostname IN (${`'${hosts.join(
                     "','"
                   )}'`}) SINCE 1 WEEK AGO TIMESERIES`}
@@ -45,7 +45,7 @@ export default class MainCharts extends React.Component {
               {entityData && entityData.account && entityData.account.id ? (
                 <LineChart
                   style={chartStyle}
-                  accountId={entityData.account.id}
+                  accountIds={[entityData.account.id]}
                   query={`SELECT max(receiveBytesPerSecond) as 'RxBytesPerSec', max(transmitBytesPerSecond) as 'TxBytesPerSec' FROM NetworkSample FACET hostname WHERE hostname IN (${`'${hosts.join(
                     "','"
                   )}'`}) SINCE 1 WEEK AGO TIMESERIES`}
@@ -65,7 +65,7 @@ export default class MainCharts extends React.Component {
                 {entityData && entityData.account && entityData.account.id ? (
                   <LineChart
                     style={chartStyle}
-                    accountId={entityData.account.id}
+                    accountIds={[entityData.account.id]}
                     query={`SELECT max(cpuSystemPercent/numeric(coreCount)) as 'CpuSysPerc', max(memoryResidentSizeBytes/numeric(systemMemoryBytes))*100 as 'MemPerc' FROM ProcessSample FACET containerId WHERE apmApplicationIds LIKE '%${entityData.applicationId}%' SINCE 1 WEEK AGO TIMESERIES LIMIT 25`}
                   />
                 ) : (
