@@ -1,3 +1,13 @@
+## [2.12.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.12.1...v2.12.2) (2022-02-24)
+
+
+### Bug Fixes
+
+* Update accountId ([daf8fd6](https://github.com/newrelic/nr1-cloud-optimize/commit/daf8fd648940b3d9f14cf7cdacbf19e5b0f6dee7))
+* Update aria label prop ([e617f61](https://github.com/newrelic/nr1-cloud-optimize/commit/e617f613dc46bed1899e580f7f68a8c356075484))
+* Update deprecated data object ([9ad0d01](https://github.com/newrelic/nr1-cloud-optimize/commit/9ad0d01e5cb2a855b0370bf1f4c25107db8fe752))
+* Update errors ([264cef8](https://github.com/newrelic/nr1-cloud-optimize/commit/264cef8124cf52318bd207b4426e8ba43a2c3fd6))
+
 ## [2.12.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.12.0...v2.12.1) (2021-11-09)
 
 
