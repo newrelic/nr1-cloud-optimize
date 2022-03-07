@@ -1,0 +1,55 @@
+service: ${file(./package.json):name}
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 128
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${opt:stage, 'dev'}
+    LOG_LVL: "DEBUG"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction 
+      Resource: arn:aws:lambda:${self:provider.region}:*:function:optimizer-${self:provider.stage}-optimize-processor
+      
+functions:
+  main:
+    timeout: 30
+    handler: api/index.router
+    events:
+      - http:
+          path: /
+          method: any
+          cors:
+            origin: "*" # <-- Specify allowed origin
+            headers: # <-- Specify allowed headers
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-NR-Api-Key
+            allowCredentials: false
+      - http:
+          path: /{proxy+}
+          method: any
+          cors:
+            origin: "*" # <-- Specify allowed origin
+            headers: # <-- Specify allowed headers
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-NR-Api-Key
+            allowCredentials: false
+
+  optimize-processor:
+    timeout: 900
+    handler: processor/index.optimize
