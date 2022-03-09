@@ -260,14 +260,9 @@ exports.run = (entities, key, config, timeNrql) => {
 
               const onDemandPriceExact = e.matches.exact?.[0]?.onDemandPrice;
 
-              e.matches.optimized = {};
+              e.matches.optimized = [];
               for (let z = 0; z < cloudPrices.length; z++) {
-                const {
-                  cpusPerVm,
-                  memPerVm,
-                  category,
-                  onDemandPrice
-                } = cloudPrices[z];
+                const { cpusPerVm, memPerVm, onDemandPrice } = cloudPrices[z];
                 if (
                   cpusPerVm >= optimizedCpuCount &&
                   memPerVm >= optimizedMemGb
@@ -276,11 +271,10 @@ exports.run = (entities, key, config, timeNrql) => {
                     !onDemandPriceExact ||
                     (onDemandPriceExact && onDemandPriceExact > onDemandPrice)
                   ) {
-                    if (!e.matches.optimized[category]) {
-                      e.matches.optimized[category] = simplifyProduct(
-                        cloudPrices[z]
-                      );
+                    if (!e.matches.optimized) {
+                      e.matches.optimized = [];
                     }
+                    e.matches.optimized.push(simplifyProduct(cloudPrices[z]));
                   }
                 }
               }

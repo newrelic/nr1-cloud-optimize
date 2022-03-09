@@ -14,7 +14,7 @@ import {
   CardBody
 } from 'nr1';
 import DataContext from '../context/data';
-import Loader from './loader';
+import Loader from '../../shared/components/loader';
 import CollectionList from './collectionList';
 
 // eslint-disable-next-line no-unused-vars

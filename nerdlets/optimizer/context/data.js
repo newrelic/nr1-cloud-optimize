@@ -51,8 +51,7 @@ export class DataProvider extends Component {
       fetchingUserApiKeys: false,
       userApiKeys: [],
       optimizerKey: null,
-      fetchingJobStatus: false,
-      jobStatus: []
+      fetchingJobStatus: false
     };
   }
 
@@ -135,7 +134,9 @@ export class DataProvider extends Component {
                   ? null
                   : 'You are either not authorized to query this account or this account is not subscribed to use this application.'
               },
-              () =>
+              () => {
+                this.fetchJobStatus();
+
                 nerdlet.setConfig({
                   actionControls: true,
                   actionControlButtons: [
@@ -145,9 +146,17 @@ export class DataProvider extends Component {
                       iconType: Icon.TYPE.INTERFACE__SIGN__PLUS,
                       onClick: () =>
                         this.updateDataState({ createCollectionOpen: true })
+                    },
+                    {
+                      label: 'History',
+                      type: 'secondary',
+                      iconType: Icon.TYPE.DATE_AND_TIME__DATE_AND_TIME__DATE,
+                      onClick: () =>
+                        this.updateDataState({ jobHistoryOpen: true })
                     }
                   ]
-                })
+                });
+              }
             );
           });
         }
@@ -235,7 +244,7 @@ export class DataProvider extends Component {
   };
 
   fetchJobStatus = accountId => {
-    const { selectedAccount } = this.state;
+    const { selectedAccount, accountCollection } = this.state;
     const id = accountId || selectedAccount?.id;
     if (id) {
       this.setState({ fetchingJobStatus: true }, () => {
@@ -243,10 +252,35 @@ export class DataProvider extends Component {
           accountId: id,
           collection: STATUS_COLLECTION
         }).then(({ data }) => {
-          console.log(data);
+          // default sort by start time
+          const sortedData = data.sort(
+            (a, b) => b?.document?.startedAt - a?.document?.startedAt
+          );
+
+          // stitch job history to workload collections
+          const newAccountCollection = (accountCollection || []).map(a => {
+            const history = (sortedData || []).filter(
+              d => d?.document?.collectionId === a?.id
+            );
+            return { ...a, history };
+          });
+
+          // stich workload collection info to job history
+          const newJobStatus = (sortedData || []).map(d => {
+            const wlCollection = (accountCollection || []).find(
+              a => a.id === d.document?.collectionId
+            );
+            return {
+              ...d,
+              wlCollectionName: wlCollection?.document?.name,
+              wlCollectionId: wlCollection?.id
+            };
+          });
+
           this.setState({
             fetchingJobStatus: false,
-            jobStatus: data
+            jobStatus: newJobStatus || [],
+            accountCollection: newAccountCollection || []
           });
         });
       });

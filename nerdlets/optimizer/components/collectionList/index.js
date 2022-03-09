@@ -57,8 +57,8 @@ export default function CollectionList(props) {
     a.document.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const actions = () => {
-    return [
+  const actions = hasResults => {
+    const allActions = [
       {
         label: 'Run',
         onClick: async (evt, { item, index }) => {
@@ -75,36 +75,41 @@ export default function CollectionList(props) {
       },
       {
         label: 'Edit',
-        onClick: (evt, { item, index }) => {
+        onClick: (evt, { item }) => {
           updateDataState({
             editCollectionOpen: true,
             editCollectionId: item.id
           });
         }
-      },
-      {
-        label: 'Results',
-        onClick: (evt, { item, index }) => {
-          // const nerdlet = {
-          //   id: "history-nerdlet",
-          //   urlState: {
-          //     uuid: item.id,
-          //     name: item.document.name,
-          //     accountId: selectedAccount.id,
-          //     accountName: selectedAccount.name,
-          //   },
-          // };
-          // navigation.openStackedNerdlet(nerdlet);
-        }
-      },
-      {
-        label: 'Delete',
-        type: TableRow.ACTION_TYPE.DESTRUCTIVE,
-        onClick: (evt, { item, index }) => {
-          deleteWorkloadCollection(item.id);
-        }
       }
     ];
+
+    if (hasResults)
+      allActions.push({
+        label: 'Results',
+        onClick: (evt, { item }) => {
+          const nerdlet = {
+            id: 'results-nerdlet',
+            urlState: {
+              wlCollectionId: item.id,
+              ...item.document,
+              account: selectedAccount
+            }
+          };
+
+          navigation.openStackedNerdlet(nerdlet);
+        }
+      });
+
+    allActions.push({
+      label: 'Delete',
+      type: TableRow.ACTION_TYPE.DESTRUCTIVE,
+      onClick: (evt, { item }) => {
+        deleteWorkloadCollection(item.id);
+      }
+    });
+
+    return allActions;
   };
 
   return (
@@ -120,7 +125,7 @@ export default function CollectionList(props) {
         <TableHeader>
           <TableHeaderCell
             value={({ item }) => item.document.name}
-            width="45%"
+            width="40%"
             sortable
             sortingType={
               column === 0 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
@@ -131,42 +136,58 @@ export default function CollectionList(props) {
           </TableHeaderCell>
 
           <TableHeaderCell
-            width="15%"
-            value={({ item }) => item.document.lastEditedBy}
+            value={({ item }) => item.document.workloads.length}
+            width="10%"
             sortable
             sortingType={
               column === 1 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
             }
             onClick={(event, data) => onClickTableHeaderCell(1, data)}
           >
-            Created By
+            Workloads
           </TableHeaderCell>
 
           <TableHeaderCell
-            width="15%"
-            value={({ item }) => item.document.status}
+            width="25%"
+            value={({ item }) => item.document.lastEditedBy}
             sortable
             sortingType={
               column === 2 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
             }
             onClick={(event, data) => onClickTableHeaderCell(2, data)}
           >
+            Created By
+          </TableHeaderCell>
+
+          <TableHeaderCell
+            width="15%"
+            value={({ item }) => item?.history?.[0]?.document?.startedAt}
+            sortable
+            sortingType={
+              column === 3 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+            }
+            onClick={(event, data) => onClickTableHeaderCell(3, data)}
+          >
             Last Optimized At
           </TableHeaderCell>
         </TableHeader>
 
         {({ item }) => {
-          const { document } = item;
+          const { id, document, history } = item;
 
           const isRunning = false;
 
+          const startedAt = history?.[0]
+            ? new Date(history?.[0]?.document?.startedAt).toLocaleString()
+            : undefined;
+
+          const hasResults = (history || []).length > 0;
+
           return (
-            <TableRow actions={actions()}>
-              <TableRowCell
-                additionalValue={`Workloads: ${document.workloads.length}`}
-              >
-                {document.name}
-              </TableRowCell>
+            <TableRow actions={actions(hasResults)}>
+              <TableRowCell additionalValue={id}>{document.name}</TableRowCell>
+
+              <TableRowCell>{document.workloads.length}</TableRowCell>
 
               <TableRowCell
                 additionalValue={`Last edit by: ${document.lastEditedBy}`}
@@ -174,7 +195,7 @@ export default function CollectionList(props) {
                 {document.createdBy}
               </TableRowCell>
 
-              <TableRowCell>{document.lastOptimizedAt}</TableRowCell>
+              <TableRowCell>{startedAt}</TableRowCell>
 
               {isRunning ? (
                 <TableRowCell style={{ textAlign: 'right' }}>

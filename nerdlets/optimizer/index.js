@@ -4,6 +4,7 @@ import { DataProvider } from './context/data';
 import CollectionCreateModal from './components/collectionCreate';
 import Optimizer from './components/optimizer';
 import CollectionEditModal from './components/collectionEdit';
+import JobHistoryModal from './components/jobHistory';
 
 function OptimizerRoot() {
   useEffect(() => {
@@ -20,6 +21,7 @@ function OptimizerRoot() {
       <DataProvider {...platformContext}>
         <CollectionEditModal />
         <CollectionCreateModal />
+        <JobHistoryModal />
         <Optimizer />
       </DataProvider>
     </div>

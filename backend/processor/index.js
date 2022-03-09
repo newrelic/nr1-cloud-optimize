@@ -19,7 +19,8 @@ const RESULT_COLLECTION = 'optimizerResults'; // workload entity level
 const MINUTE = 60000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
-const DOCUMENT_RESULTS_MAX_LENGTH = 850;
+// Each document can have a maximum length of 1024 KiB when serialized. # https://developer.newrelic.com/explore-docs/nerdstorage/
+const DOCUMENT_RESULTS_MAX_BYTES = 972800; // ~950 KiB
 const DOCUMENT_WRITE_QUEUE_LIMIT = 5;
 
 const timeRangeToNrql = timeRange => {
@@ -55,7 +56,7 @@ module.exports.optimize = async (event, context, callback) => {
     workloadGuids,
     config,
     accountId,
-    collectionName,
+    collectionId,
     identifier,
     timeRange
   } = body;
@@ -79,7 +80,7 @@ module.exports.optimize = async (event, context, callback) => {
     key,
     jobId,
     workloadGuids,
-    collectionName,
+    collectionId,
     identifier
   );
 
@@ -117,7 +118,7 @@ module.exports.optimize = async (event, context, callback) => {
     key,
     jobId,
     workloadGuids,
-    collectionName,
+    collectionId,
     identifier,
     'complete'
   );
@@ -128,7 +129,9 @@ module.exports.optimize = async (event, context, callback) => {
 // write results for each workload
 const workloadsResultsWriter = (workloadResults, uuid, key, jobId) => {
   return new Promise(resolve => {
-    const writerPromises = workloadResults.map(w => writeResults(w, uuid, key));
+    const writerPromises = workloadResults.map(w =>
+      writeResults(w, uuid, key, jobId)
+    );
     Promise.all(writerPromises).then(values => resolve(values));
   });
 };
@@ -144,7 +147,7 @@ const writeResults = (workload, uuid, key, jobId) => {
       const expectedSize = new TextEncoder().encode(JSON.stringify(tempArray))
         .length;
 
-      if (expectedSize >= DOCUMENT_RESULTS_MAX_LENGTH) {
+      if (expectedSize >= DOCUMENT_RESULTS_MAX_BYTES) {
         currentShard++;
       }
 
@@ -161,7 +164,8 @@ const writeResults = (workload, uuid, key, jobId) => {
 
     const documents = Object.keys(shards).map(no => ({
       ...workload,
-      shardNo: no,
+      jobId,
+      shardNo: parseInt(no),
       completedAt,
       results: shards[no]
     }));
@@ -388,7 +392,7 @@ const writeJobStatusEvent = async (
   key,
   jobId,
   workloadGuids,
-  collectionName,
+  collectionId,
   identifier,
   status
 ) => {
@@ -398,7 +402,7 @@ const writeJobStatusEvent = async (
     status: status || 'pending'
   };
 
-  if (collectionName) document.collectionName = collectionName;
+  if (collectionId) document.collectionId = collectionId;
   if (identifier) document.identifier = identifier;
   if (status === 'complete') document.completedAt = new Date().getTime();
 
