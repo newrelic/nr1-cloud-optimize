@@ -36,7 +36,7 @@ export default function Results(props) {
     deletingJobDocuments
   } = dataContext;
 
-  if (jobStatus.length === 0) {
+  if (fetchingJobStatus && jobStatus.length === 0) {
     return (
       <div>
         <Loader
@@ -44,6 +44,15 @@ export default function Results(props) {
           message={
             <span>Fetching workload collections for your accounts...</span>
           }
+        />
+      </div>
+    );
+  } else if (jobStatus.length === 0) {
+    return (
+      <div>
+        <Loader
+          loader="lds-ripple"
+          message={<span>No history found...</span>}
         />
       </div>
     );

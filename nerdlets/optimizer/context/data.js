@@ -12,7 +12,10 @@ import {
   nerdlet,
   Icon,
   NerdGraphQuery,
-  NerdGraphMutation
+  NerdGraphMutation,
+  EntityStorageQuery,
+  EntityStorageMutation,
+  AccountStorageMutation
 } from 'nr1';
 import {
   initQuery,
@@ -384,6 +387,59 @@ export class DataProvider extends Component {
     }
   };
 
+  deleteJobHistory = data => {
+    this.setState({ deletingJobDocuments: true }, async () => {
+      const { accountId, jobStatus } = this.state;
+      const { id, document } = data;
+      const { workloadGuids } = document;
+
+      const workloadDataPromises = workloadGuids.map(
+        w =>
+          new Promise(resolve => {
+            EntityStorageQuery.query({
+              entityGuid: w,
+              collection: 'optimizerResults'
+            }).then(({ data }) =>
+              resolve(
+                (data || [])
+                  .filter(
+                    d => d.id.startsWith(id) || d.id.startsWith('undefined')
+                  )
+                  .map(d => ({ ...d, guid: w }))
+              )
+            );
+          })
+      );
+
+      let workloadData = await Promise.all(workloadDataPromises);
+      workloadData = workloadData.flat();
+
+      const docDeletePromises = workloadData.map(w =>
+        EntityStorageMutation.mutate({
+          entityGuid: w.guid,
+          actionType: EntityStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
+          collection: 'optimizerResults',
+          documentId: w.id
+        })
+      );
+
+      docDeletePromises.push(
+        AccountStorageMutation.mutate({
+          accountId,
+          actionType: AccountStorageMutation.ACTION_TYPE.DELETE_DOCUMENT,
+          collection: STATUS_COLLECTION,
+          documentId: id
+        })
+      );
+
+      await Promise.all(docDeletePromises);
+
+      this.fetchJobStatus();
+
+      this.setState({ deletingJobDocuments: false });
+    });
+  };
+
   updateDataState = (stateData, actions) =>
     new Promise(resolve => {
       if (
@@ -408,7 +464,8 @@ export class DataProvider extends Component {
           updateDataState: this.updateDataState,
           fetchAccessibleWorkloads: this.fetchAccessibleWorkloads,
           fetchWorkloadCollections: this.fetchWorkloadCollections,
-          fetchJobStatus: this.fetchJobStatus
+          fetchJobStatus: this.fetchJobStatus,
+          deleteJobHistory: this.deleteJobHistory
         }}
       >
         {children}

@@ -61,9 +61,11 @@ export class DataProvider extends Component {
     });
   }
 
-  fetchJobStatus = props => {
-    const { wlCollectionId, account } = props;
-    const accountId = account?.id || this.state.account?.id;
+  fetchJobStatus = (props, getLast) => {
+    const { account } = props;
+    const wlCollectionId = props.wlCollectionId || this.state.wlCollectionId;
+    const accountId =
+      account?.id || this.state.account?.id || this.state.accountId;
     const { selectedResult } = this.state;
 
     if (accountId) {
@@ -89,9 +91,10 @@ export class DataProvider extends Component {
               jobStatus: newJobStatus || []
             };
 
-            if (!selectedResult) {
-              newState.selectedResult = newJobStatus?.[0].id;
-              newState.selectedResultData = newJobStatus?.[0];
+            if (!selectedResult || getLast) {
+              const lastIndex = getLast ? newJobStatus.length - 1 : null;
+              newState.selectedResult = newJobStatus?.[lastIndex || 0]?.id;
+              newState.selectedResultData = newJobStatus?.[lastIndex || 0];
             }
 
             this.updateDataState(newState);
@@ -285,9 +288,7 @@ export class DataProvider extends Component {
 
       await Promise.all(documentsToDelete);
 
-      this.fetchJobStatus(wlCollectionId);
-
-      this.updateDataState({ selectedResult: jobStatus?.[0]?.id });
+      this.fetchJobStatus(wlCollectionId, true);
 
       this.setState({ deletingJobDocuments: false });
     });

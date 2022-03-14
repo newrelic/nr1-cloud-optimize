@@ -16,7 +16,7 @@ import DataContext from '../../context/data';
 // eslint-disable-next-line no-unused-vars
 export default function History(props) {
   const dataContext = useContext(DataContext);
-  const { jobStatus, updateDataState } = dataContext;
+  const { jobStatus, deleteJobHistory, updateDataState } = dataContext;
   // const [writingDocument, setWriteState] = useState(false);
   const [searchText, setSearch] = useState('');
   const [column, setColumn] = useState(0);
@@ -63,6 +63,20 @@ export default function History(props) {
       setSortingType(nextSortingType);
       setColumn(nextColumn);
     }
+  };
+
+  const actions = () => {
+    const allActions = [
+      {
+        label: 'Delete',
+        type: TableRow.ACTION_TYPE.DESTRUCTIVE,
+        onClick: (evt, { item }) => {
+          deleteJobHistory(item);
+        }
+      }
+    ];
+
+    return allActions;
   };
 
   return (
@@ -119,7 +133,7 @@ export default function History(props) {
             const endTime = new Date(completedAt).toLocaleString();
 
             return (
-              <TableRow actions={[]}>
+              <TableRow actions={actions()}>
                 <TableRowCell
                   additionalValue={wlCollectionName ? item.id : undefined}
                 >
