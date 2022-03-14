@@ -174,7 +174,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/optimizer/dev/1646852478914-2022-03-09T19:01:18.914Z/optimizer.zip"
+          "S3Key": "serverless/optimizer/dev/1646941864047-2022-03-10T19:51:04.047Z/optimizer.zip"
         },
         "Handler": "api/index.router",
         "Runtime": "nodejs14.x",
@@ -206,7 +206,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/optimizer/dev/1646852478914-2022-03-09T19:01:18.914Z/optimizer.zip"
+          "S3Key": "serverless/optimizer/dev/1646941864047-2022-03-10T19:51:04.047Z/optimizer.zip"
         },
         "Handler": "processor/index.optimize",
         "Runtime": "nodejs14.x",
@@ -231,24 +231,24 @@
         "OptimizeDashprocessorLogGroup"
       ]
     },
-    "OptimizeDashprocessorLambdaVersionaZMUk9w92ZfZHgeNCo9AZFVPNZhouoVXupE8F7qlCM": {
+    "OptimizeDashprocessorLambdaVersiondfT7pANqpEeVLF2FoaPbMiXa3D44Ao6kjvqocomNT8": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "OptimizeDashprocessorLambdaFunction"
         },
-        "CodeSha256": "SW8n/cdIFlpnFClbrWIGXtiDC+/cW/PC6Vpwf3QxiOo="
+        "CodeSha256": "06nJAfKD1C2ckElQyp2JlkhVp9XhMoNacgiGf4yPvdc="
       }
     },
-    "MainLambdaVersion1kyUtad2cJKknu9kqAPklgJvWBHTRH54Yjp5fs8uo": {
+    "MainLambdaVersionhimlmEv6OfqhHc3Vg4BpBr5WMIBWkIq7dqYYPyz89A": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "MainLambdaFunction"
         },
-        "CodeSha256": "SW8n/cdIFlpnFClbrWIGXtiDC+/cW/PC6Vpwf3QxiOo="
+        "CodeSha256": "06nJAfKD1C2ckElQyp2JlkhVp9XhMoNacgiGf4yPvdc="
       }
     },
     "ApiGatewayRestApi": {
@@ -289,7 +289,8 @@
             "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Origin": true,
               "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Credentials": true
             },
             "ResponseModels": {}
           }
@@ -306,8 +307,9 @@
               "StatusCode": "200",
               "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-NR-Api-Key'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'"
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'",
+                "method.response.header.Access-Control-Allow-Credentials": "'true'"
               },
               "ResponseTemplates": {
                 "application/json": ""
@@ -337,7 +339,8 @@
             "ResponseParameters": {
               "method.response.header.Access-Control-Allow-Origin": true,
               "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Credentials": true
             },
             "ResponseModels": {}
           }
@@ -354,8 +357,9 @@
               "StatusCode": "200",
               "ResponseParameters": {
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-NR-Api-Key'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'"
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'",
+                "method.response.header.Access-Control-Allow-Credentials": "'true'"
               },
               "ResponseTemplates": {
                 "application/json": ""
@@ -466,7 +470,7 @@
         "MainLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1646852476916": {
+    "ApiGatewayDeployment1646941862239": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -531,7 +535,7 @@
     "OptimizeDashprocessorLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "OptimizeDashprocessorLambdaVersionaZMUk9w92ZfZHgeNCo9AZFVPNZhouoVXupE8F7qlCM"
+        "Ref": "OptimizeDashprocessorLambdaVersiondfT7pANqpEeVLF2FoaPbMiXa3D44Ao6kjvqocomNT8"
       },
       "Export": {
         "Name": "sls-optimizer-dev-OptimizeDashprocessorLambdaFunctionQualifiedArn"
@@ -540,7 +544,7 @@
     "MainLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "MainLambdaVersion1kyUtad2cJKknu9kqAPklgJvWBHTRH54Yjp5fs8uo"
+        "Ref": "MainLambdaVersionhimlmEv6OfqhHc3Vg4BpBr5WMIBWkIq7dqYYPyz89A"
       },
       "Export": {
         "Name": "sls-optimizer-dev-MainLambdaFunctionQualifiedArn"

@@ -15,7 +15,7 @@ export const initQuery = ngql`
   }
 `;
 
-export const catalogNerdpacksQuery = ngql`{
+export const catalogNerdpacksQuery = `{
   actor {
     nr1Catalog {
       nerdpacks {

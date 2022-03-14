@@ -12,14 +12,14 @@ import {
   nerdlet,
   Icon,
   NerdGraphQuery,
-  NerdGraphMutation,
-  EntityStorageMutation
+  NerdGraphMutation
 } from 'nr1';
 import {
   initQuery,
   workloadDiscoveryQuery,
   userApiKeysQuery,
-  userApiCreateQuery
+  userApiCreateQuery,
+  catalogNerdpacksQuery
 } from './queries';
 import queue from 'async/queue';
 
@@ -33,7 +33,7 @@ export class DataProvider extends Component {
     super(props);
 
     this.state = {
-      api: 'https://8qb8qau9g0.execute-api.us-east-1.amazonaws.com/dev/',
+      apiUrl: 'https://8qb8qau9g0.execute-api.us-east-1.amazonaws.com/dev',
       initializing: true,
       accountId: null,
       accountSelectError: null,
@@ -51,11 +51,13 @@ export class DataProvider extends Component {
       fetchingUserApiKeys: false,
       userApiKeys: [],
       optimizerKey: null,
-      fetchingJobStatus: false
+      fetchingJobStatus: false,
+      timeRange: null
     };
   }
 
   componentDidMount() {
+    this.getNerdpackUuid();
     this.pollJobStatus = setInterval(() => {
       this.fetchJobStatus();
     }, 5000);
@@ -76,6 +78,12 @@ export class DataProvider extends Component {
   handleUpdate = props => {
     if (props.accountId !== this.state.accountId) {
       this.accountChange(props.accountId);
+    }
+    if (
+      props.timeRange &&
+      JSON.stringify(props.timeRange) !== JSON.stringify(this.state.timeRange)
+    ) {
+      this.setState({ timeRange: props.timeRange });
     }
   };
 
@@ -324,6 +332,55 @@ export class DataProvider extends Component {
       });
     } else {
       console.log('fetching accessible workloads already in progress');
+    }
+  };
+
+  getNerdpackUuid = async () => {
+    // check if manually deployed nerdpack
+    let nerdpackUUID = '';
+    try {
+      nerdpackUUID = window.location.href
+        .split('.com/launcher/')[1]
+        .split('.')[0];
+    } catch (e) {
+      // console.log(`nerdpack not manually deployed${e}`);
+    }
+
+    // check if nerdpack running locally
+    if (nerdpackUUID === '') {
+      try {
+        const blocks = window.location.href
+          .split('https://')[1]
+          .split('.')[0]
+          .split('-');
+        nerdpackUUID = `${blocks[0]}-${blocks[1]}-${blocks[2]}-${blocks[3]}-${blocks[4]}`;
+      } catch (e) {
+        // console.log(`nerdpack not running locally`);
+      }
+    }
+
+    // check if nerdpack is running from app catalog
+    if (nerdpackUUID === '') {
+      await NerdGraphQuery.query({
+        query: catalogNerdpacksQuery
+      }).then(value => {
+        const nerdpacks = (
+          value?.data?.actor?.nr1Catalog?.nerdpacks || []
+        ).filter(
+          n =>
+            n.visibility === 'GLOBAL' &&
+            n.metadata.repository &&
+            n.metadata.repository.includes('nr1-cloud-optimize')
+        );
+
+        if (nerdpacks.length > 0) {
+          nerdpackUUID = nerdpacks[0].id;
+        }
+      });
+    }
+
+    if (nerdpackUUID) {
+      this.setState({ uuid: nerdpackUUID });
     }
   };
 

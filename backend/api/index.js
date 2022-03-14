@@ -6,6 +6,13 @@ const pathHandlers = {
   optimize: { POST: require('./optimize') }
 };
 
+const baseHeaders = {
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+  'Access-Control-Allow-Credentials': true
+};
+
 module.exports.router = async (event, context, callback) => {
   const path =
     event?.pathParameters?.path || event?.pathParameters?.proxy || '/';
@@ -17,8 +24,7 @@ module.exports.router = async (event, context, callback) => {
     const response = {
       statusCode: 400,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true
+        ...baseHeaders
       },
       body: JSON.stringify({
         success: false,
@@ -34,7 +40,10 @@ module.exports.router = async (event, context, callback) => {
         query:
           '{\n  actor {\n    user {\n      email\n      id\n    }\n  }\n}\n'
       }),
-      headers: { 'Content-Type': 'application/json', 'API-Key': nerdGraphKey }
+      headers: {
+        'Content-Type': 'application/json',
+        'API-Key': nerdGraphKey
+      }
     });
 
     const httpData = await response.json();
@@ -44,8 +53,7 @@ module.exports.router = async (event, context, callback) => {
       const response = {
         statusCode: 403,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true
+          ...baseHeaders
         },
         body: JSON.stringify({
           success: false,
@@ -61,7 +69,11 @@ module.exports.router = async (event, context, callback) => {
     try {
       const body = JSON.parse(event.body);
       return pathHandlers[path][event.httpMethod](
-        { body, headers: event.headers, key: nerdGraphKey },
+        {
+          body,
+          headers: event.headers,
+          key: nerdGraphKey
+        },
         context,
         callback
       );
@@ -69,8 +81,7 @@ module.exports.router = async (event, context, callback) => {
       const response = {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true
+          ...baseHeaders
         },
         body: JSON.stringify({
           success: false,
@@ -87,8 +98,7 @@ module.exports.router = async (event, context, callback) => {
     const response = {
       statusCode: 405,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true
+        ...baseHeaders
       },
       body: JSON.stringify({
         success: false,

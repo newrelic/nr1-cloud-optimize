@@ -262,7 +262,7 @@ const processWorkload = (workload, key, config, timeNrql) => {
     const entityTypeData = {};
     const entityTypeQueue = async.queue((entityTypeGroup, callback) => {
       const { fullType, entities } = entityTypeGroup;
-      const { run } = processorMap[fullType];
+      const run = processorMap[fullType]?.run;
 
       if (run) {
         run(entities, key, config || {}, timeNrql).then(values => {

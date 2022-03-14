@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import {
-  nerdlet,
+  Toast,
   TextField,
   Table,
   TableRow,
@@ -20,7 +20,11 @@ export default function CollectionList(props) {
     fetchWorkloadCollections,
     selectedAccount,
     accountCollection,
-    updateDataState
+    updateDataState,
+    apiUrl,
+    optimizerKey,
+    uuid,
+    timeRange
   } = dataContext;
 
   // const [name, setName] = useState("");
@@ -61,16 +65,41 @@ export default function CollectionList(props) {
     const allActions = [
       {
         label: 'Run',
-        onClick: async (evt, { item, index }) => {
-          // await runJob(item.id);
-          // getJobs();
+        onClick: async (evt, { item }) => {
+          postData(`${apiUrl}/optimize`, optimizerKey.key, {
+            workloadGuids: item.document.workloads.map(w => w.guid),
+            accountId: selectedAccount.id,
+            nerdpackUUID: uuid,
+            collectionId: item.id
+          }).then(data => {
+            if (data?.success) {
+              Toast.showToast({
+                title: 'Job sent successfully',
+                description: 'Processing...',
+                type: Toast.TYPE.NORMAL
+              });
+            }
+          });
         }
       },
       {
         label: 'Run with time range',
-        onClick: async (evt, { item, index }) => {
-          // await runJob(item.id);
-          // getJobs();
+        onClick: async (evt, { item }) => {
+          postData(`${apiUrl}/optimize`, optimizerKey.key, {
+            workloadGuids: item.document.workloads.map(w => w.guid),
+            accountId: selectedAccount.id,
+            nerdpackUUID: uuid,
+            collectionId: item.id,
+            timeRange
+          }).then(data => {
+            if (data?.success) {
+              Toast.showToast({
+                title: 'Job sent successfully',
+                description: 'Processing...',
+                type: Toast.TYPE.NORMAL
+              });
+            }
+          });
         }
       },
       {
@@ -112,6 +141,25 @@ export default function CollectionList(props) {
     return allActions;
   };
 
+  const headers = [
+    { value: ({ item }) => item.document.name, width: '40%', key: 'Name' },
+    {
+      value: ({ item }) => item.document.workloads.length,
+      width: '10%',
+      key: 'Workloads'
+    },
+    {
+      value: ({ item }) => item.document.createdBy,
+      width: '25%',
+      key: 'Created By'
+    },
+    {
+      value: ({ item }) => item?.history?.[0]?.document?.startedAt,
+      width: '25%',
+      key: 'Last Optimized At'
+    }
+  ];
+
   return (
     <>
       <TextField
@@ -123,53 +171,19 @@ export default function CollectionList(props) {
 
       <Table ariaLabel="" items={filteredAccountCollection} multivalue>
         <TableHeader>
-          <TableHeaderCell
-            value={({ item }) => item.document.name}
-            width="40%"
-            sortable
-            sortingType={
-              column === 0 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-            }
-            onClick={(event, data) => onClickTableHeaderCell(0, data)}
-          >
-            Name
-          </TableHeaderCell>
-
-          <TableHeaderCell
-            value={({ item }) => item.document.workloads.length}
-            width="10%"
-            sortable
-            sortingType={
-              column === 1 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-            }
-            onClick={(event, data) => onClickTableHeaderCell(1, data)}
-          >
-            Workloads
-          </TableHeaderCell>
-
-          <TableHeaderCell
-            width="25%"
-            value={({ item }) => item.document.lastEditedBy}
-            sortable
-            sortingType={
-              column === 2 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-            }
-            onClick={(event, data) => onClickTableHeaderCell(2, data)}
-          >
-            Created By
-          </TableHeaderCell>
-
-          <TableHeaderCell
-            width="15%"
-            value={({ item }) => item?.history?.[0]?.document?.startedAt}
-            sortable
-            sortingType={
-              column === 3 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-            }
-            onClick={(event, data) => onClickTableHeaderCell(3, data)}
-          >
-            Last Optimized At
-          </TableHeaderCell>
+          {headers.map((h, i) => (
+            // eslint-disable-next-line react/jsx-key
+            <TableHeaderCell
+              {...h}
+              sortable
+              sortingType={
+                column === i ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+              }
+              onClick={(event, data) => onClickTableHeaderCell(i, data)}
+            >
+              {h.key}
+            </TableHeaderCell>
+          ))}
         </TableHeader>
 
         {({ item }) => {
@@ -215,4 +229,25 @@ export default function CollectionList(props) {
       </Table>
     </>
   );
+}
+
+function postData(url = '', key, data = {}) {
+  return new Promise(resolve => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'NR-API-KEY': key
+      },
+      body: JSON.stringify(data)
+    })
+      .then(async response => {
+        const responseData = await response.json();
+        resolve(responseData);
+      })
+      .catch(err => {
+        console.error(err.text);
+        resolve();
+      });
+  });
 }

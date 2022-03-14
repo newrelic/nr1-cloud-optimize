@@ -3,6 +3,13 @@ const AWS = require('aws-sdk');
 // eslint-disable-line import/no-extraneous-dependencies
 const lambda = new AWS.Lambda();
 
+const baseHeaders = {
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+  'Access-Control-Allow-Credentials': true
+};
+
 module.exports = (event, context, cb) => {
   const { body } = event;
   const errors = [];
@@ -10,7 +17,7 @@ module.exports = (event, context, cb) => {
   if (
     !body.workloadGuids ||
     !Array.isArray(body.workloadGuids) ||
-    !body.workloadGuids.length > 0
+    !(body?.workloadGuids || []).length > 0
   ) {
     errors.push('array of workloadGuids missing');
   }
@@ -30,6 +37,7 @@ module.exports = (event, context, cb) => {
   if (errors.length > 0) {
     cb(null, {
       statusCode: 400,
+      headers: { ...baseHeaders },
       body: JSON.stringify({
         success: false,
         errors,
@@ -57,6 +65,7 @@ module.exports = (event, context, cb) => {
 
     cb(null, {
       statusCode: 200,
+      headers: { ...baseHeaders },
       body: JSON.stringify({
         success: true,
         jobId,
