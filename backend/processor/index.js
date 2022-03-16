@@ -81,7 +81,10 @@ module.exports.optimize = async (event, context, callback) => {
     jobId,
     workloadGuids,
     collectionId,
-    identifier
+    identifier,
+    'pending',
+    timeNrql,
+    timeRange
   );
 
   // fetch all guids attached to each workload
@@ -120,7 +123,9 @@ module.exports.optimize = async (event, context, callback) => {
     workloadGuids,
     collectionId,
     identifier,
-    'complete'
+    'complete',
+    timeNrql,
+    timeRange
   );
 
   callback(null, null);
@@ -222,15 +227,17 @@ const processWorkloads = (
     const workloadData = [];
     const workloadQueue = async.queue((workload, callback) => {
       processWorkload(workload, key, config, timeNrql).then(value => {
+        const { entityTypeData, entityTypeCost } = value;
         workloadData.push({
           // name: workload.name,
           guid: workload.guid,
           timeNrql,
           timeRange,
+          entityTypeCost,
           processedAt: new Date().getTime(),
           // unpack the map into a flat array
-          results: Object.keys(value || {})
-            .map(key => value[key].map(e => e))
+          results: Object.keys(entityTypeData || {})
+            .map(key => entityTypeData[key].map(e => e))
             .flat()
         });
         callback();
@@ -260,6 +267,8 @@ const processWorkload = (workload, key, config, timeNrql) => {
 
     // control how many groups of entity types are queried simulataneously
     const entityTypeData = {};
+    const entityTypeCost = {};
+
     const entityTypeQueue = async.queue((entityTypeGroup, callback) => {
       const { fullType, entities } = entityTypeGroup;
       const run = processorMap[fullType]?.run;
@@ -267,6 +276,7 @@ const processWorkload = (workload, key, config, timeNrql) => {
       if (run) {
         run(entities, key, config || {}, timeNrql).then(values => {
           entityTypeData[fullType] = values;
+          entityTypeCost[fullType] = buildCost(values);
           callback();
         });
       } else {
@@ -277,8 +287,69 @@ const processWorkload = (workload, key, config, timeNrql) => {
     entityTypeQueue.push(sortedGroupedEntities);
 
     entityTypeQueue.drain(() => {
-      resolve(entityTypeData);
+      resolve({ entityTypeData, entityTypeCost });
     });
+  });
+};
+
+const buildCost = entities => {
+  // totalKnown = confirmed cost
+  // totalEstimated = estimated cost of a determined service/host
+  // totalOptimized = if using an optimized service/host
+  // potentialSaving = if optimized or stale detected what is that cost
+  const cost = { known: 0, estimated: 0, optimized: 0, potentialSaving: 0 };
+
+  entities.forEach(e => {
+    // check if spot instance
+    if (e.entityType === 'INFRASTRUCTURE_HOST_ENTITY') {
+      if (e.spot) {
+        const spotPrice = e?.matches?.exact?.[0]?.spotPrice?.[0]?.price;
+        if (spotPrice) {
+          cost.known = cost.known + spotPrice;
+        }
+
+        const optimizedSpotPrice =
+          e?.matches?.optimized?.[0]?.spotPrice?.[0]?.price;
+        if (optimizedSpotPrice) {
+          cost.optimized = cost.optimized + optimizedSpotPrice;
+          cost.potentialSaving = spotPrice - optimizedSpotPrice;
+        }
+      } else {
+        const onDemandPrice = e?.matches?.exact?.[0]?.onDemandPrice;
+        if (onDemandPrice) {
+          cost.known = cost.known + onDemandPrice;
+        }
+
+        const estimatedPrice = e?.matches?.estimated?.[0]?.onDemandPrice;
+        if (estimatedPrice) {
+          cost.estimated = cost.estimated + estimatedPrice;
+        }
+
+        const optimizedOnDemandPrice =
+          e?.matches?.optimized?.[0]?.onDemandPrice;
+        if (optimizedOnDemandPrice) {
+          cost.optimized = cost.optimized + optimizedOnDemandPrice;
+          cost.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
+        }
+      }
+    } else {
+      // some generic entity cost handling if available, not intended to be successful atm
+      const onDemandPrice = e?.matches?.exact?.[0]?.onDemandPrice;
+      if (onDemandPrice) {
+        cost.known = cost.known + onDemandPrice;
+      }
+
+      const estimatedPrice = e?.matches?.estimated?.[0]?.onDemandPrice;
+      if (estimatedPrice) {
+        cost.estimated = cost.estimated + estimatedPrice;
+      }
+
+      const optimizedOnDemandPrice = e?.matches?.optimized?.[0]?.onDemandPrice;
+      if (optimizedOnDemandPrice) {
+        cost.optimized = cost.optimized + optimizedOnDemandPrice;
+        cost.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
+      }
+    }
   });
 };
 
@@ -394,12 +465,16 @@ const writeJobStatusEvent = async (
   workloadGuids,
   collectionId,
   identifier,
-  status
+  status,
+  timeNrql,
+  timeRange
 ) => {
   const document = {
     startedAt,
     workloadGuids,
-    status: status || 'pending'
+    status: status || 'pending',
+    timeNrql,
+    timeRange
   };
 
   if (collectionId) document.collectionId = collectionId;

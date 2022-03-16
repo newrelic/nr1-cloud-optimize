@@ -6,12 +6,8 @@ import {
   PopoverBody,
   BlockText,
   Button,
-  Form,
-  Layout,
-  LayoutItem,
-  Stack,
-  StackItem,
   HeadingText,
+  Tooltip,
   Card,
   CardBody,
   Select,
@@ -27,6 +23,7 @@ export default function Results(props) {
   const {
     name,
     selectedResult,
+    selectedResultData,
     fetchingJobStatus,
     jobStatus,
     deleteJob,
@@ -35,6 +32,7 @@ export default function Results(props) {
     workloads,
     deletingJobDocuments
   } = dataContext;
+  const document = selectedResultData?.document || {};
 
   if (fetchingJobStatus && jobStatus.length === 0) {
     return (
@@ -59,6 +57,24 @@ export default function Results(props) {
   }
 
   const accountName = account?.name || account?.id;
+
+  const timeRange = document?.timeRange;
+  const timeNrql = document?.timeNrql;
+
+  let timeText = '';
+  if (!timeRange) {
+    const start = new Date(document.startedAt);
+    const end = new Date(document.startedAt - 86400000 * 7);
+    timeText = `Data between: ${end.toLocaleString()} to ${start.toLocaleString()}`;
+  } else if (timeRange.duration) {
+    const start = new Date(document.startedAt);
+    const end = new Date(document.startedAt - timeRange.duration);
+    timeText = `Data between: ${end.toLocaleString()} to ${start.toLocaleString()}`;
+  } else if (timeRange.begin_time && timeRange.end_time) {
+    const start = new Date(timeRange.begin_time);
+    const end = new Date(timeRange.end_time);
+    timeText = `Data between: ${end.toLocaleString()} to ${start.toLocaleString()}`;
+  }
 
   return (
     <>
@@ -85,6 +101,17 @@ export default function Results(props) {
                 </PopoverBody>
               </Popover>
             </BlockText>
+            <BlockText type={BlockText.TYPE.PARAGRAPH}>
+              {timeText}&nbsp;
+              <Popover openOnHover>
+                <PopoverTrigger>
+                  <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
+                </PopoverTrigger>
+                <PopoverBody>
+                  <BlockText>&nbsp;NRQL used: {timeNrql}&nbsp;</BlockText>
+                </PopoverBody>
+              </Popover>
+            </BlockText>
           </CardBody>
           <CardBody>
             <div>
@@ -106,20 +133,23 @@ export default function Results(props) {
               </Select>
               &nbsp;
               {jobStatus.length > 0 && (
-                <Button
-                  loading={deletingJobDocuments}
-                  style={{ marginTop: '23px' }}
-                  sizeType={Button.SIZE_TYPE.SMALL}
-                  type={Button.TYPE.DESTRUCTIVE}
-                  iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TRASH}
-                  onClick={() => deleteJob(selectedResult)}
-                />
+                <Tooltip text="Delete job history">
+                  <Button
+                    loading={deletingJobDocuments}
+                    style={{ marginTop: '23px' }}
+                    sizeType={Button.SIZE_TYPE.SMALL}
+                    type={Button.TYPE.DESTRUCTIVE}
+                    iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TRASH}
+                    onClick={() => deleteJob(selectedResult)}
+                  />
+                </Tooltip>
               )}
             </div>
+            <br />
           </CardBody>
         </Card>
       </div>
-      <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+      <div style={{ maxHeight: '90000px', overflowY: 'auto' }}>
         <Card>
           <CardBody>
             <ResultsPanel />

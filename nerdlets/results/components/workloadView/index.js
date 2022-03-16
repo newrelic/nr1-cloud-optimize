@@ -1,22 +1,4 @@
-import React, { useContext } from 'react';
-import {
-  Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverBody,
-  BlockText,
-  Layout,
-  LayoutItem,
-  Stack,
-  StackItem,
-  HeadingText,
-  Card,
-  CardBody,
-  Select,
-  SelectItem
-} from 'nr1';
-import DataContext from '../../context/data';
-import Loader from '../../../shared/components/loader';
+import React from 'react';
 import _ from 'lodash';
 import EntityView from '../entityView';
 
