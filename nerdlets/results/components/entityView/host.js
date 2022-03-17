@@ -26,7 +26,7 @@ export default function HostView(props) {
     }
   };
 
-  const cost = { known: 0, optimized: 0, estimated: 0 };
+  const cost = { known: 0, optimized: 0, estimated: 0, potentialSaving: 0 };
   entities.forEach(e => {
     if (e.spot) {
       const spotPrice = e?.matches?.exact?.[0]?.spotPrice?.[0]?.price;
@@ -170,6 +170,7 @@ export default function HostView(props) {
 
         {({ item }) => {
           const { SystemSample } = item;
+          const optimizedType = item.matches?.optimized?.[0];
 
           return (
             <TableRow actions={[]}>
@@ -195,18 +196,24 @@ export default function HostView(props) {
               <MetricTableRowCell
                 type={MetricTableRowCell.TYPE.PERCENTAGE}
                 value={SystemSample['max.memoryPercent'] / 100}
-                additionalValue={`Memory GB: ${(
-                  SystemSample?.memoryGb || 0
-                ).toFixed(2)}`}
+                additionalValue={`Memory GB: ${Math.round(
+                  (SystemSample?.memoryGb || 0).toFixed(2)
+                )}`}
               />
               <TableRowCell>{item.matches?.exact?.[0].type}</TableRowCell>
               <TableRowCell>
                 {item.matches?.exact?.[0].onDemandPrice}
               </TableRowCell>
-              <TableRowCell>{item.matches?.optimized?.[0]?.type}</TableRowCell>
-              <TableRowCell>
-                {item.matches?.optimized?.[0]?.onDemandPrice}
+              <TableRowCell
+                additionalValue={
+                  optimizedType
+                    ? `CPU: ${optimizedType.cpu} Memory: ${optimizedType.memory}`
+                    : undefined
+                }
+              >
+                {optimizedType?.type}
               </TableRowCell>
+              <TableRowCell>{optimizedType?.onDemandPrice}</TableRowCell>
               <TableRowCell>{item.potentialSaving}</TableRowCell>
             </TableRow>
           );

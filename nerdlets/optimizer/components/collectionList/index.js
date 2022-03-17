@@ -246,6 +246,7 @@ function postData(url = '', key, data = {}) {
         resolve(responseData);
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.error(err.text);
         resolve();
       });

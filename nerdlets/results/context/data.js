@@ -176,6 +176,8 @@ export class DataProvider extends Component {
 
         await workloadQueue.drain();
 
+        // need to add some calculations
+
         console.log(workloadData);
 
         this.setState({ workloadData }, () => resolve(workloadData));

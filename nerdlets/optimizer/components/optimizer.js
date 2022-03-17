@@ -16,6 +16,7 @@ import {
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
 import CollectionList from './collectionList';
+import QuickStart from './quickStart';
 
 // eslint-disable-next-line no-unused-vars
 export default function Optimizer(props) {
@@ -96,7 +97,11 @@ export default function Optimizer(props) {
                   <CardBody>
                     <HeadingText
                       type={HeadingText.TYPE.HEADING_3}
-                      style={{ paddingBottom: '0px', marginBottom: '1px' }}
+                      style={{
+                        paddingBottom: '0px',
+                        marginBottom: '1px',
+                        fontSize: '18px'
+                      }}
                     >
                       Workload Collections from {account}
                     </HeadingText>
@@ -117,6 +122,8 @@ export default function Optimizer(props) {
                   </CardBody>
                 </Card>
               )}
+
+              <QuickStart />
 
               {accountCollection && accountCollection.length > 0 && (
                 <Card>

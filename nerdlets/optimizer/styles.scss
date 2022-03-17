@@ -2,7 +2,9 @@
   outline: 1px solid black;
 }
 
-
+h3:not(.u-unstyledH3) {
+  font-size: unset;
+}
 
 .lds-ring {
   display: inline-block;

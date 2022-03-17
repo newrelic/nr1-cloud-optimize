@@ -83,7 +83,11 @@ export default function Results(props) {
           <CardBody>
             <HeadingText
               type={HeadingText.TYPE.HEADING_3}
-              style={{ paddingBottom: '0px', marginBottom: '1px' }}
+              style={{
+                paddingBottom: '0px',
+                marginBottom: '1px',
+                fontSize: '18px'
+              }}
             >
               {name} results for {workloads.length} workloads from {accountName}
             </HeadingText>
@@ -113,7 +117,7 @@ export default function Results(props) {
               </Popover>
             </BlockText>
           </CardBody>
-          <CardBody>
+          <CardBody style={{ marginBottom: '-10px' }}>
             <div>
               <Select
                 label="Select time"
