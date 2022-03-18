@@ -232,7 +232,7 @@ export default function HostView(props) {
           <TableHeaderCell width="7%" />
           <TableHeaderCell width="7%" />
         </TableHeader>
-        {({ item }) => {
+        {() => {
           return (
             <TableRow actions={[]}>
               <TableRowCell />

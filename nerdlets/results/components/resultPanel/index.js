@@ -2,18 +2,22 @@ import React, { useContext } from 'react';
 import { SectionMessage, Card, CardHeader, CardBody } from 'nr1';
 import DataContext from '../../context/data';
 import WorkloadView from '../workloadView';
+import CostSummary from './costSummary';
 
 // eslint-disable-next-line no-unused-vars
 export default function ResultsPanel(props) {
   const dataContext = useContext(DataContext);
-  const { workloadData } = dataContext;
+  const { workloadData, costSummary } = dataContext;
 
   return (
     <>
+      <CostSummary cost={costSummary} tileType="OUTLINE" />
+
       {Object.keys(workloadData)
         .sort()
         .map(wl => {
           const { name, results } = workloadData[wl];
+          const wlCost = costSummary?.workloads?.[wl];
 
           return (
             <React.Fragment key={wl}>
@@ -39,6 +43,7 @@ export default function ResultsPanel(props) {
                     />
                   ) : (
                     <div style={{ paddingLeft: '10px' }}>
+                      <CostSummary cost={wlCost} />
                       <WorkloadView workload={workloadData[wl]} />
                     </div>
                   )}

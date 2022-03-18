@@ -26,6 +26,7 @@ import {
   catalogNerdpacksQuery
 } from './queries';
 import queue from 'async/queue';
+import calculate from './calculate';
 
 const RESULT_UPDATE_INTERVAL = 5000;
 const QUEUE_LIMIT = 5;
@@ -46,7 +47,10 @@ export class DataProvider extends Component {
       selectedResultData: null,
       optimizerResults: [],
       workloadData: {},
-      deletingJobDocuments: false
+      deletingJobDocuments: false,
+      tagModalOpen: false,
+      entityTags: [],
+      selectedTags: {}
     };
   }
 
@@ -176,13 +180,44 @@ export class DataProvider extends Component {
 
         await workloadQueue.drain();
 
-        // need to add some calculations
+        const { selectedTags } = this.state;
+        const costSummary = calculate(workloadData, selectedTags);
+        const entityTags = this.buildTags(workloadData);
 
-        console.log(workloadData);
+        console.log(entityTags);
 
-        this.setState({ workloadData }, () => resolve(workloadData));
+        this.setState({ workloadData, costSummary, entityTags }, () =>
+          resolve(workloadData)
+        );
       });
     });
+  };
+
+  recalculate = () => {
+    const { selectedTags, workloadData } = this.state;
+    const costSummary = calculate(workloadData, selectedTags);
+
+    this.setState({ costSummary });
+  };
+
+  buildTags = workloadData => {
+    const tags = {};
+    Object.keys(workloadData).forEach(wl => {
+      const workload = workloadData[wl];
+
+      workload.results.forEach(e => {
+        Object.keys(e.tags).forEach(tag => {
+          const values = e.tags[tag];
+          if (!tags[tag]) {
+            tags[tag] = values;
+          } else {
+            tags[tag] = [...new Set([...tags[tag], ...values])];
+          }
+        });
+      });
+    });
+
+    return tags;
   };
 
   updateDataState = (stateData, actions) =>
@@ -307,7 +342,8 @@ export class DataProvider extends Component {
           ...this.state,
           updateDataState: this.updateDataState,
           fetchJobStatus: this.fetchJobStatus,
-          deleteJob: this.deleteJob
+          deleteJob: this.deleteJob,
+          recalculate: this.recalculate
         }}
       >
         {children}

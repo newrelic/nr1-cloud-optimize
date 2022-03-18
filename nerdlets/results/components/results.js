@@ -16,6 +16,7 @@ import {
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
 import ResultsPanel from './resultPanel';
+import TagBar from './tags/bar';
 
 // eslint-disable-next-line no-unused-vars
 export default function Results(props) {
@@ -149,6 +150,8 @@ export default function Results(props) {
                 </Tooltip>
               )}
             </div>
+            <TagBar />
+
             <br />
           </CardBody>
         </Card>

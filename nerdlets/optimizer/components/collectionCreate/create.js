@@ -69,7 +69,10 @@ export default function CollectionCreate(props) {
 
   return (
     <>
-      <HeadingText type={HeadingText.TYPE.HEADING_3}>
+      <HeadingText
+        type={HeadingText.TYPE.HEADING_3}
+        style={{ fontSize: '18px' }}
+      >
         Create Collection
       </HeadingText>
       <BlockText type={BlockText.TYPE.PARAGRAPH}>

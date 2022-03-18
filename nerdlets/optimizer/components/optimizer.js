@@ -11,7 +11,8 @@ import {
   StackItem,
   HeadingText,
   Card,
-  CardBody
+  CardBody,
+  Button
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -105,7 +106,10 @@ export default function Optimizer(props) {
                     >
                       Workload Collections from {account}
                     </HeadingText>
-                    <BlockText type={BlockText.TYPE.PARAGRAPH}>
+                    <BlockText
+                      type={BlockText.TYPE.PARAGRAPH}
+                      style={{ float: 'left' }}
+                    >
                       {subText} a collection of workload(s) to Optimize{' '}
                       <Popover openOnHover>
                         <PopoverTrigger>
@@ -118,6 +122,42 @@ export default function Optimizer(props) {
                           </BlockText>
                         </PopoverBody>
                       </Popover>
+                    </BlockText>
+
+                    <BlockText
+                      type={BlockText.TYPE.PARAGRAPH}
+                      style={{ float: 'right' }}
+                    >
+                      <Button
+                        type={Button.TYPE.PRIMARY}
+                        sizeType={Button.SIZE_TYPE.SMALL}
+                        iconType={Button.ICON_TYPE.INTERFACE__SIGN__EXCLAMATION}
+                        onClick={() =>
+                          window.open(
+                            'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=bug%2C+needs-triage&template=bug_report.md&title=',
+                            '_blank'
+                          )
+                        }
+                      >
+                        New Issue
+                      </Button>
+                      &nbsp;
+                      <Button
+                        type={Button.TYPE.PRIMARY}
+                        sizeType={Button.SIZE_TYPE.SMALL}
+                        iconType={
+                          Button.ICON_TYPE
+                            .PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD
+                        }
+                        onClick={() =>
+                          window.open(
+                            'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=enhancement%2C+needs-triage&template=enhancement.md&title=',
+                            '_blank'
+                          )
+                        }
+                      >
+                        Feature Request
+                      </Button>
                     </BlockText>
                   </CardBody>
                 </Card>
