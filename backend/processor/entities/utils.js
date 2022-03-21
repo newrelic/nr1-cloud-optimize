@@ -22,7 +22,19 @@ const defaultIgnoreTags = [
   'host'
 ];
 
-const defaultAllowedTags = ['instanceType', 'type'];
+const defaultAllowedTags = [
+  'instanceType',
+  'type',
+  'aws.ec2InstanceType',
+  'aws.awsRegion',
+  'aws.cacheClusterId',
+  'aws.dbInstanceClass',
+  'aws.engine',
+  'aws.multiAz',
+  'accountId'
+];
+
+exports.BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
 
 exports.batchEntityQuery = (key, query, entities, config) => {
   return new Promise(resolve => {
@@ -78,6 +90,36 @@ exports.batchEntityQuery = (key, query, entities, config) => {
 
     entityQueue.drain(() => {
       resolve(entityData);
+    });
+  });
+};
+
+exports.nrqlQuery = (key, accountId, nrql) => {
+  return new Promise(resolve => {
+    const query = `query NrqlQuery($accountId: Int!, $nrql: Nrql!) {
+      actor {
+        account(id: $accountId) {
+          nrql(query: $nrql) {
+            results
+          }
+        }
+      }
+    }`;
+
+    fetch('https://api.newrelic.com/graphql', {
+      method: 'post',
+      body: JSON.stringify({
+        query,
+        variables: { accountId, nrql }
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'API-Key': key
+      }
+    }).then(async response => {
+      const httpData = await response.json();
+      const nrqlData = httpData?.data?.actor?.account?.nrql;
+      resolve(nrqlData);
     });
   });
 };

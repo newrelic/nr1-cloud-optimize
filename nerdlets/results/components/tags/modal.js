@@ -85,17 +85,6 @@ export default function TagModal(props) {
           </CardBody>
         </Card>
 
-        {/* <Button
-          style={{ float: 'left' }}
-          onClick={() => {
-            recalculate();
-            updateDataState({ tagModalOpen: false });
-          }}
-          type={Button.TYPE.PRIMARY}
-        >
-          Apply
-        </Button> */}
-
         <Button
           style={{ float: 'right' }}
           onClick={async () => {

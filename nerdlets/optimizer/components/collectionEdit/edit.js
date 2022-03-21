@@ -82,7 +82,10 @@ export default function CollectionEdit(props) {
 
   return (
     <>
-      <HeadingText type={HeadingText.TYPE.HEADING_3}>
+      <HeadingText
+        type={HeadingText.TYPE.HEADING_3}
+        style={{ fontSize: '18px' }}
+      >
         Edit Collection
       </HeadingText>
       <TextField

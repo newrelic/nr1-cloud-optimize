@@ -9,7 +9,7 @@ export default function WorkloadView(props) {
   const dataContext = useContext(DataContext);
   const { selectedTags } = dataContext;
   const { workload } = props;
-  const groupedEntities = _.groupBy(workload.results, e => e.entityType);
+  const groupedEntities = _.groupBy(workload.results, e => e.type);
 
   return (
     <>
@@ -17,6 +17,7 @@ export default function WorkloadView(props) {
         const filteredEntities = groupedEntities[g].filter(e =>
           checkTags(e, selectedTags)
         );
+
         return <EntityView key={g} group={g} entities={filteredEntities} />;
       })}
     </>

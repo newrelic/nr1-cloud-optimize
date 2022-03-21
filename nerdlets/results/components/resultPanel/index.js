@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { SectionMessage, Card, CardHeader, CardBody } from 'nr1';
+import { SectionMessage, Card, CardHeader, CardBody, Link } from 'nr1';
 import DataContext from '../../context/data';
 import WorkloadView from '../workloadView';
 import CostSummary from './costSummary';
@@ -13,6 +13,8 @@ export default function ResultsPanel(props) {
     <>
       <CostSummary cost={costSummary} tileType="OUTLINE" />
 
+      <hr style={{ borderTop: '2px solid #bbb', marginTop: '10px' }} />
+
       {Object.keys(workloadData)
         .sort()
         .map(wl => {
@@ -22,7 +24,20 @@ export default function ResultsPanel(props) {
           return (
             <React.Fragment key={wl}>
               <Card collapsible>
-                <CardHeader title={name} />
+                <CardHeader>
+                  {name}
+                  {' - '}
+                  <Link
+                    onClick={() =>
+                      window.open(
+                        ` https://one.newrelic.com/redirect/entity/${wl}`,
+                        '_blank'
+                      )
+                    }
+                  >
+                    View Workload
+                  </Link>
+                </CardHeader>
                 <CardBody>
                   {(results || []).length === 0 ? (
                     <SectionMessage
@@ -49,7 +64,6 @@ export default function ResultsPanel(props) {
                   )}
                 </CardBody>
               </Card>
-
               {/* <HeadingText
               type={HeadingText.TYPE.HEADING_2}
               style={{ marginBottom: '10px' }}

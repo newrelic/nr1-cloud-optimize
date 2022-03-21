@@ -87,7 +87,9 @@ export class DataProvider extends Component {
 
             // stich workload collection info to job history
             const newJobStatus = (sortedData || []).filter(
-              d => d.document?.collectionId === wlCollectionId
+              d =>
+                d.document?.status === 'complete' &&
+                d.document?.collectionId === wlCollectionId
             );
 
             const newState = {
@@ -184,8 +186,6 @@ export class DataProvider extends Component {
         const costSummary = calculate(workloadData, selectedTags);
         const entityTags = this.buildTags(workloadData);
 
-        console.log(entityTags);
-
         this.setState({ workloadData, costSummary, entityTags }, () =>
           resolve(workloadData)
         );
@@ -205,8 +205,8 @@ export class DataProvider extends Component {
     Object.keys(workloadData).forEach(wl => {
       const workload = workloadData[wl];
 
-      workload.results.forEach(e => {
-        Object.keys(e.tags).forEach(tag => {
+      (workload?.results || []).forEach(e => {
+        Object.keys(e.tags || {}).forEach(tag => {
           const values = e.tags[tag];
           if (!tags[tag]) {
             tags[tag] = values;

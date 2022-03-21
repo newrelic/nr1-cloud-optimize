@@ -43,8 +43,27 @@ const timeRangeToNrql = timeRange => {
 
 // map DOMAIN::TYPE:ENTITY_TYPE to a processor function
 const processorMap = {
-  'INFRA::HOST::INFRASTRUCTURE_HOST_ENTITY': require('./entities/HOST')
+  'INFRA::HOST::INFRASTRUCTURE_HOST_ENTITY': require('./entities/HOST'),
+  'INFRA::AWSAPIGATEWAYAPI::GENERIC_INFRASTRUCTURE_ENTITY': require('./entities/AWSAPIGATEWAYAPI'),
+  'INFRA::AWSELASTICSEARCHNODE::GENERIC_INFRASTRUCTURE_ENTITY': require('./entities/AWSELASTICSEARCHNODE'),
+  'INFRA::AWSELB::GENERIC_INFRASTRUCTURE_ENTITY': require('./entities/AWSELB'),
+  'INFRA::AWSALB::GENERIC_INFRASTRUCTURE_ENTITY': require('./entities/AWSALB'),
+  'INFRA::AWSSQSQUEUE::GENERIC_INFRASTRUCTURE_ENTITY': require('./entities/AWSSQSQUEUE')
 };
+
+// INFRA::AWSAPIGATEWAYAPI::GENERIC_INFRASTRUCTURE_ENTITY
+// INFRA::AWSDYNAMODBTABLE::GENERIC_INFRASTRUCTURE_ENTITY
+// INFRA::AWSELASTICACHEREDISNODE::GENERIC_INFRASTRUCTURE_ENTITY
+// INFRA::AWSSNSTOPIC::GENERIC_INFRASTRUCTURE_ENTITY
+// INFRA::AWSELASTICSEARCHNODE::GENERIC_INFRASTRUCTURE_ENTITY
+// INFRA::AWSELASTICSEARCHCLUSTER::GENERIC_INFRASTRUCTURE_ENTITY
+// AWSELB: null,
+// AWSSQSQUEUE: null,
+// AWSLAMBDAFUNCTION: null,
+// AWSELASTICSEARCHNODE: null,
+// AWSAPIGATEWAYAPI: null,
+// AWSELASTICACHEREDISNODE: null,
+// AWSSNSTOPIC: null,
 
 module.exports.optimize = async (event, context, callback) => {
   const startedAt = new Date().getTime();
@@ -62,6 +81,20 @@ module.exports.optimize = async (event, context, callback) => {
   } = body;
 
   const timeNrql = timeRangeToNrql(timeRange);
+
+  let totalPeriodMs = 0;
+
+  // default 7 days
+  if (!timeRange) {
+    totalPeriodMs = startedAt - new Date(startedAt - 86400000 * 7).getTime();
+  } else if (timeRange.duration) {
+    totalPeriodMs =
+      startedAt - new Date(startedAt - timeRange.duration).getTime();
+  } else if (timeRange.begin_time && timeRange.end_time) {
+    const start = new Date(timeRange.begin_time);
+    const end = new Date(timeRange.end_time);
+    totalPeriodMs = start.getTime() - end.getTime();
+  }
 
   // perform a nerdstorage check to see if same UUIDs inflight
   const { jobStatusCollection, jobStatusMain } = await getJobStatus(
@@ -84,7 +117,8 @@ module.exports.optimize = async (event, context, callback) => {
     identifier,
     'pending',
     timeNrql,
-    timeRange
+    timeRange,
+    totalPeriodMs
   );
 
   // fetch all guids attached to each workload
@@ -98,7 +132,8 @@ module.exports.optimize = async (event, context, callback) => {
     key,
     config,
     timeNrql,
-    timeRange
+    timeRange,
+    totalPeriodMs
   );
 
   // logJob.info({ workloadResults });
@@ -125,7 +160,8 @@ module.exports.optimize = async (event, context, callback) => {
     identifier,
     'complete',
     timeNrql,
-    timeRange
+    timeRange,
+    totalPeriodMs
   );
 
   callback(null, null);
@@ -221,27 +257,30 @@ const processWorkloads = (
   key,
   config,
   timeNrql,
-  timeRange
+  timeRange,
+  totalPeriodMs
 ) => {
   return new Promise(resolve => {
     const workloadData = [];
     const workloadQueue = async.queue((workload, callback) => {
-      processWorkload(workload, key, config, timeNrql).then(value => {
-        const { entityTypeData, entityTypeCost } = value;
-        workloadData.push({
-          // name: workload.name,
-          guid: workload.guid,
-          timeNrql,
-          timeRange,
-          entityTypeCost,
-          processedAt: new Date().getTime(),
-          // unpack the map into a flat array
-          results: Object.keys(entityTypeData || {})
-            .map(key => entityTypeData[key].map(e => e))
-            .flat()
-        });
-        callback();
-      });
+      processWorkload(workload, key, config, timeNrql, totalPeriodMs).then(
+        value => {
+          const { entityTypeData, entityTypeCost } = value;
+          workloadData.push({
+            // name: workload.name,
+            guid: workload.guid,
+            timeNrql,
+            timeRange,
+            entityTypeCost,
+            processedAt: new Date().getTime(),
+            // unpack the map into a flat array
+            results: Object.keys(entityTypeData || {})
+              .map(key => entityTypeData[key].map(e => e))
+              .flat()
+          });
+          callback();
+        }
+      );
     }, WORKLOAD_QUEUE_LIMIT);
 
     workloadQueue.push(workloadEntityData);
@@ -252,7 +291,7 @@ const processWorkloads = (
   });
 };
 
-const processWorkload = (workload, key, config, timeNrql) => {
+const processWorkload = (workload, key, config, timeNrql, totalPeriodMs) => {
   // sort entity types within
   return new Promise(resolve => {
     // group entities
@@ -273,13 +312,18 @@ const processWorkload = (workload, key, config, timeNrql) => {
       const { fullType, entities } = entityTypeGroup;
       const run = processorMap[fullType]?.run;
 
+      console.log(fullType);
+
       if (run) {
-        run(entities, key, config || {}, timeNrql).then(values => {
-          entityTypeData[fullType] = values;
-          entityTypeCost[fullType] = buildCost(values);
-          callback();
-        });
+        run(entities, key, config || {}, timeNrql, totalPeriodMs).then(
+          values => {
+            entityTypeData[fullType] = values;
+            entityTypeCost[fullType] = buildCost(values);
+            callback();
+          }
+        );
       } else {
+        entityTypeData[fullType] = entities;
         callback();
       }
     }, ENTITY_TYPE_QUEUE_LIMIT);
@@ -467,14 +511,16 @@ const writeJobStatusEvent = async (
   identifier,
   status,
   timeNrql,
-  timeRange
+  timeRange,
+  totalPeriodMs
 ) => {
   const document = {
     startedAt,
     workloadGuids,
     status: status || 'pending',
     timeNrql,
-    timeRange
+    timeRange,
+    totalPeriodMs
   };
 
   if (collectionId) document.collectionId = collectionId;

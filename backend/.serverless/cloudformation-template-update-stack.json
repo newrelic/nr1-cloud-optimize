@@ -174,7 +174,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/optimizer/dev/1647455040860-2022-03-16T18:24:00.860Z/optimizer.zip"
+          "S3Key": "serverless/optimizer/dev/1647863148007-2022-03-21T11:45:48.007Z/optimizer.zip"
         },
         "Handler": "api/index.router",
         "Runtime": "nodejs14.x",
@@ -206,7 +206,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/optimizer/dev/1647455040860-2022-03-16T18:24:00.860Z/optimizer.zip"
+          "S3Key": "serverless/optimizer/dev/1647863148007-2022-03-21T11:45:48.007Z/optimizer.zip"
         },
         "Handler": "processor/index.optimize",
         "Runtime": "nodejs14.x",
@@ -231,24 +231,24 @@
         "OptimizeDashprocessorLogGroup"
       ]
     },
-    "OptimizeDashprocessorLambdaVersionCRIDxrepftcLy15mBF585bPtqPlkGMyYHrx85LjM": {
+    "OptimizeDashprocessorLambdaVersionA5DD5CXVikHsjVszsgKwnfw428TicUp77Z32JDsozi0": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "OptimizeDashprocessorLambdaFunction"
         },
-        "CodeSha256": "vO8rT5mPkpTW4BJz0J57QfoooIF2ArxMPyTYvXWGZt0="
+        "CodeSha256": "ZdrovOoSmOq16bf4vA5hkuILxnrnr7IZplXQwHWXuT8="
       }
     },
-    "MainLambdaVersionqFZ0SS0NnJmsKwW6TvNeWCbJSVr29wPRZxaUjndCI": {
+    "MainLambdaVersionLzCDBNYoox0Ds8i4WSGsE9g6Ig7WquAbucEKo4JvOoQ": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "MainLambdaFunction"
         },
-        "CodeSha256": "vO8rT5mPkpTW4BJz0J57QfoooIF2ArxMPyTYvXWGZt0="
+        "CodeSha256": "ZdrovOoSmOq16bf4vA5hkuILxnrnr7IZplXQwHWXuT8="
       }
     },
     "ApiGatewayRestApi": {
@@ -470,7 +470,7 @@
         "MainLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1647455039085": {
+    "ApiGatewayDeployment1647863146258": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -535,7 +535,7 @@
     "OptimizeDashprocessorLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "OptimizeDashprocessorLambdaVersionCRIDxrepftcLy15mBF585bPtqPlkGMyYHrx85LjM"
+        "Ref": "OptimizeDashprocessorLambdaVersionA5DD5CXVikHsjVszsgKwnfw428TicUp77Z32JDsozi0"
       },
       "Export": {
         "Name": "sls-optimizer-dev-OptimizeDashprocessorLambdaFunctionQualifiedArn"
@@ -544,7 +544,7 @@
     "MainLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "MainLambdaVersionqFZ0SS0NnJmsKwW6TvNeWCbJSVr29wPRZxaUjndCI"
+        "Ref": "MainLambdaVersionLzCDBNYoox0Ds8i4WSGsE9g6Ig7WquAbucEKo4JvOoQ"
       },
       "Export": {
         "Name": "sls-optimizer-dev-MainLambdaFunctionQualifiedArn"

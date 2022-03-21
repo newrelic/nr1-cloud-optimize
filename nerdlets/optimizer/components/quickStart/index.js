@@ -11,7 +11,7 @@ export default function QuickStart(props) {
 
   return (
     <>
-      <Card collapsible style={{ fontSize: 'unset' }}>
+      <Card collapsible style={{ fontSize: 'unset', overflow: 'hidden' }}>
         <CardHeader title="Quick Start Guide" />
         <CardBody>
           <Steps defaultValue="create-workload-entities">

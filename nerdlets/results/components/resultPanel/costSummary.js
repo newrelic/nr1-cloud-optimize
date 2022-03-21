@@ -83,7 +83,7 @@ export default function CostSummary(props) {
           <StackItem>
             <Tile type={Tile.TYPE[tileType || 'SOLID']}>
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
-                Optimized Cost{' '}
+                Optimized Run Cost{' '}
                 <Popover openOnHover>
                   <PopoverTrigger>
                     <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
@@ -96,7 +96,7 @@ export default function CostSummary(props) {
                   </PopoverBody>
                 </Popover>
               </HeadingText>
-              <BlockText>${cost.optimized}</BlockText>
+              <BlockText>${cost.optimizedRun}</BlockText>
             </Tile>
           </StackItem>
           <StackItem>

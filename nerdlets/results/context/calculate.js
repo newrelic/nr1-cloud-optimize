@@ -4,6 +4,7 @@ export default function(workloadData, tags) {
     known: 0,
     estimated: 0,
     optimized: 0,
+    optimizedRun: 0,
     potentialSaving: 0,
     workloads: {}
   };
@@ -15,11 +16,12 @@ export default function(workloadData, tags) {
         known: 0,
         estimated: 0,
         optimized: 0,
+        optimizedRun: 0,
         potentialSaving: 0
       };
     }
 
-    workloadData[key].results.forEach(e => {
+    (workloadData[key]?.results || []).forEach(e => {
       if (checkTags(e, tags)) {
         if (e.type === 'HOST') {
           if (e.spot) {
@@ -39,6 +41,20 @@ export default function(workloadData, tags) {
                 cost.workloads[key].optimized + optimizedSpotPrice;
               cost.workloads[key].potentialSaving =
                 spotPrice - optimizedSpotPrice;
+            }
+
+            if (spotPrice || optimizedSpotPrice) {
+              if (optimizedSpotPrice) {
+                cost.optimizedRun = cost.optimizedRun + optimizedSpotPrice;
+
+                cost.workloads[key].optimizedRun =
+                  cost.workloads[key].optimizedRun + optimizedSpotPrice;
+              } else {
+                cost.optimizedRun = cost.optimizedRun + spotPrice;
+
+                cost.workloads[key].optimizedRun =
+                  cost.workloads[key].optimizedRun + spotPrice;
+              }
             }
           } else {
             const onDemandPrice = e?.matches?.exact?.[0]?.onDemandPrice;
@@ -62,12 +78,39 @@ export default function(workloadData, tags) {
               cost.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
 
               cost.workloads[key].optimized =
-                cost.optimized + optimizedOnDemandPrice;
+                cost.workloads[key].optimized + optimizedOnDemandPrice;
               cost.workloads[key].potentialSaving =
                 onDemandPrice - optimizedOnDemandPrice;
 
               e.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
             }
+
+            if (onDemandPrice || optimizedOnDemandPrice) {
+              if (optimizedOnDemandPrice) {
+                cost.optimizedRun = cost.optimizedRun + optimizedOnDemandPrice;
+
+                cost.workloads[key].optimizedRun =
+                  cost.workloads[key].optimizedRun + optimizedOnDemandPrice;
+              } else {
+                cost.optimizedRun = cost.optimizedRun + onDemandPrice;
+
+                cost.workloads[key].optimizedRun =
+                  cost.workloads[key].optimizedRun + onDemandPrice;
+              }
+            }
+          }
+        } else if (e.type === 'AWSAPIGATEWAYAPI') {
+          if (e.requestCost) {
+            cost.estimated = cost.estimated + e.requestCost;
+            cost.workloads[key].estimated =
+              cost.workloads[key].estimated + e.requestCost;
+          }
+        } else if (e.type === 'AWSELASTICSEARCHNODE') {
+          const instance = e?.discoveredPrices?.[0];
+          if (instance) {
+            cost.known = cost.known + parseFloat(instance?.price);
+            cost.workloads[key].known =
+              cost.workloads[key].known + parseFloat(instance?.price);
           }
         }
       }
@@ -92,7 +135,7 @@ export function checkTags(entity, selectedTags) {
 
   for (let z = 0; z < tags.length; z++) {
     const tag = tags[z];
-    if (entity.tags[tag]) {
+    if (entity?.tags?.[tag]) {
       const tagValues = selectedTags?.[tag];
       const entityValues = entity.tags[tag] || [];
 

@@ -71,6 +71,8 @@ exports.run = (entities, key, config, timeNrql) => {
     const query = `query HostQuery($guids: [EntityGuid]!) {
       actor {
         entities(guids: $guids) {
+          reporting
+          alertSeverity
           name
           guid
           domain

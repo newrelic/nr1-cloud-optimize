@@ -80,7 +80,7 @@ export default function Results(props) {
   return (
     <>
       <div>
-        <Card>
+        <Card style={{ overflow: 'hidden' }}>
           <CardBody>
             <HeadingText
               type={HeadingText.TYPE.HEADING_3}
