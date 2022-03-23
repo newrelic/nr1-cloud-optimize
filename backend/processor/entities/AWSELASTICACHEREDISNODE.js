@@ -5,10 +5,10 @@ const {
   BASE_URL
 } = require('./utils');
 
-const NodeQuery = `SELECT latest(provider.domainName), max(provider.CPUUtilization.Maximum), max(provider.ReadIOPS.Maximum), max(provider.WriteIOPS.Maximum), max(provider.ReadThroughput.Maximum), max(provider.WriteThroughput.Maximum), max(provider.SearchRate.Maximum) FROM DatastoreSample WHERE provider='ElasticsearchNode' LIMIT 1`;
+const NodeQuery = `SELECT max(provider.cacheHits.Maximum), max(provider.cacheMisses.Maximum), max(provider.cpuUtilization.Maximum), max(provider.currConnections.Maximum), max(provider.newConnections.Maximum), max(provider.currItems.Maximum), max(provider.bytesUsedForCache.Maximum) FROM DatastoreSample WHERE provider='ElastiCacheRedisNode' LIMIT 1`;
 
-const ClusterDataQuery = (clusterName, timeNrql) =>
-  `SELECT latest(awsRegion), latest(provider.instanceType), latest(entityName) FROM DatastoreSample WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' LIMIT 1 ${timeNrql}`;
+const ClusterDataQuery = (clusterId, timeNrql) =>
+  `SELECT latest(provider.cacheNodeType), latest(provider.cacheClusterId), latest(entityName) FROM DatastoreSample WHERE provider='ElastiCacheRedisCluster' AND provider.cacheClusterId = '${clusterId}' LIMIT 1  ${timeNrql}`;
 
 exports.run = (entities, key, config, timeNrql) => {
   // const { AWSELASTICSEARCHNODE, defaultCloud, defaultRegions } = config;
@@ -38,7 +38,7 @@ exports.run = (entities, key, config, timeNrql) => {
     batchEntityQuery(key, query, entities, config).then(async entityData => {
       // get cloud pricing
       const cloudPricing = await fetchPricing(
-        `${BASE_URL}/amazon/elasticsearch/pricing.json`
+        `${BASE_URL}/amazon/elasticache/pricing.json`
       );
       const priceData = cloudPricing?.priceData;
 
@@ -61,14 +61,15 @@ exports.run = (entities, key, config, timeNrql) => {
               delete NodeSample[key];
             }
           });
+
           e.NodeSample = NodeSample;
-          e.clusterName = NodeSample?.['provider.domainName'];
+          e.cacheClusterId = e.tags?.['aws.cacheClusterId']?.[0];
 
           const accountId = e.tags?.accountId?.[0];
-          const foundCluster = clusters.find(c => c.name === e.clusterName);
+          const foundCluster = clusters.find(c => c.id === e.cacheClusterId);
           if (!foundCluster) {
             clusters.push({
-              name: e.clusterName,
+              id: e.cacheClusterId,
               accountId: parseInt(accountId)
             });
           }
@@ -76,8 +77,9 @@ exports.run = (entities, key, config, timeNrql) => {
 
         // get cluster data
         const clusterDataPromises = clusters.map(c =>
-          nrqlQuery(key, c.accountId, ClusterDataQuery(c.name, timeNrql))
+          nrqlQuery(key, c.accountId, ClusterDataQuery(c.id, timeNrql))
         );
+
         const clusterDataResponses = await Promise.all(clusterDataPromises);
         const clusterData = clusterDataResponses
           .map(c => c?.results?.[0])
@@ -86,15 +88,12 @@ exports.run = (entities, key, config, timeNrql) => {
         // use cluster data to determine node pricing
         entityData.forEach(e => {
           const cluster = clusterData.find(
-            r => r['latest.entityName'] === e.clusterName
+            r => r['latest.provider.cacheClusterId'] === e.cacheClusterId
           );
 
           if (cluster) {
-            const region = priceData?.mapping[cluster['latest.awsRegion']];
-            const instanceType = cluster[
-              'latest.provider.instanceType'
-            ].replace('elasticsearch', 'search');
-
+            const region = priceData?.mapping[e.tags?.['aws.awsRegion']?.[0]];
+            const instanceType = cluster['latest.provider.cacheNodeType'];
             const pricing = priceData.regions[region.replace('Europe', 'EU')];
 
             if (pricing) {

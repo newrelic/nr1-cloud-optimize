@@ -7,7 +7,8 @@ import {
   TableRowCell,
   HeadingText,
   Switch,
-  EntityTitleTableRowCell
+  EntityTitleTableRowCell,
+  Link
 } from 'nr1';
 import calculate from '../../context/calculate';
 
@@ -41,10 +42,6 @@ export default function AwsSqsView(props) {
     {
       key: 'Message Cost',
       value: ({ item }) => item.messageCostStandardPerReq
-    },
-    {
-      key: 'Cost Per Hour',
-      value: ({ item }) => item.costPerHour
     }
   ];
 
@@ -54,7 +51,8 @@ export default function AwsSqsView(props) {
         type={HeadingText.TYPE.HEADING_5}
         style={{ paddingBottom: '0px', marginBottom: '0px' }}
       >
-        AWS SQS QUEUE
+        AWS SQS QUEUE{' '}
+        <Link to="https://aws.amazon.com/sqs/pricing/">Pricing</Link>
       </HeadingText>
       <Switch
         checked={hideUndetected}
@@ -87,7 +85,7 @@ export default function AwsSqsView(props) {
 
         {({ item }) => {
           const QueueSample = item?.QueueSample;
-          console.log(item);
+
           return (
             <TableRow actions={[]}>
               <EntityTitleTableRowCell
@@ -102,8 +100,11 @@ export default function AwsSqsView(props) {
               <TableRowCell>{item?.tags?.['aws.awsRegion']?.[0]}</TableRowCell>
               <TableRowCell>{QueueSample?.numberOfMessages}</TableRowCell>
 
-              <TableRowCell>{item?.messageCostStandardPerReq}</TableRowCell>
-              <TableRowCell>{item.costPerHour}</TableRowCell>
+              <TableRowCell>
+                {item?.messageCostStandardPerReq
+                  ? (item?.messageCostStandardPerReq).toFixed(10)
+                  : ''}
+              </TableRowCell>
             </TableRow>
           );
         }}
@@ -117,12 +118,10 @@ export default function AwsSqsView(props) {
           <TableHeaderCell />
           <TableHeaderCell />
           <TableHeaderCell />
-          <TableHeaderCell />
         </TableHeader>
         {() => {
           return (
             <TableRow actions={[]}>
-              <TableRowCell />
               <TableRowCell />
               <TableRowCell />
               <TableRowCell />

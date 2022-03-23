@@ -1,6 +1,7 @@
 import React from 'react';
 import AwsAlbView from './AWSALB';
 import AwsAPIGatewayView from './AWSAPIGATEWAYAPI';
+import AwsElasticacheRedisNodeView from './AWSELASTICACHEREDISNODE';
 import AwsElasticsearchNodeView from './AWSELASTICSEARCHNODE';
 import AwsElbView from './AWSELB';
 import AwsSqsView from './AWSSQSQUEUE';
@@ -20,6 +21,8 @@ export default function EntityView(props) {
         return <AwsAPIGatewayView entities={entities} />;
       case 'AWSELASTICSEARCHNODE':
         return <AwsElasticsearchNodeView entities={entities} />;
+      case 'AWSELASTICACHEREDISNODE':
+        return <AwsElasticacheRedisNodeView entities={entities} />;
       case 'AWSELB':
         return <AwsElbView entities={entities} />;
       case 'AWSALB':

@@ -40,7 +40,7 @@ export default function AwsElasticsearchNodeView(props) {
       value: ({ item }) => item?.discoveredPrices?.[0]?.['Instance Type']
     },
     {
-      key: 'Price',
+      key: 'Cost Per Hour',
       value: ({ item }) => item?.discoveredPrices?.[0]?.price
     }
   ];

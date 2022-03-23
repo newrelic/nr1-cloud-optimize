@@ -53,7 +53,7 @@ exports.run = (entities, key, config, timeNrql) => {
           e.ApiGatewaySample = ApiGatewaySample;
 
           const region = priceData?.mapping?.[e.tags?.['aws.awsRegion']?.[0]];
-          const pricing = priceData?.regions?.[region];
+          const pricing = priceData?.regions?.[region.replace('Europe', 'EU')];
 
           if (pricing) {
             const requests = ApiGatewaySample.requests || 0;

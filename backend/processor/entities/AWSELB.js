@@ -52,7 +52,7 @@ exports.run = (entities, key, config, timeNrql) => {
           e.LoadBalancerSample = LoadBalancerSample;
 
           const region = priceData?.mapping?.[e.tags?.['aws.awsRegion']?.[0]];
-          const pricing = priceData?.regions?.[region];
+          const pricing = priceData?.regions?.[region.replace('Europe', 'EU')];
 
           // https://aws.amazon.com/elasticloadbalancing/pricing/
 

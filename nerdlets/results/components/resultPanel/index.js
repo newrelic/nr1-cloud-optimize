@@ -24,7 +24,7 @@ export default function ResultsPanel(props) {
           return (
             <React.Fragment key={wl}>
               <Card collapsible>
-                <CardHeader>
+                <CardHeader style={{ fontSize: '16px', fontWeight: 'bold' }}>
                   {name}
                   {' - '}
                   <Link

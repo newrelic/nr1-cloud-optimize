@@ -51,7 +51,7 @@ exports.run = (entities, key, config, timeNrql) => {
           e.QueueSample = QueueSample;
 
           const region = priceData?.mapping?.[e.tags?.['aws.awsRegion']?.[0]];
-          const pricing = priceData?.regions?.[region];
+          const pricing = priceData?.regions?.[region.replace('Europe', 'EU')];
 
           if (pricing) {
             e.messageCostStandardPerReq = parseFloat(
