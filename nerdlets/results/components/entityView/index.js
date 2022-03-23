@@ -4,6 +4,7 @@ import AwsAPIGatewayView from './AWSAPIGATEWAYAPI';
 import AwsElasticacheRedisNodeView from './AWSELASTICACHEREDISNODE';
 import AwsElasticsearchNodeView from './AWSELASTICSEARCHNODE';
 import AwsElbView from './AWSELB';
+import AwsLambdaFunctionView from './AWSLAMBDAFUNCTION';
 import AwsSqsView from './AWSSQSQUEUE';
 import HostView from './HOST';
 
@@ -29,6 +30,8 @@ export default function EntityView(props) {
         return <AwsAlbView entities={entities} />;
       case 'AWSSQSQUEUE':
         return <AwsSqsView entities={entities} />;
+      case 'AWSLAMBDAFUNCTION':
+        return <AwsLambdaFunctionView entities={entities} />;
       default:
         return ignore.includes(group) ? (
           ''
