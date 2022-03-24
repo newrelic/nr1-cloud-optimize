@@ -5,10 +5,11 @@ import {
   TableHeaderCell,
   TableRow,
   TableRowCell,
-  HeadingText,
   MetricTableRowCell,
   EntityTitleTableRowCell,
-  Link
+  Card,
+  CardHeader,
+  CardBody
 } from 'nr1';
 import calculate from '../../context/calculate';
 
@@ -60,95 +61,106 @@ export default function AwsAlbView(props) {
 
   return (
     <>
-      <HeadingText
-        type={HeadingText.TYPE.HEADING_5}
-        style={{ paddingBottom: '0px', marginBottom: '0px' }}
-      >
-        AWS ALB{' '}
-        <Link to="https://aws.amazon.com/elasticloadbalancing/pricing/">
-          Pricing
-        </Link>
-      </HeadingText>
+      <Card collapsible style={{ marginLeft: '0px' }}>
+        <CardHeader
+          style={{ marginLeft: '0px', width: '80%' }}
+          title={`AWS ALB (${entities.length})`}
+          additionalInfoLink={{
+            label: `Pricing`,
+            to: 'https://aws.amazon.com/elasticloadbalancing/pricing/'
+          }}
+        />
+        <CardBody
+          style={{ marginLeft: '0px', marginRight: '0px', marginBottom: '0px' }}
+        >
+          <Table items={entities}>
+            <TableHeader>
+              {headers.map((h, i) => (
+                // eslint-disable-next-line react/jsx-key
+                <TableHeaderCell
+                  {...h}
+                  sortable
+                  sortingType={
+                    column === i
+                      ? sortingType
+                      : TableHeaderCell.SORTING_TYPE.NONE
+                  }
+                  onClick={(event, data) => onClickTableHeaderCell(i, data)}
+                >
+                  {h.key}
+                </TableHeaderCell>
+              ))}
+            </TableHeader>
 
-      <Table items={entities} multivalue>
-        <TableHeader>
-          {headers.map((h, i) => (
-            // eslint-disable-next-line react/jsx-key
-            <TableHeaderCell
-              {...h}
-              sortable
-              sortingType={
-                column === i ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-              }
-              onClick={(event, data) => onClickTableHeaderCell(i, data)}
-            >
-              {h.key}
-            </TableHeaderCell>
-          ))}
-        </TableHeader>
+            {({ item }) => {
+              const LoadBalancerSample = item?.LoadBalancerSample;
 
-        {({ item }) => {
-          const LoadBalancerSample = item?.LoadBalancerSample;
+              return (
+                <TableRow actions={[]}>
+                  <EntityTitleTableRowCell
+                    value={item}
+                    onClick={() =>
+                      window.open(
+                        ` https://one.newrelic.com/redirect/entity/${item.guid}`,
+                        '_blank'
+                      )
+                    }
+                  />
+                  <TableRowCell>
+                    {item?.tags?.['aws.awsRegion']?.[0]}
+                  </TableRowCell>
+                  <TableRowCell>
+                    {LoadBalancerSample?.['provider.activeConnectionCount.Sum']}
+                  </TableRowCell>
+                  <TableRowCell>
+                    {LoadBalancerSample?.['provider.newConnectionCount.Sum']}
+                  </TableRowCell>
 
-          return (
-            <TableRow actions={[]}>
-              <EntityTitleTableRowCell
-                value={item}
-                onClick={() =>
-                  window.open(
-                    ` https://one.newrelic.com/redirect/entity/${item.guid}`,
-                    '_blank'
-                  )
-                }
-              />
-              <TableRowCell>{item?.tags?.['aws.awsRegion']?.[0]}</TableRowCell>
-              <TableRowCell>
-                {LoadBalancerSample?.['provider.activeConnectionCount.Sum']}
-              </TableRowCell>
-              <TableRowCell>
-                {LoadBalancerSample?.['provider.newConnectionCount.Sum']}
-              </TableRowCell>
+                  <MetricTableRowCell
+                    type={MetricTableRowCell.TYPE.BYTES}
+                    value={
+                      LoadBalancerSample?.['provider.processedBytes.Maximum'] ||
+                      0
+                    }
+                  />
 
-              <MetricTableRowCell
-                type={MetricTableRowCell.TYPE.BYTES}
-                value={
-                  LoadBalancerSample?.['provider.processedBytes.Maximum'] || 0
-                }
-              />
+                  <TableRowCell>{item?.lcuCostPerHour}</TableRowCell>
+                  <TableRowCell>{item?.costPerHour}</TableRowCell>
+                </TableRow>
+              );
+            }}
+          </Table>
 
-              <TableRowCell>{item?.lcuCostPerHour}</TableRowCell>
-              <TableRowCell>{item?.costPerHour}</TableRowCell>
-            </TableRow>
-          );
-        }}
-      </Table>
-
-      <Table items={[{ 1: 1 }]}>
-        <TableHeader>
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-        </TableHeader>
-        {() => {
-          return (
-            <TableRow actions={[]}>
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}>
-                Total
-              </TableRowCell>
-              <TableRowCell>{cost.estimated}</TableRowCell>
-            </TableRow>
-          );
-        }}
-      </Table>
+          <Table items={[{ 1: 1 }]}>
+            <TableHeader>
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+            </TableHeader>
+            {() => {
+              return (
+                <TableRow actions={[]}>
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell
+                    alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}
+                  >
+                    Total
+                  </TableRowCell>
+                  <TableRowCell>{cost.estimated}</TableRowCell>
+                </TableRow>
+              );
+            }}
+          </Table>
+        </CardBody>
+      </Card>
     </>
   );
 }

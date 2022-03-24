@@ -11,7 +11,8 @@ import {
   Card,
   CardBody,
   Select,
-  SelectItem
+  SelectItem,
+  SectionMessage
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -80,6 +81,15 @@ export default function Results(props) {
   return (
     <>
       <div>
+        <Card>
+          <CardBody style={{ marginBottom: '0px' }}>
+            <SectionMessage
+              title="Please note all information should be considered best effort as it is based on public pricing and available usage data."
+              description="The data should be used as general guidance to help you find optimization opportunities"
+            />
+          </CardBody>
+        </Card>
+
         <Card style={{ overflow: 'hidden' }}>
           <CardBody>
             <HeadingText
@@ -156,6 +166,7 @@ export default function Results(props) {
           </CardBody>
         </Card>
       </div>
+
       <div style={{ maxHeight: '90000px', overflowY: 'auto' }}>
         <Card>
           <CardBody>

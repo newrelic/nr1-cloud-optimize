@@ -57,10 +57,12 @@ export default function ResultsPanel(props) {
                       ]}
                     />
                   ) : (
-                    <div style={{ paddingLeft: '10px' }}>
-                      <CostSummary cost={wlCost} />
+                    <>
+                      <div style={{ paddingLeft: '5px' }}>
+                        <CostSummary cost={wlCost} />
+                      </div>
                       <WorkloadView workload={workloadData[wl]} />
-                    </div>
+                    </>
                   )}
                 </CardBody>
               </Card>

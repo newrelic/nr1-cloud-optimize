@@ -5,6 +5,7 @@ import AwsElasticacheRedisNodeView from './AWSELASTICACHEREDISNODE';
 import AwsElasticsearchNodeView from './AWSELASTICSEARCHNODE';
 import AwsElbView from './AWSELB';
 import AwsLambdaFunctionView from './AWSLAMBDAFUNCTION';
+import AwsRdsDbInstanceView from './AWSRDSDBINSTANCE';
 import AwsSqsView from './AWSSQSQUEUE';
 import HostView from './HOST';
 
@@ -32,6 +33,8 @@ export default function EntityView(props) {
         return <AwsSqsView entities={entities} />;
       case 'AWSLAMBDAFUNCTION':
         return <AwsLambdaFunctionView entities={entities} />;
+      case 'AWSRDSDBINSTANCE':
+        return <AwsRdsDbInstanceView entities={entities} />;
       default:
         return ignore.includes(group) ? (
           ''

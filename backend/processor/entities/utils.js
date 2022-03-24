@@ -25,13 +25,21 @@ const defaultIgnoreTags = [
 const defaultAllowedTags = [
   'instanceType',
   'type',
+  'accountId',
+  'aws.availabilityZone',
   'aws.ec2InstanceType',
   'aws.awsRegion',
   'aws.cacheClusterId',
   'aws.dbInstanceClass',
   'aws.engine',
+  'aws.engineVersion',
   'aws.multiAz',
-  'accountId'
+  'aws.dbInstanceClass',
+  'aws.dbInstanceIdentifier',
+  'aws.storageType',
+  'aws.storageEncrypted',
+  'aws.clusterInstance',
+  'aws.multiAz'
 ];
 
 exports.BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
@@ -124,11 +132,11 @@ exports.nrqlQuery = (key, accountId, nrql) => {
   });
 };
 
-exports.fetchPricing = (url, cloud, region) => {
+exports.fetchPricing = (url, cloud, region, engine, type) => {
   return new Promise(resolve => {
     fetch(url).then(async response => {
       const httpData = await response.json();
-      resolve({ priceData: httpData, cloud, region });
+      resolve({ priceData: httpData, cloud, region, engine, type });
     });
   });
 };

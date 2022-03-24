@@ -146,7 +146,9 @@ exports.run = (entities, key, config, timeNrql) => {
           delete e.regionId;
         }
 
-        pricing[e.cloud][e.cloudRegion] = null;
+        if (pricing[e.cloud]) {
+          pricing[e.cloud][e.cloudRegion] = null;
+        }
       });
 
       // get cloud pricing

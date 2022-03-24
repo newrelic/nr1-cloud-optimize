@@ -5,7 +5,9 @@ import {
   TableHeaderCell,
   TableRow,
   TableRowCell,
-  HeadingText,
+  Card,
+  CardHeader,
+  CardBody,
   Switch,
   EntityTitleTableRowCell
 } from 'nr1';
@@ -47,93 +49,106 @@ export default function AwsElasticsearchNodeView(props) {
 
   return (
     <>
-      <HeadingText
-        type={HeadingText.TYPE.HEADING_5}
-        style={{ paddingBottom: '0px', marginBottom: '0px' }}
-      >
-        AWS ELASTICSEARCH NODE
-      </HeadingText>
+      <Card collapsible style={{ marginLeft: '0px' }}>
+        <CardHeader
+          style={{ marginLeft: '0px', width: '80%' }}
+          title={`AWS ELASTICSEARCH NODE (${entities.length})`}
+          additionalInfoLink={{
+            label: `Pricing`,
+            to: 'https://aws.amazon.com/opensearch-service/pricing/'
+          }}
+        />
+        <CardBody
+          style={{ marginLeft: '0px', marginRight: '0px', marginBottom: '0px' }}
+        >
+          <Switch
+            checked={hideUndetected}
+            onChange={() => setUndetected(!hideUndetected)}
+            label="Hide nodes with undetected clusters"
+          />
 
-      <Switch
-        checked={hideUndetected}
-        onChange={() => setUndetected(!hideUndetected)}
-        label="Hide nodes with undetected clusters"
-      />
+          <Table
+            items={entities.filter(
+              e => (hideUndetected && e?.clusterName) || !hideUndetected
+            )}
+            multivalue
+          >
+            <TableHeader>
+              {headers.map((h, i) => (
+                // eslint-disable-next-line react/jsx-key
+                <TableHeaderCell
+                  {...h}
+                  sortable
+                  sortingType={
+                    column === i
+                      ? sortingType
+                      : TableHeaderCell.SORTING_TYPE.NONE
+                  }
+                  onClick={(event, data) => onClickTableHeaderCell(i, data)}
+                >
+                  {h.key}
+                </TableHeaderCell>
+              ))}
+            </TableHeader>
 
-      <Table
-        items={entities.filter(
-          e => (hideUndetected && e?.clusterName) || !hideUndetected
-        )}
-        multivalue
-      >
-        <TableHeader>
-          {headers.map((h, i) => (
-            // eslint-disable-next-line react/jsx-key
-            <TableHeaderCell
-              {...h}
-              sortable
-              sortingType={
-                column === i ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-              }
-              onClick={(event, data) => onClickTableHeaderCell(i, data)}
-            >
-              {h.key}
-            </TableHeaderCell>
-          ))}
-        </TableHeader>
+            {({ item }) => {
+              const instance = item?.discoveredPrices?.[0];
+              return (
+                <TableRow actions={[]}>
+                  <EntityTitleTableRowCell
+                    value={item}
+                    onClick={() =>
+                      window.open(
+                        ` https://one.newrelic.com/redirect/entity/${item.guid}`,
+                        '_blank'
+                      )
+                    }
+                  />
+                  <TableRowCell>{item?.clusterName}</TableRowCell>
+                  <TableRowCell>
+                    {item?.tags?.['aws.awsRegion']?.[0]}
+                  </TableRowCell>
+                  <TableRowCell
+                    additionalValue={
+                      instance
+                        ? `CPU: ${instance.vCPU} Mem (GiB): ${instance['Memory (GiB)']}`
+                        : ''
+                    }
+                  >
+                    {instance?.['Instance Type']}
+                  </TableRowCell>
+                  <TableRowCell>{instance?.price}</TableRowCell>
+                </TableRow>
+              );
+            }}
+          </Table>
 
-        {({ item }) => {
-          const instance = item?.discoveredPrices?.[0];
-          return (
-            <TableRow actions={[]}>
-              <EntityTitleTableRowCell
-                value={item}
-                onClick={() =>
-                  window.open(
-                    ` https://one.newrelic.com/redirect/entity/${item.guid}`,
-                    '_blank'
-                  )
-                }
-              />
-              <TableRowCell>{item?.clusterName}</TableRowCell>
-              <TableRowCell>{item?.tags?.['aws.awsRegion']?.[0]}</TableRowCell>
-              <TableRowCell
-                additionalValue={
-                  instance
-                    ? `CPU: ${instance.vCPU} Mem (GiB): ${instance['Memory (GiB)']}`
-                    : ''
-                }
-              >
-                {instance?.['Instance Type']}
-              </TableRowCell>
-              <TableRowCell>{instance?.price}</TableRowCell>
-            </TableRow>
-          );
-        }}
-      </Table>
-
-      <Table items={[{ 1: 1 }]}>
-        <TableHeader>
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-        </TableHeader>
-        {() => {
-          return (
-            <TableRow actions={[]}>
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}>
-                Total
-              </TableRowCell>
-              <TableRowCell>{cost.known}</TableRowCell>
-            </TableRow>
-          );
-        }}
-      </Table>
+          <Table items={[{ 1: 1 }]}>
+            <TableHeader>
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+            </TableHeader>
+            {() => {
+              return (
+                <TableRow actions={[]}>
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell
+                    alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}
+                  >
+                    Total
+                  </TableRowCell>
+                  <TableRowCell>{cost.known}</TableRowCell>
+                </TableRow>
+              );
+            }}
+          </Table>
+        </CardBody>
+      </Card>
     </>
   );
 }

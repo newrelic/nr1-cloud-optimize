@@ -5,7 +5,9 @@ import {
   TableHeaderCell,
   TableRow,
   TableRowCell,
-  HeadingText,
+  Card,
+  CardHeader,
+  CardBody,
   MetricTableRowCell,
   EntityTitleTableRowCell
 } from 'nr1';
@@ -61,102 +63,115 @@ export default function AwsElbView(props) {
 
   return (
     <>
-      <HeadingText
-        type={HeadingText.TYPE.HEADING_5}
-        style={{ paddingBottom: '0px', marginBottom: '0px' }}
-      >
-        AWS ELB
-      </HeadingText>
+      <Card collapsible style={{ marginLeft: '0px' }}>
+        <CardHeader
+          style={{ marginLeft: '0px', width: '80%' }}
+          title={`AWS ELB (${entities.length})`}
+          additionalInfoLink={{
+            label: `Pricing`,
+            to: 'https://aws.amazon.com/elasticloadbalancing/pricing/'
+          }}
+        />
+        <CardBody
+          style={{ marginLeft: '0px', marginRight: '0px', marginBottom: '0px' }}
+        >
+          <Table items={entities}>
+            <TableHeader>
+              {headers.map((h, i) => (
+                // eslint-disable-next-line react/jsx-key
+                <TableHeaderCell
+                  {...h}
+                  sortable
+                  sortingType={
+                    column === i
+                      ? sortingType
+                      : TableHeaderCell.SORTING_TYPE.NONE
+                  }
+                  onClick={(event, data) => onClickTableHeaderCell(i, data)}
+                >
+                  {h.key}
+                </TableHeaderCell>
+              ))}
+            </TableHeader>
 
-      <Table items={entities} multivalue>
-        <TableHeader>
-          {headers.map((h, i) => (
-            // eslint-disable-next-line react/jsx-key
-            <TableHeaderCell
-              {...h}
-              sortable
-              sortingType={
-                column === i ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-              }
-              onClick={(event, data) => onClickTableHeaderCell(i, data)}
-            >
-              {h.key}
-            </TableHeaderCell>
-          ))}
-        </TableHeader>
+            {({ item }) => {
+              const LoadBalancerSample = item?.LoadBalancerSample;
+              return (
+                <TableRow actions={[]}>
+                  <EntityTitleTableRowCell
+                    value={item}
+                    onClick={() =>
+                      window.open(
+                        ` https://one.newrelic.com/redirect/entity/${item.guid}`,
+                        '_blank'
+                      )
+                    }
+                  />
+                  <TableRowCell>
+                    {item?.tags?.['aws.awsRegion']?.[0]}
+                  </TableRowCell>
+                  <TableRowCell>
+                    {
+                      LoadBalancerSample?.[
+                        'provider.estimatedAlbActiveConnectionCount.Maximum'
+                      ]
+                    }
+                  </TableRowCell>
+                  <TableRowCell>
+                    {
+                      LoadBalancerSample?.[
+                        'provider.estimatedAlbNewConnectionCount.Maximum'
+                      ]
+                    }
+                  </TableRowCell>
 
-        {({ item }) => {
-          const LoadBalancerSample = item?.LoadBalancerSample;
-          return (
-            <TableRow actions={[]}>
-              <EntityTitleTableRowCell
-                value={item}
-                onClick={() =>
-                  window.open(
-                    ` https://one.newrelic.com/redirect/entity/${item.guid}`,
-                    '_blank'
-                  )
-                }
-              />
-              <TableRowCell>{item?.tags?.['aws.awsRegion']?.[0]}</TableRowCell>
-              <TableRowCell>
-                {
-                  LoadBalancerSample?.[
-                    'provider.estimatedAlbActiveConnectionCount.Maximum'
-                  ]
-                }
-              </TableRowCell>
-              <TableRowCell>
-                {
-                  LoadBalancerSample?.[
-                    'provider.estimatedAlbNewConnectionCount.Maximum'
-                  ]
-                }
-              </TableRowCell>
+                  <MetricTableRowCell
+                    type={MetricTableRowCell.TYPE.BYTES}
+                    value={
+                      LoadBalancerSample?.[
+                        'provider.estimatedProcessedBytes.Maximum'
+                      ]
+                    }
+                  />
 
-              <MetricTableRowCell
-                type={MetricTableRowCell.TYPE.BYTES}
-                value={
-                  LoadBalancerSample?.[
-                    'provider.estimatedProcessedBytes.Maximum'
-                  ]
-                }
-              />
+                  <TableRowCell>{item?.costPerGB}</TableRowCell>
+                  <TableRowCell>{item.costPerHour}</TableRowCell>
+                </TableRow>
+              );
+            }}
+          </Table>
 
-              <TableRowCell>{item?.costPerGB}</TableRowCell>
-              <TableRowCell>{item.costPerHour}</TableRowCell>
-            </TableRow>
-          );
-        }}
-      </Table>
+          <Table items={[{ 1: 1 }]}>
+            <TableHeader>
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
 
-      <Table items={[{ 1: 1 }]}>
-        <TableHeader>
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-          <TableHeaderCell />
-
-          <TableHeaderCell />
-        </TableHeader>
-        {() => {
-          return (
-            <TableRow actions={[]}>
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell />
-              <TableRowCell alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}>
-                Total
-              </TableRowCell>
-              <TableRowCell>{cost.estimated}</TableRowCell>
-            </TableRow>
-          );
-        }}
-      </Table>
+              <TableHeaderCell />
+            </TableHeader>
+            {() => {
+              return (
+                <TableRow actions={[]}>
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell
+                    alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}
+                  >
+                    Total
+                  </TableRowCell>
+                  <TableRowCell>{cost.estimated}</TableRowCell>
+                </TableRow>
+              );
+            }}
+          </Table>
+        </CardBody>
+      </Card>
     </>
   );
 }

@@ -8,15 +8,13 @@ import {
   Card,
   CardHeader,
   CardBody,
-  Switch,
   EntityTitleTableRowCell
 } from 'nr1';
 import calculate from '../../context/calculate';
 
 // eslint-disable-next-line no-unused-vars
-export default function AwsElasticacheRedisNodeView(props) {
+export default function AwsRdsDbInstanceView(props) {
   const { entities } = props;
-  const [hideUndetected, setUndetected] = useState(true);
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
@@ -35,15 +33,14 @@ export default function AwsElasticacheRedisNodeView(props) {
 
   const headers = [
     { key: 'Name', value: ({ item }) => item.name },
-    { key: 'Cluster', value: ({ item }) => item?.cacheClusterId },
     { key: 'Region', value: ({ item }) => item?.tags?.['aws.awsRegion']?.[0] },
     {
       key: 'Instance Type',
-      value: ({ item }) => item?.discoveredPrices?.[0]?.['Instance Type']
+      value: ({ item }) => item?.tags?.['aws.dbInstanceClass']?.[0]
     },
     {
-      key: 'Cost Per Hour',
-      value: ({ item }) => item?.discoveredPrices?.[0]?.price
+      key: 'Price Per Hour',
+      value: ({ item }) => item?.price?.onDemandPrice?.pricePerUnit?.USD
     }
   ];
 
@@ -52,27 +49,16 @@ export default function AwsElasticacheRedisNodeView(props) {
       <Card collapsible style={{ marginLeft: '0px' }}>
         <CardHeader
           style={{ marginLeft: '0px', width: '80%' }}
-          title={`AWS ELASTICACHE REDIS NODE (${entities.length})`}
+          title={`AWS RDS (${entities.length})`}
           additionalInfoLink={{
             label: `Pricing`,
-            to: 'https://aws.amazon.com/elasticache/pricing/'
+            to: 'https://aws.amazon.com/rds/pricing/'
           }}
         />
         <CardBody
           style={{ marginLeft: '0px', marginRight: '0px', marginBottom: '0px' }}
         >
-          <Switch
-            checked={hideUndetected}
-            onChange={() => setUndetected(!hideUndetected)}
-            label="Hide nodes with undetected clusters"
-          />
-
-          <Table
-            items={entities.filter(
-              e => (hideUndetected && e?.cacheClusterId) || !hideUndetected
-            )}
-            multivalue
-          >
+          <Table items={entities} multivalue>
             <TableHeader>
               {headers.map((h, i) => (
                 // eslint-disable-next-line react/jsx-key
@@ -92,7 +78,7 @@ export default function AwsElasticacheRedisNodeView(props) {
             </TableHeader>
 
             {({ item }) => {
-              const instance = item?.discoveredPrices?.[0];
+              const attributes = item?.price?.attributes;
               return (
                 <TableRow actions={[]}>
                   <EntityTitleTableRowCell
@@ -104,20 +90,17 @@ export default function AwsElasticacheRedisNodeView(props) {
                       )
                     }
                   />
-                  <TableRowCell>{item?.cacheClusterId}</TableRowCell>
                   <TableRowCell>
                     {item?.tags?.['aws.awsRegion']?.[0]}
                   </TableRowCell>
                   <TableRowCell
-                    additionalValue={
-                      instance
-                        ? `CPU: ${instance.vCPU} Mem (GiB): ${instance['Memory (GiB)']}`
-                        : ''
-                    }
+                    additionalValue={`CPU: ${attributes.vcpu} Mem (GiB): ${attributes.memory}`}
                   >
-                    {instance?.['Instance Type']}
+                    {item?.tags?.['aws.dbInstanceClass']?.[0]}
                   </TableRowCell>
-                  <TableRowCell>{instance?.price}</TableRowCell>
+                  <TableRowCell>
+                    {item?.price?.onDemandPrice?.pricePerUnit?.USD}
+                  </TableRowCell>
                 </TableRow>
               );
             }}
