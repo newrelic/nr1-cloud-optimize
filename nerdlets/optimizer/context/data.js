@@ -55,12 +55,14 @@ export class DataProvider extends Component {
       userApiKeys: [],
       optimizerKey: null,
       fetchingJobStatus: false,
-      timeRange: null
+      timeRange: null,
+      messages: []
     };
   }
 
   componentDidMount() {
     this.getNerdpackUuid();
+    this.getMessages();
     this.pollJobStatus = setInterval(() => {
       this.fetchJobStatus();
     }, 5000);
@@ -76,6 +78,18 @@ export class DataProvider extends Component {
 
   componentWillUnmount() {
     clearInterval(this.pollJobStatus);
+  }
+
+  getMessages() {
+    try {
+      fetch(
+        'https://raw.githubusercontent.com/newrelic/nr1-cloud-optimize/main/messages.json'
+      )
+        .then(response => response.json())
+        .then(messages => this.setState({ messages }));
+    } catch (e) {
+      console.log('failed to fetch messages', e);
+    }
   }
 
   handleUpdate = props => {

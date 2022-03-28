@@ -18,6 +18,7 @@ import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
 import CollectionList from './collectionList';
 import QuickStart from './quickStart';
+import Messages from './messages';
 
 // eslint-disable-next-line no-unused-vars
 export default function Optimizer(props) {
@@ -163,7 +164,18 @@ export default function Optimizer(props) {
                 </Card>
               )}
 
-              <QuickStart />
+              <Stack
+                gapType={Stack.GAP_TYPE.EXTRA_LARGE}
+                horizontalType={Stack.HORIZONTAL_TYPE.FILL_EVENLY}
+              >
+                <StackItem>
+                  <QuickStart />
+                </StackItem>
+                <StackItem>&nbsp;</StackItem>
+                <StackItem>
+                  <Messages />
+                </StackItem>
+              </Stack>
 
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
