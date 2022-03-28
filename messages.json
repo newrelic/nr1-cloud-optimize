@@ -1,0 +1,10 @@
+[
+  {
+    "title":"We've redesigned this application completely!",
+    "messages":[
+      "Why? We started from EC2s and the requirements for new services kept growing!",
+      "Customers unanimously wanted more services and to view the cost and performance by workload.",
+      "We had to re-architect the application completely so we can continue to add new services and functionality easily."
+    ]
+  }
+]
