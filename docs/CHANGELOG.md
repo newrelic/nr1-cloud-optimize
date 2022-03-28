@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.12.2...v2.13.0) (2022-03-28)
+
+
+### Features
+
+* add messages file ([4e73be6](https://github.com/newrelic/nr1-cloud-optimize/commit/4e73be694b692c15abb28893b674833e5c705de2))
+
 ## [2.12.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.12.1...v2.12.2) (2022-02-24)
 
 
