@@ -42,8 +42,12 @@ export default function AwsElasticsearchNodeView(props) {
       value: ({ item }) => item?.discoveredPrices?.[0]?.['Instance Type']
     },
     {
-      key: 'Cost Per Hour',
+      key: 'Price Per Hour',
       value: ({ item }) => item?.discoveredPrices?.[0]?.price
+    },
+    {
+      key: 'Cost (Price Per Hour * Hours)',
+      value: ({ item }) => item?.periodCost
     }
   ];
 
@@ -118,6 +122,7 @@ export default function AwsElasticsearchNodeView(props) {
                     {instance?.['Instance Type']}
                   </TableRowCell>
                   <TableRowCell>{instance?.price}</TableRowCell>
+                  <TableRowCell>{item?.periodCost}</TableRowCell>
                 </TableRow>
               );
             }}
@@ -130,10 +135,12 @@ export default function AwsElasticsearchNodeView(props) {
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
+              <TableHeaderCell />
             </TableHeader>
             {() => {
               return (
                 <TableRow actions={[]}>
+                  <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />

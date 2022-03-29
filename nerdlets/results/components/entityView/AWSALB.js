@@ -56,6 +56,10 @@ export default function AwsAlbView(props) {
     {
       key: 'Cost Per Hour',
       value: ({ item }) => item.costPerHour
+    },
+    {
+      key: 'Cost (Hours * LCU Cost + Hours * Cost Per Hour)',
+      value: ({ item }) => item.periodCost
     }
   ];
 
@@ -125,7 +129,8 @@ export default function AwsAlbView(props) {
                   />
 
                   <TableRowCell>{item?.lcuCostPerHour}</TableRowCell>
-                  <TableRowCell>{item?.costPerHour}</TableRowCell>
+                  <TableRowCell>{item?.pricePerHour}</TableRowCell>
+                  <TableRowCell>{item?.periodCost}</TableRowCell>
                 </TableRow>
               );
             }}
@@ -140,10 +145,12 @@ export default function AwsAlbView(props) {
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
+              <TableHeaderCell />
             </TableHeader>
             {() => {
               return (
                 <TableRow actions={[]}>
+                  <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />

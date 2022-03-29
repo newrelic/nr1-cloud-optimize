@@ -9,7 +9,7 @@ import AwsRdsDbInstanceView from './AWSRDSDBINSTANCE';
 import AwsSqsView from './AWSSQSQUEUE';
 import HostView from './HOST';
 
-const ignore = ['AWSELASTICSEARCHCLUSTER'];
+// const ignore = ['AWSELASTICSEARCHCLUSTER'];
 
 // eslint-disable-next-line no-unused-vars
 export default function EntityView(props) {
@@ -36,14 +36,16 @@ export default function EntityView(props) {
       case 'AWSRDSDBINSTANCE':
         return <AwsRdsDbInstanceView entities={entities} />;
       default:
-        return ignore.includes(group) ? (
-          ''
-        ) : (
-          <>
-            No view available for {group}
-            <br />
-          </>
-        );
+        // console.log(`unsupported entityType: ${group}`);
+        return '';
+      // return ignore.includes(group) ? (
+      //   ''
+      // ) : (
+      //   <>
+      //     No view available for {group}
+      //     <br />
+      //   </>
+      // );
     }
   };
 

@@ -14,7 +14,10 @@ FROM DatastoreSample WHERE provider='RdsDbInstance' LIMIT 1`;
 const pricingUrl = (region, type, engine) =>
   `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`;
 
-exports.run = (entities, key, config, timeNrql) => {
+exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
+  // milliseconds to hours - divide the time value by 3.6e+6
+  const operatingHours = totalPeriodMs / 3.6e6;
+
   return new Promise(resolve => {
     const query = `query Query($guids: [EntityGuid]!) {
       actor {
@@ -153,6 +156,9 @@ exports.run = (entities, key, config, timeNrql) => {
                   clockSpeed: price.attributes.clockSpeed
                 }
               };
+              // milliseconds to hours - divide the time value by 3.6e+6
+              e.periodCost =
+                operatingHours * (price?.onDemandPrice?.pricePerUnit?.USD || 0);
             }
           }
         });

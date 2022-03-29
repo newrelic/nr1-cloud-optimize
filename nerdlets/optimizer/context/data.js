@@ -15,7 +15,9 @@ import {
   NerdGraphMutation,
   EntityStorageQuery,
   EntityStorageMutation,
-  AccountStorageMutation
+  AccountStorageMutation,
+  UserStorageQuery,
+  UserStorageMutation
 } from 'nr1';
 import {
   initQuery,
@@ -56,12 +58,14 @@ export class DataProvider extends Component {
       optimizerKey: null,
       fetchingJobStatus: false,
       timeRange: null,
-      messages: []
+      messages: [],
+      userConfig: null
     };
   }
 
   componentDidMount() {
     this.getNerdpackUuid();
+    this.getUserConfig();
     this.getMessages();
     this.pollJobStatus = setInterval(() => {
       this.fetchJobStatus();
@@ -90,6 +94,13 @@ export class DataProvider extends Component {
     } catch (e) {
       console.log('failed to fetch messages', e);
     }
+  }
+
+  getUserConfig() {
+    UserStorageQuery.query({
+      collection: 'USER_CONFIG',
+      documentId: 'config'
+    }).then(document => this.setState({ userConfig: document?.data || {} }));
   }
 
   handleUpdate = props => {
@@ -479,7 +490,8 @@ export class DataProvider extends Component {
           fetchAccessibleWorkloads: this.fetchAccessibleWorkloads,
           fetchWorkloadCollections: this.fetchWorkloadCollections,
           fetchJobStatus: this.fetchJobStatus,
-          deleteJobHistory: this.deleteJobHistory
+          deleteJobHistory: this.deleteJobHistory,
+          getUserConfig: this.getUserConfig
         }}
       >
         {children}

@@ -164,18 +164,8 @@ export default function Optimizer(props) {
                 </Card>
               )}
 
-              <Stack
-                gapType={Stack.GAP_TYPE.EXTRA_LARGE}
-                horizontalType={Stack.HORIZONTAL_TYPE.FILL_EVENLY}
-              >
-                <StackItem>
-                  <QuickStart />
-                </StackItem>
-                <StackItem>&nbsp;</StackItem>
-                <StackItem>
-                  <Messages />
-                </StackItem>
-              </Stack>
+              <Messages />
+              <QuickStart />
 
               {accountCollection && accountCollection.length > 0 && (
                 <Card>

@@ -10,8 +10,9 @@ const NodeQuery = `SELECT max(provider.cacheHits.Maximum), max(provider.cacheMis
 const ClusterDataQuery = (clusterId, timeNrql) =>
   `SELECT latest(provider.cacheNodeType), latest(provider.cacheClusterId), latest(entityName) FROM DatastoreSample WHERE provider='ElastiCacheRedisCluster' AND provider.cacheClusterId = '${clusterId}' LIMIT 1  ${timeNrql}`;
 
-exports.run = (entities, key, config, timeNrql) => {
-  // const { AWSELASTICSEARCHNODE, defaultCloud, defaultRegions } = config;
+exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
+  // milliseconds to hours - divide the time value by 3.6e+6
+  const operatingHours = totalPeriodMs / 3.6e6;
 
   return new Promise(resolve => {
     const query = `query Query($guids: [EntityGuid]!) {
@@ -109,6 +110,7 @@ exports.run = (entities, key, config, timeNrql) => {
 
               if (discoveredPrices.length > 0) {
                 e.discoveredPrices = discoveredPrices;
+                e.periodCost = discoveredPrices?.[0]?.price * operatingHours;
               }
             }
           }

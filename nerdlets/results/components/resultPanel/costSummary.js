@@ -80,7 +80,7 @@ export default function CostSummary(props) {
               <BlockText>${cost.known + cost.estimated}</BlockText>
             </Tile>
           </StackItem>
-          <StackItem>
+          {/* <StackItem>
             <Tile type={Tile.TYPE[tileType || 'SOLID']}>
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
                 Optimized Run Cost{' '}
@@ -98,7 +98,7 @@ export default function CostSummary(props) {
               </HeadingText>
               <BlockText>${cost.optimizedRun}</BlockText>
             </Tile>
-          </StackItem>
+          </StackItem> */}
           <StackItem>
             <Tile type={Tile.TYPE[tileType || 'SOLID']}>
               <HeadingText type={HeadingText.TYPE.HEADING_6}>

@@ -54,10 +54,14 @@ export default function AwsElbView(props) {
       value: ({ item }) =>
         item?.LoadBalancerSample?.['provider.estimatedProcessedBytes.Maximum']
     },
-    { key: 'Cost Per GB', value: ({ item }) => item.costPerGB },
+    { key: 'Price Per GB', value: ({ item }) => item.pricePerGB },
     {
-      key: 'Cost Per Hour',
-      value: ({ item }) => item.costPerHour
+      key: 'Price Per Hour',
+      value: ({ item }) => item.pricePerHour
+    },
+    {
+      key: 'Cost (Hours * Price Per Hour + Processed GB * Price Per GB)',
+      value: ({ item }) => item.periodCost
     }
   ];
 
@@ -134,8 +138,9 @@ export default function AwsElbView(props) {
                     }
                   />
 
-                  <TableRowCell>{item?.costPerGB}</TableRowCell>
-                  <TableRowCell>{item.costPerHour}</TableRowCell>
+                  <TableRowCell>{item?.pricePerGB}</TableRowCell>
+                  <TableRowCell>{item.pricePerHour}</TableRowCell>
+                  <TableRowCell>{item.periodCost}</TableRowCell>
                 </TableRow>
               );
             }}
@@ -149,12 +154,13 @@ export default function AwsElbView(props) {
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
-
+              <TableHeaderCell />
               <TableHeaderCell />
             </TableHeader>
             {() => {
               return (
                 <TableRow actions={[]}>
+                  <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />

@@ -3,8 +3,6 @@ const { batchEntityQuery, fetchPricing, BASE_URL } = require('./utils');
 const GatewaySampleQuery = `SELECT sum(provider.count.SampleCount) as 'requests' FROM ApiGatewaySample WHERE provider='ApiGatewayApi' LIMIT 1`;
 
 exports.run = (entities, key, config, timeNrql) => {
-  // const { AWSAPIGATEWAYAPI, defaultCloud, defaultRegions } = config;
-
   return new Promise(resolve => {
     const query = `query Query($guids: [EntityGuid]!) {
       actor {

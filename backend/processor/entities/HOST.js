@@ -37,8 +37,10 @@ const simplifyProduct = priceData => {
   return result;
 };
 
-exports.run = (entities, key, config, timeNrql) => {
+exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
   const { HOST, defaultCloud, defaultRegions } = config;
+  // milliseconds to hours - divide the time value by 3.6e+6
+  const operatingHours = totalPeriodMs / 3.6e6;
 
   const conf = {
     cloud: defaultCloud || 'amazon',
@@ -283,6 +285,15 @@ exports.run = (entities, key, config, timeNrql) => {
                 }
               }
             }
+          }
+
+          if (e.matches.exact?.[0]) {
+            const onDemandPrice = e.matches.exact?.[0]?.onDemandPrice;
+            e.exactPeriodCost = operatingHours * onDemandPrice;
+          }
+          if (e.matches.optimized?.[0]) {
+            const onDemandPrice = e.matches.exact?.[0]?.onDemandPrice;
+            e.optimizedPeriodCost = operatingHours * onDemandPrice;
           }
         } else {
           // handle no pricing?

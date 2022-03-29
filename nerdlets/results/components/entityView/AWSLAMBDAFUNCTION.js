@@ -46,7 +46,11 @@ export default function AwsLambdaFunctionView(props) {
     { key: 'Duration Price', value: ({ item }) => item.durationPrice },
     { key: 'Request Price', value: ({ item }) => item.requestPrice },
     { key: 'Duration Cost', value: ({ item }) => item.durationCost },
-    { key: 'Request Cost', value: ({ item }) => item.requestCost }
+    { key: 'Request Cost', value: ({ item }) => item.requestCost },
+    {
+      key: 'Cost (Request Cost + Duration Cost)',
+      value: ({ item }) => item.requestCost + item.durationCost
+    }
   ];
 
   return (
@@ -109,6 +113,9 @@ export default function AwsLambdaFunctionView(props) {
                   <TableRowCell>{item?.requestPrice}</TableRowCell>
                   <TableRowCell>{item?.durationCost}</TableRowCell>
                   <TableRowCell>{item?.requestCost}</TableRowCell>
+                  <TableRowCell>
+                    {item?.requestCost + item?.durationCost}
+                  </TableRowCell>
                 </TableRow>
               );
             }}
@@ -116,6 +123,9 @@ export default function AwsLambdaFunctionView(props) {
 
           <Table items={[{ 1: 1 }]}>
             <TableHeader>
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
@@ -130,12 +140,15 @@ export default function AwsLambdaFunctionView(props) {
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
                   <TableRowCell
                     alignmentType={TableRowCell.ALIGNMENT_TYPE.RIGHT}
                   >
                     Total
                   </TableRowCell>
-                  <TableRowCell>{cost.estimated}</TableRowCell>
+                  <TableRowCell>{cost.known}</TableRowCell>
                 </TableRow>
               );
             }}

@@ -15,7 +15,7 @@ import calculate from '../../context/calculate';
 
 // eslint-disable-next-line no-unused-vars
 export default function AwsSqsView(props) {
-  const { entities } = props;
+  const { entities, timeData } = props;
   const [hideUndetected, setUndetected] = useState(true);
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
@@ -31,7 +31,7 @@ export default function AwsSqsView(props) {
     }
   };
 
-  const cost = calculate({ workloadData: { results: entities } });
+  const cost = calculate({ workloadData: { results: entities, timeData } });
 
   const headers = [
     { key: 'Name', value: ({ item }) => item.name },
@@ -41,8 +41,14 @@ export default function AwsSqsView(props) {
       value: ({ item }) => item?.QueueSample?.numberOfMessages
     },
     {
-      key: 'Message Cost',
+      key: 'Message Price',
       value: ({ item }) => item.messageCostStandardPerReq
+    },
+    {
+      key: 'Message Cost (Price * Messages)',
+      value: ({ item }) =>
+        item.messageCostStandardPerReq *
+        (item?.QueueSample?.numberOfMessages || 0)
     }
   ];
 
@@ -115,6 +121,11 @@ export default function AwsSqsView(props) {
                       ? (item?.messageCostStandardPerReq).toFixed(10)
                       : ''}
                   </TableRowCell>
+
+                  <TableRowCell>
+                    {item.messageCostStandardPerReq *
+                      (item?.QueueSample?.numberOfMessages || 0)}
+                  </TableRowCell>
                 </TableRow>
               );
             }}
@@ -127,12 +138,10 @@ export default function AwsSqsView(props) {
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
-              <TableHeaderCell />
             </TableHeader>
             {() => {
               return (
-                <TableRow actions={[]}>
-                  <TableRowCell />
+                <TableRow>
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
@@ -141,7 +150,7 @@ export default function AwsSqsView(props) {
                   >
                     Total
                   </TableRowCell>
-                  <TableRowCell>{cost.estimated}</TableRowCell>
+                  <TableRowCell>{cost.known}</TableRowCell>
                 </TableRow>
               );
             }}

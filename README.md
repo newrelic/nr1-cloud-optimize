@@ -1,16 +1,16 @@
 [![New Relic One Catalog Project header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/New_Relic_One_Catalog_Project.png)](https://opensource.newrelic.com/oss-category/#new-relic-one-catalog-project)
 
-# Cloud Optimize (nr1-cloud-optimize)
+# Optimizer (nr1-cloud-optimize)
 
 ![CI](https://github.com/newrelic/nr1-cloud-optimize/workflows/CI/badge.svg) ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
 
 ## Usage
 
-Cloud Optimize analyzes your cloud environment using the [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure) cloud integrations.
+Optimizer analyzes your cloud environment using the [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure) cloud integrations.
 
-The application compares the size of your instances to their utilization, identifying resources that are sized larger than needed. Cloud Optimize will estimate your savings by optimizing resource size.
+The application compares the size of your instances to their utilization, identifying resources that are sized larger than needed. Optimizer will estimate your savings by optimizing resource size.
 
-Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.
+Users of Optimizer are able to select the hosts, regions and other configurations to specify their unique business use cases.
 
 This application supports AWS, GCP, Azure and Alibaba cloud infrastructures.
 
@@ -80,7 +80,7 @@ New Relic hosts and moderates an online forum where you can interact with New Re
 
 [https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936](https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936)
 
-Please do not report issues with Cloud Optimize to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
+Please do not report issues with Optimizer to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
 
 ## Issues / Enhancement Requests
 

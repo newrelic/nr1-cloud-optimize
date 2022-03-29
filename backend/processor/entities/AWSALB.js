@@ -2,8 +2,9 @@ const { batchEntityQuery, fetchPricing, BASE_URL } = require('./utils');
 
 const LoadBalancerQuery = `FROM LoadBalancerSample SELECT latest(awsRegion), latest(provider.ruleEvaluations.Sum), latest(provider.processedBytes.Maximum), latest(provider.newConnectionCount.Sum), latest(procider.activeConnectionCount.Sum) LIMIT 1`;
 
-exports.run = (entities, key, config, timeNrql) => {
-  // const { AWSELASTICSEARCHNODE, defaultCloud, defaultRegions } = config;
+exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
+  // milliseconds to hours - divide the time value by 3.6e+6
+  const operatingHours = totalPeriodMs / 3.6e6;
 
   return new Promise(resolve => {
     const query = `query Query($guids: [EntityGuid]!) {
@@ -97,9 +98,13 @@ exports.run = (entities, key, config, timeNrql) => {
             e.lcuCostPerHour =
               e.lcuPricePerHour *
               (newConnLCUs + activeConnLCUs + processedGbLCUs + rulesEvalLCUs);
-            e.costPerHour = parseFloat(
+            e.pricePerHour = parseFloat(
               pricing['Application Load Balancer Hours'].price
             );
+
+            e.periodCost =
+              operatingHours * e.pricePerHour +
+              operatingHours * e.lcuCostPerHour;
           }
         });
       }

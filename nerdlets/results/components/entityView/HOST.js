@@ -29,7 +29,13 @@ export default function HostView(props) {
     }
   };
 
-  const cost = { known: 0, optimized: 0, estimated: 0, potentialSaving: 0 };
+  const cost = {
+    known: 0,
+    optimized: 0,
+    estimated: 0,
+    potentialSaving: 0,
+    exactPeriodCost: 0
+  };
   entities.forEach(e => {
     if (e.spot) {
       const spotPrice = e?.matches?.exact?.[0]?.spotPrice?.[0]?.price;
@@ -59,6 +65,10 @@ export default function HostView(props) {
         cost.optimized = cost.optimized + optimizedOnDemandPrice;
         cost.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
         e.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
+      }
+
+      if (e.exactPeriodCost) {
+        cost.exactPeriodCost = cost.exactPeriodCost + e.exactPeriodCost;
       }
     }
   });
@@ -111,7 +121,7 @@ export default function HostView(props) {
                 sortingType={
                   column === 3 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(2, data)}
+                onClick={(event, data) => onClickTableHeaderCell(3, data)}
                 value={({ item }) => item?.SystemSample?.['max.memoryPercent']}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
@@ -122,7 +132,7 @@ export default function HostView(props) {
                 sortingType={
                   column === 4 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(3, data)}
+                onClick={(event, data) => onClickTableHeaderCell(4, data)}
                 value={({ item }) => item.matches?.exact?.[0].type}
               >
                 Type
@@ -133,10 +143,10 @@ export default function HostView(props) {
                 sortingType={
                   column === 5 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(4, data)}
+                onClick={(event, data) => onClickTableHeaderCell(5, data)}
                 value={({ item }) => item.matches?.exact?.[0].onDemandPrice}
               >
-                Cost
+                Price Per Hour
               </TableHeaderCell>
               <TableHeaderCell
                 sortable
@@ -157,7 +167,18 @@ export default function HostView(props) {
                 onClick={(event, data) => onClickTableHeaderCell(6, data)}
                 value={({ item }) => item.matches?.optimized?.[0].onDemandPrice}
               >
-                Cost
+                Optimized Price Per Hour
+              </TableHeaderCell>
+              <TableHeaderCell
+                width="7%"
+                sortable
+                sortingType={
+                  column === 7 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                }
+                onClick={(event, data) => onClickTableHeaderCell(7, data)}
+                value={({ item }) => item.potentialSaving}
+              >
+                Saving
               </TableHeaderCell>
               <TableHeaderCell
                 width="7%"
@@ -165,10 +186,10 @@ export default function HostView(props) {
                 sortingType={
                   column === 8 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(6, data)}
-                value={({ item }) => item.potentialSaving}
+                onClick={(event, data) => onClickTableHeaderCell(8, data)}
+                value={({ item }) => item.exactPeriodCost}
               >
-                Saving
+                Cost (Price * Hours)
               </TableHeaderCell>
             </TableHeader>
 
@@ -229,6 +250,7 @@ export default function HostView(props) {
                   </TableRowCell>
                   <TableRowCell>{optimizedType?.onDemandPrice}</TableRowCell>
                   <TableRowCell>{item.potentialSaving}</TableRowCell>
+                  <TableRowCell>{item.exactPeriodCost}</TableRowCell>
                 </TableRow>
               );
             }}
@@ -241,8 +263,9 @@ export default function HostView(props) {
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
-              <TableHeaderCell width="7%" />
               <TableHeaderCell />
+              <TableHeaderCell width="7%" />
+              <TableHeaderCell width="7%" />
               <TableHeaderCell width="7%" />
               <TableHeaderCell width="7%" />
             </TableHeader>
@@ -253,11 +276,12 @@ export default function HostView(props) {
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
+                  <TableRowCell />
                   <TableRowCell>Total</TableRowCell>
                   <TableRowCell>{cost.known}</TableRowCell>
-                  <TableRowCell />
                   <TableRowCell>{cost.optimized}</TableRowCell>
                   <TableRowCell>{cost.potentialSaving}</TableRowCell>
+                  <TableRowCell>{cost.exactPeriodCost}</TableRowCell>
                 </TableRow>
               );
             }}

@@ -57,45 +57,44 @@ export default function(workloadData, tags) {
               }
             }
           } else {
-            const onDemandPrice = e?.matches?.exact?.[0]?.onDemandPrice;
-            if (onDemandPrice) {
-              cost.known = cost.known + onDemandPrice;
+            if (e.exactPeriodCost) {
+              cost.known = cost.known + e.exactPeriodCost;
               cost.workloads[key].known =
-                cost.workloads[key].known + onDemandPrice;
+                cost.workloads[key].known + e.exactPeriodCost;
             }
 
-            const estimatedPrice = e?.matches?.estimated?.[0]?.onDemandPrice;
-            if (estimatedPrice) {
-              cost.estimated = cost.estimated + estimatedPrice;
-              cost.workloads[key].estimated =
-                cost.workloads[key].estimated + estimatedPrice;
-            }
+            // not used for anything atm
+            // const estimatedPrice =
+            //   e?.matches?.estimated?.[0]?.e.exactPeriodCost;
+            // if (estimatedPrice) {
+            //   cost.estimated = cost.estimated + estimatedPrice;
+            //   cost.workloads[key].estimated =
+            //     cost.workloads[key].estimated + estimatedPrice;
+            // }
 
-            const optimizedOnDemandPrice =
-              e?.matches?.optimized?.[0]?.onDemandPrice;
-            if (optimizedOnDemandPrice) {
-              cost.optimized = cost.optimized + optimizedOnDemandPrice;
-              cost.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
+            if (e.optimizedPeriodCost) {
+              cost.optimized = cost.optimized + e.optimizedPeriodCost;
+              cost.potentialSaving = e.exactPeriodCost - e.optimizedPeriodCost;
 
               cost.workloads[key].optimized =
-                cost.workloads[key].optimized + optimizedOnDemandPrice;
+                cost.workloads[key].optimized + e.optimizedPeriodCost;
               cost.workloads[key].potentialSaving =
-                onDemandPrice - optimizedOnDemandPrice;
+                e.exactPeriodCost - e.optimizedPeriodCost;
 
-              e.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
+              e.potentialSaving = e.exactPeriodCost - e.optimizedPeriodCost;
             }
 
-            if (onDemandPrice || optimizedOnDemandPrice) {
-              if (optimizedOnDemandPrice) {
-                cost.optimizedRun = cost.optimizedRun + optimizedOnDemandPrice;
+            if (e.exactPeriodCost || e.optimizedPeriodCost) {
+              if (e.optimizedPeriodCost) {
+                cost.optimizedRun = cost.optimizedRun + e.optimizedPeriodCost;
 
                 cost.workloads[key].optimizedRun =
-                  cost.workloads[key].optimizedRun + optimizedOnDemandPrice;
+                  cost.workloads[key].optimizedRun + e.optimizedPeriodCost;
               } else {
-                cost.optimizedRun = cost.optimizedRun + onDemandPrice;
+                cost.optimizedRun = cost.optimizedRun + e.exactPeriodCost;
 
                 cost.workloads[key].optimizedRun =
-                  cost.workloads[key].optimizedRun + onDemandPrice;
+                  cost.workloads[key].optimizedRun + e.exactPeriodCost;
               }
             }
           }
@@ -106,11 +105,47 @@ export default function(workloadData, tags) {
               cost.workloads[key].estimated + e.requestCost;
           }
         } else if (e.type === 'AWSELASTICSEARCHNODE') {
-          const instance = e?.discoveredPrices?.[0];
-          if (instance) {
-            cost.known = cost.known + parseFloat(instance?.price);
+          if (e.periodCost) {
+            cost.known = cost.known + e.periodCost;
             cost.workloads[key].known =
-              cost.workloads[key].known + parseFloat(instance?.price);
+              cost.workloads[key].known + e.periodCost;
+          }
+        } else if (e.type === 'AWSSQSQUEUE') {
+          if (e.messageCostStandardPerReq) {
+            const calc =
+              e.messageCostStandardPerReq * e.QueueSample?.numberOfMessages ||
+              0;
+
+            cost.known = cost.known + calc;
+            cost.workloads[key].known = cost.workloads[key].known + calc;
+          }
+        } else if (e.type === 'AWSALB') {
+          if (e.periodCost) {
+            cost.estimated = cost.estimated + e.periodCost;
+            cost.workloads[key].estimated =
+              cost.workloads[key].estimated + e.periodCost;
+          }
+        } else if (e.type === 'AWSELB') {
+          if (e.periodCost) {
+            cost.estimated = cost.estimated + e.periodCost;
+            cost.workloads[key].estimated =
+              cost.workloads[key].estimated + e.periodCost;
+          }
+        } else if (e.type === 'AWSLAMBDAFUNCTION') {
+          const calc = e.durationCost || 0 + e.requestCost || 0;
+          cost.known = cost.known + calc;
+          cost.workloads[key].known = cost.workloads[key].known + calc;
+        } else if (e.type === 'AWSRDSDBINSTANCE') {
+          if (e.periodCost) {
+            cost.known = cost.known + e.periodCost;
+            cost.workloads[key].known =
+              cost.workloads[key].known + e.periodCost;
+          }
+        } else if (e.type === 'AWSELASTICACHEREDISNODE') {
+          if (e.periodCost) {
+            cost.known = cost.known + e.periodCost;
+            cost.workloads[key].known =
+              cost.workloads[key].known + e.periodCost;
           }
         }
       }

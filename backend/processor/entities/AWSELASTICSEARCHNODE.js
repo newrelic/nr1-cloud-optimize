@@ -10,8 +10,9 @@ const NodeQuery = `SELECT latest(provider.domainName), max(provider.CPUUtilizati
 const ClusterDataQuery = (clusterName, timeNrql) =>
   `SELECT latest(awsRegion), latest(provider.instanceType), latest(entityName) FROM DatastoreSample WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' LIMIT 1 ${timeNrql}`;
 
-exports.run = (entities, key, config, timeNrql) => {
-  // const { AWSELASTICSEARCHNODE, defaultCloud, defaultRegions } = config;
+exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
+  // milliseconds to hours - divide the time value by 3.6e+6
+  const operatingHours = totalPeriodMs / 3.6e6;
 
   return new Promise(resolve => {
     const query = `query Query($guids: [EntityGuid]!) {
@@ -110,6 +111,7 @@ exports.run = (entities, key, config, timeNrql) => {
 
               if (discoveredPrices.length > 0) {
                 e.discoveredPrices = discoveredPrices;
+                e.periodCost = discoveredPrices?.[0]?.price * operatingHours;
               }
             }
           }

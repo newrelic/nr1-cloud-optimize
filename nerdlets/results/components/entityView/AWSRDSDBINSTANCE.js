@@ -14,7 +14,7 @@ import calculate from '../../context/calculate';
 
 // eslint-disable-next-line no-unused-vars
 export default function AwsRdsDbInstanceView(props) {
-  const { entities } = props;
+  const { entities, timeData } = props;
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
@@ -29,7 +29,7 @@ export default function AwsRdsDbInstanceView(props) {
     }
   };
 
-  const cost = calculate({ workloadData: { results: entities } });
+  const cost = calculate({ workloadData: { results: entities, timeData } });
 
   const headers = [
     { key: 'Name', value: ({ item }) => item.name },
@@ -41,6 +41,10 @@ export default function AwsRdsDbInstanceView(props) {
     {
       key: 'Price Per Hour',
       value: ({ item }) => item?.price?.onDemandPrice?.pricePerUnit?.USD
+    },
+    {
+      key: 'Cost (Price * Hours)',
+      value: ({ item }) => item?.periodCost
     }
   ];
 
@@ -101,6 +105,7 @@ export default function AwsRdsDbInstanceView(props) {
                   <TableRowCell>
                     {item?.price?.onDemandPrice?.pricePerUnit?.USD}
                   </TableRowCell>
+                  <TableRowCell>{item?.periodCost}</TableRowCell>
                 </TableRow>
               );
             }}
