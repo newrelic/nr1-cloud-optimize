@@ -115,7 +115,7 @@ export default function AwsElasticacheRedisNodeView(props) {
                   <TableRowCell
                     additionalValue={
                       instance
-                        ? `CPU: ${instance.vCPU} Mem (GiB): ${instance['Memory (GiB)']}`
+                        ? `CPU: ${instance.vCPU} Mem (GiB): ${instance.Memory}`
                         : ''
                     }
                   >

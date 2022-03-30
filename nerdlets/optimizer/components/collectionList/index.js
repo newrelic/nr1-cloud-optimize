@@ -66,6 +66,10 @@ export default function CollectionList(props) {
       {
         label: 'Run',
         onClick: async (evt, { item }) => {
+          Toast.showToast({
+            title: 'Requesting job',
+            type: Toast.TYPE.NORMAL
+          });
           postData(`${apiUrl}/optimize`, optimizerKey.key, {
             workloadGuids: item.document.workloads.map(w => w.guid),
             accountId: selectedAccount.id,

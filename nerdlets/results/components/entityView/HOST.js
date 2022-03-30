@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Button,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -11,11 +12,14 @@ import {
   CardHeader,
   CardBody
 } from 'nr1';
+import Modal from 'react-modal';
+import HostK8sContainerModal from './HOSTK8SCONTAINERMODAL';
 
 // eslint-disable-next-line no-unused-vars
 export default function HostView(props) {
   const { entities } = props;
   const [column, setColumn] = useState(0);
+  const [modalData, setModal] = useState(false);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
   );
@@ -75,6 +79,17 @@ export default function HostView(props) {
 
   return (
     <>
+      <Modal isOpen={modalData} contentLabel="Minimal Modal Example">
+        <Button
+          onClick={() => setModal(false)}
+          type={Button.TYPE.PRIMARY}
+          sizeType={Button.SIZE_TYPE.MEDIUM}
+          iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__CLOSE}
+        >
+          Close
+        </Button>
+        <HostK8sContainerModal entity={modalData} setModal={setModal} />
+      </Modal>
       <Card collapsible style={{ marginLeft: '0px' }}>
         <CardHeader
           style={{ marginLeft: '0px', width: '80%' }}
@@ -191,6 +206,7 @@ export default function HostView(props) {
               >
                 Cost (Price * Hours)
               </TableHeaderCell>
+              <TableHeaderCell>&nbsp;</TableHeaderCell>
             </TableHeader>
 
             {({ item }) => {
@@ -251,6 +267,21 @@ export default function HostView(props) {
                   <TableRowCell>{optimizedType?.onDemandPrice}</TableRowCell>
                   <TableRowCell>{item.potentialSaving}</TableRowCell>
                   <TableRowCell>{item.exactPeriodCost}</TableRowCell>
+                  <TableRowCell>
+                    {item.K8sContainerData && item.K8sContainerData.length > 0 && (
+                      <Button
+                        onClick={() => setModal(item)}
+                        type={Button.TYPE.PRIMARY}
+                        sizeType={Button.SIZE_TYPE.SMALL}
+                        iconType={
+                          Button.ICON_TYPE
+                            .HARDWARE_AND_SOFTWARE__KUBERNETES__K8S_CONTAINER
+                        }
+                      >
+                        K8s Containers&nbsp;({item.K8sContainerData.length})
+                      </Button>
+                    )}
+                  </TableRowCell>
                 </TableRow>
               );
             }}

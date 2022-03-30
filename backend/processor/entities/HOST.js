@@ -1,4 +1,9 @@
-const { batchEntityQuery, fetchPricing, roundHalf } = require('./utils');
+const {
+  batchEntityQuery,
+  fetchPricing,
+  roundHalf,
+  nrqlQuery
+} = require('./utils');
 
 const BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
 
@@ -10,6 +15,12 @@ const SystemSampleQuery = `FROM SystemSample SELECT \
                                       max(cpuPercent), max(memoryUsedBytes), max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' LIMIT 1`;
 
 const NetworkSampleQuery = `FROM NetworkSample SELECT max(receiveBytesPerSecond), max(transmitBytesPerSecond) FACET interfaceName`;
+
+const K8sContainerDataQuery = (hostname, timeRange) =>
+  `FROM K8sContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', \
+  latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuCoresUtilization) as 'maxCpuCoresUtilization', \
+  latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsedBytes) as 'maxMemoryUsedBytes', max(memoryUtilization) as 'maxMemoryUtilization' \
+  WHERE hostname = '${hostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
 
 const simplifyProduct = priceData => {
   const {
@@ -104,6 +115,8 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
       pricing[conf.cloud][conf.regions[conf.cloud]] = null;
 
+      const k8sHosts = [];
+
       // massage entity data
       entityData.forEach(e => {
         // move samples top level
@@ -151,7 +164,38 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         if (pricing[e.cloud]) {
           pricing[e.cloud][e.cloudRegion] = null;
         }
+
+        // check if k8s host
+        const keys = Object.keys(e?.tags || {});
+        for (let z = 0; z < keys.length; z++) {
+          if (keys[z].includes('k8s') || keys[z].includes('kubernetes')) {
+            e.k8s = true;
+            k8sHosts.push({
+              hostname: e?.SystemSample?.hostname,
+              accountId: e.tags?.accountId?.[0],
+              guid: e.guid
+            });
+            break;
+          }
+        }
       });
+
+      // get k8s data
+      // the container sample has their own guids so we need to stitch the container data afterwards
+      const k8sContainerPromises = k8sHosts.map(
+        k =>
+          new Promise(resolve => {
+            nrqlQuery(
+              key,
+              parseInt(k.accountId),
+              K8sContainerDataQuery(k.hostname, timeNrql)
+            ).then(data => {
+              resolve({ data, hostname: k.hostname, guid: k.guid });
+            });
+          })
+      );
+
+      const k8sContainerData = await Promise.all(k8sContainerPromises);
 
       // get cloud pricing
       const pricingPromises = Object.keys(pricing)
@@ -178,6 +222,15 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
       // determine instance and pricing
       entityData.forEach(e => {
+        if (e.k8s) {
+          for (let z = 0; z < k8sContainerData.length; z++) {
+            if (e.guid === k8sContainerData[z].guid) {
+              e.K8sContainerData = k8sContainerData[z]?.data?.results || [];
+              break;
+            }
+          }
+        }
+
         e.matches = { exact: [] };
         const selectedType =
           e.SystemSample.instanceType ||

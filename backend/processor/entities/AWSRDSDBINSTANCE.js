@@ -151,9 +151,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
               e.price = {
                 onDemandPrice: price.onDemandPrice,
                 attributes: {
-                  vcpu: price.attributes.vcpu,
-                  memory: price.attributes.memory,
-                  clockSpeed: price.attributes.clockSpeed
+                  vcpu: price?.attributes?.vcpu,
+                  memory: price?.attributes?.memory,
+                  clockSpeed: price?.attributes?.clockSpeed
                 }
               };
               // milliseconds to hours - divide the time value by 3.6e+6
