@@ -5,7 +5,11 @@ import { Button, Tooltip } from 'nr1';
 // eslint-disable-next-line no-unused-vars
 export default function TagBar(props) {
   const dataContext = useContext(DataContext);
-  const { updateDataState } = dataContext;
+  const { updateDataState, selectedTags } = dataContext;
+
+  const tagCount = Object.keys(selectedTags)
+    .map(key => Object.keys(selectedTags[key]))
+    .flat().length;
 
   return (
     <>
@@ -18,7 +22,7 @@ export default function TagBar(props) {
             iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TAG}
             onClick={() => updateDataState({ tagModalOpen: true })}
           >
-            Filter Tags
+            Filter Tags {tagCount > 0 && `(${tagCount})`}
           </Button>
         </Tooltip>
       </div>

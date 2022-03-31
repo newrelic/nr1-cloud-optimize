@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Button,
   Table,
   TableHeader,
   TableHeaderCell,
   TableRow,
   TableRowCell,
   MetricTableRowCell,
-  EntityTitleTableRowCell,
   Card,
   CardHeader,
   CardBody
@@ -33,8 +31,6 @@ export default function HostK8sContainerModal(props) {
       setColumn(nextColumn);
     }
   };
-
-  console.log(entity);
 
   const coreMultiplier = 16;
   const hostComputeUnits =
