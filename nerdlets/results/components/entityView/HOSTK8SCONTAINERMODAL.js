@@ -104,7 +104,7 @@ export default function HostK8sContainerModal(props) {
       <Card collapsible style={{ marginLeft: '0px', height: '95%' }}>
         <CardHeader
           style={{ marginLeft: '0px', width: '80%' }}
-          title={`Kubernetes Containers (${containers.length})`}
+          title={`${entity.name} - Kubernetes Containers (${containers.length})`}
         />
         <CardBody
           style={{ marginLeft: '0px', marginRight: '0px', marginBottom: '0px' }}

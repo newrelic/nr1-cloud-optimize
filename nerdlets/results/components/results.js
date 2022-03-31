@@ -12,7 +12,9 @@ import {
   CardBody,
   Select,
   SelectItem,
-  SectionMessage
+  SectionMessage,
+  Stack,
+  StackItem
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -82,100 +84,97 @@ export default function Results(props) {
 
   return (
     <>
-      <div>
-        <Card>
-          <CardBody style={{ marginBottom: '0px' }}>
-            <SectionMessage
-              title="Please note all information should be considered best effort as it is based on public pricing and available usage data."
-              description="The data should be used as general guidance to help you find optimization opportunities"
-            />
-          </CardBody>
-        </Card>
-
-        <Card style={{ overflow: 'hidden' }}>
-          <CardBody>
-            <HeadingText
-              type={HeadingText.TYPE.HEADING_3}
-              style={{
-                paddingBottom: '0px',
-                marginBottom: '1px',
-                fontSize: '18px'
-              }}
-            >
-              {name} results for {workloads.length} workloads from {accountName}
-            </HeadingText>
-            <BlockText type={BlockText.TYPE.PARAGRAPH}>
-              Optimization results history&nbsp;
-              <Popover openOnHover>
-                <PopoverTrigger>
-                  <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
-                </PopoverTrigger>
-                <PopoverBody>
-                  <BlockText>
-                    &nbsp;A collection is stored under a account but can contain
-                    workloads from other accounts&nbsp;
-                  </BlockText>
-                </PopoverBody>
-              </Popover>
-            </BlockText>
-            <BlockText type={BlockText.TYPE.PARAGRAPH}>
-              {timeText}&nbsp;
-              <Popover openOnHover>
-                <PopoverTrigger>
-                  <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
-                </PopoverTrigger>
-                <PopoverBody>
-                  <BlockText>&nbsp;NRQL used: {timeNrql}&nbsp;</BlockText>
-                </PopoverBody>
-              </Popover>
-            </BlockText>
-          </CardBody>
-          <CardBody style={{ marginBottom: '-10px' }}>
-            <div>
-              <Select
-                label="Select time"
-                onChange={(evt, selectedResult) =>
-                  updateDataState({ selectedResult })
-                }
-                value={selectedResult}
+      <Stack directionType={Stack.DIRECTION_TYPE.VERTICAL} fullWidth>
+        <StackItem grow style={{ width: '99%' }}>
+          <Card>
+            <CardBody>
+              <SectionMessage
+                title="Please note all information should be considered best effort as it is based on public pricing and available usage data."
+                description="The data should be used as general guidance to help you find optimization opportunities"
+              />
+            </CardBody>
+          </Card>
+        </StackItem>
+        <StackItem grow style={{ width: '99%' }}>
+          <Card style={{ overflow: 'hidden' }}>
+            <CardBody>
+              <HeadingText
+                type={HeadingText.TYPE.HEADING_3}
+                style={{
+                  paddingBottom: '0px',
+                  marginBottom: '1px',
+                  fontSize: '18px'
+                }}
               >
-                {jobStatus.map(j => {
-                  const { id, document } = j;
-                  return (
-                    <SelectItem key={id} value={id}>
-                      {new Date(document?.startedAt).toLocaleString()}
-                    </SelectItem>
-                  );
-                })}
-              </Select>
-              &nbsp;
-              {jobStatus.length > 0 && (
-                <Tooltip text="Delete job history">
-                  <Button
-                    loading={deletingJobDocuments}
-                    style={{ marginTop: '23px' }}
-                    sizeType={Button.SIZE_TYPE.SMALL}
-                    type={Button.TYPE.DESTRUCTIVE}
-                    iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TRASH}
-                    onClick={() => deleteJob(selectedResult)}
-                  />
-                </Tooltip>
-              )}
-            </div>
-            <TagBar />
+                {name} results for {workloads.length} workloads from{' '}
+                {accountName}
+              </HeadingText>
+              <BlockText type={BlockText.TYPE.PARAGRAPH}>
+                Optimization results history&nbsp;
+                <Popover openOnHover>
+                  <PopoverTrigger>
+                    <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
+                  </PopoverTrigger>
+                  <PopoverBody>
+                    <BlockText>
+                      &nbsp;A collection is stored under a account but can
+                      contain workloads from other accounts&nbsp;
+                    </BlockText>
+                  </PopoverBody>
+                </Popover>
+              </BlockText>
+              <BlockText type={BlockText.TYPE.PARAGRAPH}>
+                {timeText}&nbsp;
+                <Popover openOnHover>
+                  <PopoverTrigger>
+                    <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
+                  </PopoverTrigger>
+                  <PopoverBody>
+                    <BlockText>&nbsp;NRQL used: {timeNrql}&nbsp;</BlockText>
+                  </PopoverBody>
+                </Popover>
+              </BlockText>
+            </CardBody>
+            <CardBody style={{ marginBottom: '-5px' }}>
+              <div>
+                <Select
+                  label="Select time"
+                  onChange={(evt, selectedResult) =>
+                    updateDataState({ selectedResult })
+                  }
+                  value={selectedResult}
+                >
+                  {jobStatus.map(j => {
+                    const { id, document } = j;
+                    return (
+                      <SelectItem key={id} value={id}>
+                        {new Date(document?.startedAt).toLocaleString()}
+                      </SelectItem>
+                    );
+                  })}
+                </Select>
+                &nbsp;
+                {jobStatus.length > 0 && (
+                  <Tooltip text="Delete job history">
+                    <Button
+                      loading={deletingJobDocuments}
+                      style={{ marginTop: '23px' }}
+                      sizeType={Button.SIZE_TYPE.SMALL}
+                      type={Button.TYPE.DESTRUCTIVE}
+                      iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TRASH}
+                      onClick={() => deleteJob(selectedResult)}
+                    />
+                  </Tooltip>
+                )}
+              </div>
+              <TagBar />
 
-            <br />
-          </CardBody>
-        </Card>
-      </div>
-
-      <div style={{ maxHeight: '90000px', overflowY: 'auto' }}>
-        <Card>
-          <CardBody>
-            <ResultsPanel />
-          </CardBody>
-        </Card>
-      </div>
+              <br />
+            </CardBody>
+          </Card>
+        </StackItem>
+        <ResultsPanel />
+      </Stack>
     </>
   );
 }

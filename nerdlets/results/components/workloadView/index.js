@@ -3,6 +3,7 @@ import DataContext from '../../context/data';
 import _ from 'lodash';
 import EntityView from '../entityView';
 import { checkTags } from '../../context/calculate';
+import { StackItem } from 'nr1';
 
 // eslint-disable-next-line no-unused-vars
 export default function WorkloadView(props) {
@@ -18,7 +19,11 @@ export default function WorkloadView(props) {
           checkTags(e, selectedTags)
         );
 
-        return <EntityView key={g} group={g} entities={filteredEntities} />;
+        return (
+          <StackItem key={g} grow style={{ width: '99%' }}>
+            <EntityView key={g} group={g} entities={filteredEntities} />
+          </StackItem>
+        );
       })}
     </>
   );

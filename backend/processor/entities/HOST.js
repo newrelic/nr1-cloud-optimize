@@ -62,19 +62,19 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       alibaba: defaultRegions?.alibaba || 'us-east-1'
     },
     optimize: {
-      cpuRightSize: HOST?.cpuRightSize || 0.5,
-      memRightSize: HOST?.memRightSize || 0.5,
+      cpuRightSize: parseFloat(HOST?.cpuRightSize || 0.5),
+      memRightSize: parseFloat(HOST?.memRightSize || 0.5),
       cpuMemUpperOperator: HOST?.cpuMemUpperOperator || 'AND',
-      cpuUpper: HOST?.cpuUpper || 50,
-      memUpper: HOST?.memUpper || 50,
+      cpuUpper: parseFloat(HOST?.cpuUpper || 50),
+      memUpper: parseFloat(HOST?.memUpper || 50),
       cpuMemUpperStaleOperator: HOST?.cpuMemUpperStaleOperator || 'AND',
-      staleCpu: HOST?.staleCpu || 5,
-      staleMem: HOST?.staleMem || 5,
+      staleCpu: parseFloat(HOST?.staleCpu || 5),
+      staleMem: parseFloat(HOST?.staleMem || 5),
       rxTxStaleOperator: HOST?.rxTxStaleOperator || 'AND',
-      staleReceiveBytesPerSec: HOST?.staleReceiveBytesPerSec || 5,
-      staleTransmitBytesPerSec: HOST?.staleTransmitBytesPerSec || 5,
-      lastReportPeriod: HOST?.lastReportPeriod || 24,
-      inclusionPeriodHours: HOST?.inclusionPeriodHours || 24,
+      staleReceiveBytesPerSec: parseFloat(HOST?.staleReceiveBytesPerSec || 5),
+      staleTransmitBytesPerSec: parseFloat(HOST?.staleTransmitBytesPerSec || 5),
+      lastReportPeriod: parseFloat(HOST?.lastReportPeriod || 24),
+      inclusionPeriodHours: parseFloat(HOST?.inclusionPeriodHours || 24),
       includedInstanceTypes: HOST?.includedInstanceTypes || [],
       excludedInstanceTypes: HOST?.excludedInstanceTypes || []
     }
@@ -345,7 +345,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             e.exactPeriodCost = operatingHours * onDemandPrice;
           }
           if (e.matches.optimized?.[0]) {
-            const onDemandPrice = e.matches.exact?.[0]?.onDemandPrice;
+            const onDemandPrice = e.matches.optimized?.[0]?.onDemandPrice;
             e.optimizedPeriodCost = operatingHours * onDemandPrice;
           }
         } else {

@@ -8,7 +8,14 @@ function ResultsRoot() {
   const nerdletContext = useContext(NerdletStateContext);
 
   return (
-    <div>
+    <div
+      style={{
+        height: '100%',
+        backgroundColor: '#F3F4F4',
+        paddingLeft: '15px',
+        paddingRight: '15px'
+      }}
+    >
       <DataProvider {...nerdletContext}>
         <TagModal />
         <Results />

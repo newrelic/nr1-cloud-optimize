@@ -74,14 +74,13 @@ export default function(workloadData, tags) {
 
             if (e.optimizedPeriodCost) {
               cost.optimized = cost.optimized + e.optimizedPeriodCost;
-              cost.potentialSaving = e.exactPeriodCost - e.optimizedPeriodCost;
-
               cost.workloads[key].optimized =
                 cost.workloads[key].optimized + e.optimizedPeriodCost;
-              cost.workloads[key].potentialSaving =
-                e.exactPeriodCost - e.optimizedPeriodCost;
 
               e.potentialSaving = e.exactPeriodCost - e.optimizedPeriodCost;
+              cost.potentialSaving = cost.potentialSaving + e.potentialSaving;
+              cost.workloads[key].potentialSaving =
+                cost.workloads[key].potentialSaving + e.potentialSaving;
             }
 
             if (e.exactPeriodCost || e.optimizedPeriodCost) {

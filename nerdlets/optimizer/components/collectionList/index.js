@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableHeaderCell,
   navigation,
+  AccountStorageQuery,
   AccountStorageMutation,
   Spinner
 } from 'nr1';
@@ -24,7 +25,8 @@ export default function CollectionList(props) {
     apiUrl,
     optimizerKey,
     uuid,
-    timeRange
+    timeRange,
+    email
   } = dataContext;
 
   // const [name, setName] = useState("");
@@ -61,6 +63,16 @@ export default function CollectionList(props) {
     a.document.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const getLatestConfiguration = documentId => {
+    return new Promise(resolve => {
+      AccountStorageQuery.query({
+        accountId: selectedAccount.id,
+        collection: 'workloadCollections',
+        documentId
+      }).then(value => resolve(value?.data?.config || {}));
+    });
+  };
+
   const actions = hasResults => {
     const allActions = [
       {
@@ -70,11 +82,13 @@ export default function CollectionList(props) {
             title: 'Requesting job',
             type: Toast.TYPE.NORMAL
           });
+          const config = await getLatestConfiguration(item.id);
           postData(`${apiUrl}/optimize`, optimizerKey.key, {
             workloadGuids: item.document.workloads.map(w => w.guid),
             accountId: selectedAccount.id,
             nerdpackUUID: uuid,
-            collectionId: item.id
+            collectionId: item.id,
+            config
           }).then(data => {
             if (data?.success) {
               Toast.showToast({
@@ -89,12 +103,18 @@ export default function CollectionList(props) {
       {
         label: 'Run with time range',
         onClick: async (evt, { item }) => {
+          Toast.showToast({
+            title: 'Requesting job',
+            type: Toast.TYPE.NORMAL
+          });
+          const config = await getLatestConfiguration(item.id);
           postData(`${apiUrl}/optimize`, optimizerKey.key, {
             workloadGuids: item.document.workloads.map(w => w.guid),
             accountId: selectedAccount.id,
             nerdpackUUID: uuid,
             collectionId: item.id,
-            timeRange
+            timeRange,
+            config
           }).then(data => {
             if (data?.success) {
               Toast.showToast({
@@ -107,12 +127,28 @@ export default function CollectionList(props) {
         }
       },
       {
-        label: 'Edit',
+        label: 'Update Workloads',
         onClick: (evt, { item }) => {
           updateDataState({
             editCollectionOpen: true,
             editCollectionId: item.id
           });
+        }
+      },
+      {
+        label: 'Edit Configuration',
+        onClick: (evt, { item }) => {
+          const nerdlet = {
+            id: 'configuration-nerdlet',
+            urlState: {
+              wlCollectionId: item.id,
+              document: item.document,
+              account: selectedAccount,
+              email
+            }
+          };
+
+          navigation.openStackedNerdlet(nerdlet);
         }
       }
     ];

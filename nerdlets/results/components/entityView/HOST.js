@@ -47,12 +47,13 @@ export default function HostView(props) {
         cost.known = cost.known + spotPrice;
       }
 
-      const optimizedSpotPrice =
-        e?.matches?.optimized?.[0]?.spotPrice?.[0]?.price;
-      if (optimizedSpotPrice) {
-        cost.optimized = cost.optimized + optimizedSpotPrice;
-        cost.potentialSaving = spotPrice - optimizedSpotPrice;
-      }
+      // needs work
+      // const optimizedSpotPrice =
+      //   e?.matches?.optimized?.[0]?.spotPrice?.[0]?.price;
+      // if (optimizedSpotPrice) {
+      //   cost.optimized = cost.optimized + optimizedSpotPrice;
+      //   cost.potentialSaving = spotPrice - optimizedSpotPrice;
+      // }
     } else {
       const onDemandPrice = e?.matches?.exact?.[0]?.onDemandPrice;
       if (onDemandPrice) {
@@ -67,8 +68,7 @@ export default function HostView(props) {
       const optimizedOnDemandPrice = e?.matches?.optimized?.[0]?.onDemandPrice;
       if (optimizedOnDemandPrice) {
         cost.optimized = cost.optimized + optimizedOnDemandPrice;
-        cost.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
-        e.potentialSaving = onDemandPrice - optimizedOnDemandPrice;
+        cost.potentialSaving = cost.potentialSaving + e.potentialSaving;
       }
 
       if (e.exactPeriodCost) {
@@ -193,7 +193,7 @@ export default function HostView(props) {
                 onClick={(event, data) => onClickTableHeaderCell(7, data)}
                 value={({ item }) => item.potentialSaving}
               >
-                Saving
+                Saving (Optimized Price Per Hour * Hours)
               </TableHeaderCell>
               <TableHeaderCell
                 width="7%"
@@ -204,7 +204,7 @@ export default function HostView(props) {
                 onClick={(event, data) => onClickTableHeaderCell(8, data)}
                 value={({ item }) => item.exactPeriodCost}
               >
-                Cost (Price * Hours)
+                Cost (Price Per Hour * Hours)
               </TableHeaderCell>
               <TableHeaderCell>&nbsp;</TableHeaderCell>
             </TableHeader>
@@ -299,6 +299,7 @@ export default function HostView(props) {
               <TableHeaderCell width="7%" />
               <TableHeaderCell width="7%" />
               <TableHeaderCell width="7%" />
+              <TableHeaderCell />
             </TableHeader>
             {() => {
               return (
@@ -313,6 +314,7 @@ export default function HostView(props) {
                   <TableRowCell>{cost.optimized}</TableRowCell>
                   <TableRowCell>{cost.potentialSaving}</TableRowCell>
                   <TableRowCell>{cost.exactPeriodCost}</TableRowCell>
+                  <TableRowCell />
                 </TableRow>
               );
             }}
