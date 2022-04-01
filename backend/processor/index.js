@@ -13,7 +13,7 @@ const { workloadEntityFetchQuery } = require('./queries');
 
 const WORKLOAD_QUEUE_LIMIT = 5; // how many workloads to handle async
 const ENTITY_TYPE_QUEUE_LIMIT = 3; // how many entity types to process async
-const JOB_HISTORY_LIMIT = 10;
+// const JOB_HISTORY_LIMIT = 10; // unused perhaps for future
 const STATUS_COLLECTION = 'jobStatus'; // account level
 const RESULT_COLLECTION = 'optimizerResults'; // workload entity level
 const MINUTE = 60000;

@@ -136,10 +136,26 @@ export default function CollectionList(props) {
         }
       },
       {
-        label: 'Edit Configuration',
+        label: 'Edit Optimization Config',
         onClick: (evt, { item }) => {
           const nerdlet = {
-            id: 'configuration-nerdlet',
+            id: 'optimization-configuration-nerdlet',
+            urlState: {
+              wlCollectionId: item.id,
+              document: item.document,
+              account: selectedAccount,
+              email
+            }
+          };
+
+          navigation.openStackedNerdlet(nerdlet);
+        }
+      },
+      {
+        label: 'Edit Suggestions Config',
+        onClick: (evt, { item }) => {
+          const nerdlet = {
+            id: 'suggestions-configuration-nerdlet',
             urlState: {
               wlCollectionId: item.id,
               document: item.document,

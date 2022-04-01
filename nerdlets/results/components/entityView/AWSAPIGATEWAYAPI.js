@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  navigation,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -80,12 +81,7 @@ export default function AwsAPIGatewayView(props) {
                 <TableRow actions={[]}>
                   <EntityTitleTableRowCell
                     value={item}
-                    onClick={() =>
-                      window.open(
-                        ` https://one.newrelic.com/redirect/entity/${item.guid}`,
-                        '_blank'
-                      )
-                    }
+                    onClick={() => navigation.openStackedEntity(item.guid)}
                   />
                   <TableRowCell>
                     {item?.tags?.['aws.awsRegion']?.[0]}

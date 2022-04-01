@@ -15,12 +15,14 @@ import {
   SelectItem
 } from 'nr1';
 
+const { options } = require('./options');
+
 function ConfigurationNerdlet() {
   const nerdletContext = useContext(NerdletStateContext);
   const { document, email, wlCollectionId, account } = nerdletContext;
   const { name } = document;
-  const config = document?.config || {};
-  const [formConfig, updateConfig] = useState(config);
+  const suggestionsConfig = document?.suggestionsConfig || {};
+  const [formConfig, updateConfig] = useState(suggestionsConfig);
   const [writingDocument, setWriteState] = useState(false);
 
   const writeDocument = () => {
@@ -33,122 +35,14 @@ function ConfigurationNerdlet() {
       document: {
         ...document,
         lastEditedBy: email,
-        config: formConfig
+        suggestionsConfig: formConfig
       }
     }).then(value => {
       // eslint-disable-next-line no-console
-      console.log('updated config', value);
+      console.log('updated suggestionsConfig', value);
       setWriteState(false);
     });
   };
-
-  const options = [
-    {
-      type: 'HOST',
-      config: {
-        cpuRightSize: {
-          label: 'CPU Right Size',
-          description:
-            'If a suggestion is to be provided multiple the cpu count by this value',
-          type: 'number',
-          defaultValue: 0.5
-        },
-        memRightSize: {
-          label: 'Memory Right Size',
-          description:
-            'If a suggestion is to be provided multiple the memory by this value',
-          type: 'number',
-          defaultValue: 0.5
-        },
-
-        cpuUpper: {
-          label: 'CPU Upper Percent',
-          description: 'If cpu below this value request an optimization',
-          type: 'number',
-          defaultValue: 50
-        },
-        memUpper: {
-          label: 'Memory Upper Percent',
-          description: 'If memory below this value request an optimization',
-          type: 'number',
-          defaultValue: 50
-        },
-        cpuMemUpperOperator: {
-          label: 'CPU & Memory Upper Limit Operator',
-          description:
-            'If both or one of these values are met request an optimization',
-          type: 'enum',
-          defaultValue: 'AND',
-          items: [
-            { title: 'AND', value: 'AND' },
-            { title: 'OR', value: 'OR' }
-          ]
-        },
-        staleCpu: {
-          label: 'CPU Stale Percent',
-          description: 'If cpu below this value consider stale',
-          type: 'number',
-          defaultValue: 5
-        },
-        staleMem: {
-          label: 'Memory Upper Percent',
-          description: 'If memory below this value consider stale',
-          type: 'number',
-          defaultValue: 5
-        },
-        cpuMemUpperStaleOperator: {
-          label: 'CPU & Memory Stale Operator',
-          description: 'If both or one of these values are met consider stale',
-          type: 'enum',
-          defaultValue: 'AND',
-          items: [
-            { title: 'AND', value: 'AND' },
-            { title: 'OR', value: 'OR' }
-          ]
-        },
-        staleReceiveBytesPerSec: {
-          label: 'Receieve Bytes Per Sec Staleness',
-          description:
-            'If receive bytes per sec below this value consider stale',
-          type: 'number',
-          defaultValue: 5
-        },
-        staleTransmitBytesPerSec: {
-          label: 'Transmit Bytes Per Sec Staleness',
-          description:
-            'If transmit bytes per sec below this value consider stale',
-          type: 'number',
-          defaultValue: 5
-        },
-        rxTxStaleOperator: {
-          label: ' Recieve & Transmit Stale Operator',
-          description: 'If both or one of these values are met consider stale',
-          type: 'enum',
-          defaultValue: 'AND',
-          items: [
-            { title: 'AND', value: 'AND' },
-            { title: 'OR', value: 'OR' }
-          ]
-        },
-        includedInstanceTypes: {
-          label: 'Included Instance Types',
-          description:
-            'Only return instances that are matched from this comma separated list',
-          type: 'string',
-          defaultValue: '',
-          placeholder: 'Enter a comma separated list'
-        },
-        excludedInstanceTypes: {
-          label: 'Excluded Instance Types',
-          description:
-            'Do not return instances that are matched from this comma separated list',
-          type: 'string',
-          defaultValue: '',
-          placeholder: 'Enter a comma separated list'
-        }
-      }
-    }
-  ];
 
   // lastReportPeriod: HOST?.lastReportPeriod || 24,
   // inclusionPeriodHours: HOST?.inclusionPeriodHours || 24,
@@ -173,7 +67,7 @@ function ConfigurationNerdlet() {
 
   const renderConfig = () => {
     return options.map(o => {
-      const configKeys = Object.keys(o.config);
+      const suggestionsConfigKeys = Object.keys(o.suggestionsConfig);
       return (
         <React.Fragment key={o.type}>
           <Form
@@ -183,7 +77,7 @@ function ConfigurationNerdlet() {
           >
             <h4 style={{ paddingBottom: '10px' }}>{o.type}</h4>
 
-            {configKeys.map(key => {
+            {suggestionsConfigKeys.map(key => {
               const {
                 label,
                 description,
@@ -191,7 +85,7 @@ function ConfigurationNerdlet() {
                 defaultValue,
                 items,
                 placeholder
-              } = o.config[key];
+              } = o.suggestionsConfig[key];
 
               const newLabel = `${label} ${
                 defaultValue ? `(Default: ${defaultValue})` : ''
@@ -291,7 +185,7 @@ function ConfigurationNerdlet() {
             <StackItem grow style={{ width: '99%' }}>
               <Card>
                 <CardBody>
-                  <h2>{name} - Configuration</h2>
+                  <h2>{name} - Suggestions Configuration</h2>
                 </CardBody>
               </Card>
             </StackItem>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  navigation,
   Button,
   Table,
   TableHeader,
@@ -228,12 +229,7 @@ export default function HostView(props) {
               </TableRowCell> */}
                   <EntityTitleTableRowCell
                     value={item}
-                    onClick={() =>
-                      window.open(
-                        ` https://one.newrelic.com/redirect/entity/${item.guid}`,
-                        '_blank'
-                      )
-                    }
+                    onClick={() => navigation.openStackedEntity(item.guid)}
                     additionalValue={item.isSpot ? 'spot instance' : ''}
                   />
                   <TableRowCell additionalValue={item.cloudRegion}>

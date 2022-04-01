@@ -1,5 +1,7 @@
+import provideSuggestions from './provideSuggestions';
+
 // calculate cost aggregate data and savings
-export default function(workloadData, tags) {
+export default function(workloadData, tags, config) {
   const cost = {
     known: 0,
     estimated: 0,
@@ -22,6 +24,9 @@ export default function(workloadData, tags) {
     }
 
     (workloadData[key]?.results || []).forEach(e => {
+      if (config) {
+        provideSuggestions(e, config);
+      }
       if (checkTags(e, tags)) {
         if (e.type === 'HOST') {
           if (e.spot) {

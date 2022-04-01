@@ -84,7 +84,11 @@ export default function Results(props) {
 
   return (
     <>
-      <Stack directionType={Stack.DIRECTION_TYPE.VERTICAL} fullWidth>
+      <Stack
+        directionType={Stack.DIRECTION_TYPE.VERTICAL}
+        fullWidth
+        horizontalType={Stack.HORIZONTAL_TYPE.CENTER}
+      >
         <StackItem grow style={{ width: '99%' }}>
           <Card>
             <CardBody>

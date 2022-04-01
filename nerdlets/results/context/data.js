@@ -27,6 +27,7 @@ import {
 } from './queries';
 import queue from 'async/queue';
 import calculate from './calculate';
+import provideSuggestions from './provideSuggestions';
 
 const RESULT_UPDATE_INTERVAL = 5000;
 const QUEUE_LIMIT = 5;
@@ -50,18 +51,40 @@ export class DataProvider extends Component {
       deletingJobDocuments: false,
       tagModalOpen: false,
       entityTags: [],
-      selectedTags: {}
+      selectedTags: {},
+      suggestionsConfig: {}
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getNerdpackUuid();
+    await this.fetchCollectionConfig(this.props);
     this.fetchJobStatus(this.props);
 
     this.setState({ ...this.props }, () => {
       this.pollJobStatus = setInterval(() => {
         this.fetchJobStatus(this.props);
       }, RESULT_UPDATE_INTERVAL);
+    });
+  }
+
+  fetchCollectionConfig(props) {
+    const { account } = props;
+    const documentId = props.wlCollectionId || this.state.wlCollectionId;
+    const accountId =
+      account?.id || this.state.account?.id || this.state.accountId;
+
+    return new Promise(resolve => {
+      AccountStorageQuery.query({
+        accountId,
+        collection: 'workloadCollections',
+        documentId
+      }).then(value => {
+        this.setState({
+          suggestionsConfig: value?.data?.suggestionsConfig || {}
+        });
+        resolve();
+      });
     });
   }
 
@@ -112,6 +135,7 @@ export class DataProvider extends Component {
 
   // query each workload for the history of a particular job
   fetchWorkloads = (guids, jobId) => {
+    const { suggestionsConfig } = this.state;
     return new Promise(resolve => {
       this.setState({ fetchingWorkloadData: true }, async () => {
         const buildDocumentName = shardNo => `${jobId}_${shardNo}`;
@@ -183,7 +207,11 @@ export class DataProvider extends Component {
         await workloadQueue.drain();
 
         const { selectedTags } = this.state;
-        const costSummary = calculate(workloadData, selectedTags);
+        const costSummary = calculate(
+          workloadData,
+          selectedTags,
+          suggestionsConfig
+        );
         const entityTags = this.buildTags(workloadData);
 
         this.setState({ workloadData, costSummary, entityTags }, () =>
@@ -230,6 +258,7 @@ export class DataProvider extends Component {
           );
 
         // fetch all workload data
+        console.log(stateData.selectedResultData);
         this.fetchWorkloads(
           stateData?.selectedResultData?.document?.workloadGuids || [],
           stateData.selectedResultData?.id
