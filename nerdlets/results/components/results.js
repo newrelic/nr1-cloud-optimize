@@ -84,11 +84,7 @@ export default function Results(props) {
 
   return (
     <>
-      <Stack
-        directionType={Stack.DIRECTION_TYPE.VERTICAL}
-        fullWidth
-        horizontalType={Stack.HORIZONTAL_TYPE.CENTER}
-      >
+      <Stack directionType={Stack.DIRECTION_TYPE.VERTICAL} fullWidth>
         <StackItem grow style={{ width: '99%' }}>
           <Card>
             <CardBody>
@@ -99,7 +95,14 @@ export default function Results(props) {
             </CardBody>
           </Card>
         </StackItem>
-        <StackItem grow style={{ width: '99%' }}>
+      </Stack>
+      <Stack
+        fullWidth
+        verticalType={Stack.VERTICAL_TYPE.TOP}
+        style={{ marginTop: '10px' }}
+        gapType={Stack.GAP_TYPE.NONE}
+      >
+        <StackItem style={{ width: '49.2%' }}>
           <Card style={{ overflow: 'hidden' }}>
             <CardBody>
               <HeadingText
@@ -127,20 +130,39 @@ export default function Results(props) {
                   </PopoverBody>
                 </Popover>
               </BlockText>
-              <BlockText type={BlockText.TYPE.PARAGRAPH}>
-                {timeText}&nbsp;
-                <Popover openOnHover>
-                  <PopoverTrigger>
-                    <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
-                  </PopoverTrigger>
-                  <PopoverBody>
-                    <BlockText>&nbsp;NRQL used: {timeNrql}&nbsp;</BlockText>
-                  </PopoverBody>
-                </Popover>
-              </BlockText>
             </CardBody>
-            <CardBody style={{ marginBottom: '-5px' }}>
-              <div>
+          </Card>
+        </StackItem>
+        <StackItem style={{ height: '100%', width: '49.2%' }}>
+          <Card>
+            <CardBody style={{ marginBottom: '0px' }}>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ textAlign: 'right', color: '#506060' }}>
+                  {timeText}&nbsp;
+                  <Popover openOnHover>
+                    <PopoverTrigger>
+                      <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
+                    </PopoverTrigger>
+                    <PopoverBody>
+                      <BlockText>&nbsp;NRQL used: {timeNrql}&nbsp;</BlockText>
+                    </PopoverBody>
+                  </Popover>
+                </span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                {jobStatus.length > 0 && (
+                  <Tooltip text="Delete job history">
+                    <Button
+                      loading={deletingJobDocuments}
+                      style={{ marginTop: '23px' }}
+                      sizeType={Button.SIZE_TYPE.SMALL}
+                      type={Button.TYPE.DESTRUCTIVE}
+                      iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TRASH}
+                      onClick={() => deleteJob(selectedResult)}
+                    />
+                  </Tooltip>
+                )}
+                &nbsp;
                 <Select
                   label="Select time"
                   onChange={(evt, selectedResult) =>
@@ -157,26 +179,24 @@ export default function Results(props) {
                     );
                   })}
                 </Select>
-                &nbsp;
-                {jobStatus.length > 0 && (
-                  <Tooltip text="Delete job history">
-                    <Button
-                      loading={deletingJobDocuments}
-                      style={{ marginTop: '23px' }}
-                      sizeType={Button.SIZE_TYPE.SMALL}
-                      type={Button.TYPE.DESTRUCTIVE}
-                      iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__TRASH}
-                      onClick={() => deleteJob(selectedResult)}
-                    />
-                  </Tooltip>
-                )}
               </div>
-              <TagBar />
-
-              <br />
             </CardBody>
           </Card>
         </StackItem>
+      </Stack>
+      <Stack
+        fullWidth
+        verticalType={Stack.VERTICAL_TYPE.TOP}
+        directionType={Stack.DIRECTION_TYPE.VERTICAL}
+      >
+        <StackItem grow style={{ width: '99%' }}>
+          <Card>
+            <CardBody style={{ marginTop: '0px', marginBottom: '0px' }}>
+              <TagBar />
+            </CardBody>
+          </Card>
+        </StackItem>
+
         <ResultsPanel />
       </Stack>
     </>

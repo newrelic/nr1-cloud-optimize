@@ -24,7 +24,7 @@ export default function TagBar(props) {
 
   return (
     <>
-      <div style={{ float: 'right', marginTop: '-25px' }}>
+      <div>
         <Tooltip text="Click to filter tags">
           <Button
             style={{ marginRight: '10px' }}
@@ -36,12 +36,21 @@ export default function TagBar(props) {
             Filter Tags {tagCount > 0 && `(${tagCount} selected)`}
           </Button>
         </Tooltip>
+        {tagCount > 0 && (
+          <Button
+            onClick={() => updateDataState({ selectedTags: {} })}
+            type={Button.TYPE.OUTLINE}
+            sizeType={Button.SIZE_TYPE.SMALL}
+          >
+            Clear All
+          </Button>
+        )}
         <br />
       </div>
       <div
         style={{
-          textAlign: 'right',
-          marginTop: '10px'
+          marginTop: '10px',
+          display: 'inline-block'
         }}
       >
         {tagKeys.map(tag => {
@@ -49,22 +58,27 @@ export default function TagBar(props) {
 
           return tagValues.map(v => {
             return (
-              <span
+              <div
                 key={`${tag}.${v}`}
-                style={{
-                  padding: tagKeys.length > 0 ? '4px' : '0px',
-                  fontSize: '12px',
-                  marginTop: '10px',
-                  marginRight: '10px',
-                  backgroundColor: '#D0F0FF',
-                  cursor: 'pointer',
-                  borderRadius: '3px'
-                }}
-                onClick={() => updateTags(tag, v)}
+                style={{ paddingBottom: '15px', display: 'inline-block' }}
               >
-                {tag}:{v}&nbsp;&nbsp;
-                <span style={{ color: '#0079BF' }}>X</span>&nbsp;
-              </span>
+                <span
+                  style={{
+                    padding: tagKeys.length > 0 ? '4px' : '0px',
+                    fontSize: '12px',
+                    marginTop: '10px',
+                    marginBottom: '20px',
+                    marginRight: '10px',
+                    backgroundColor: '#D0F0FF',
+                    cursor: 'pointer',
+                    borderRadius: '3px'
+                  }}
+                  onClick={() => updateTags(tag, v)}
+                >
+                  {tag}:{v}&nbsp;&nbsp;
+                  <span style={{ color: '#0079BF' }}>X</span>&nbsp;
+                </span>
+              </div>
             );
           });
         })}
