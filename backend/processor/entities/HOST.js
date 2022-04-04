@@ -223,12 +223,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       // determine instance and pricing
       entityData.forEach(e => {
         if (e.k8s) {
-          for (let z = 0; z < k8sContainerData.length; z++) {
-            if (e.guid === k8sContainerData[z].guid) {
-              e.K8sContainerData = k8sContainerData[z]?.data?.results || [];
-              break;
-            }
-          }
+          e.K8sContainerData =
+            (k8sContainerData || []).find(d => d.guid === e.guid)?.data
+              ?.results || [];
         }
 
         e.matches = { exact: [] };

@@ -102,7 +102,7 @@ export default function Results(props) {
         style={{ marginTop: '10px' }}
         gapType={Stack.GAP_TYPE.NONE}
       >
-        <StackItem style={{ width: '49.2%' }}>
+        <StackItem style={{ width: '49.5%' }}>
           <Card style={{ overflow: 'hidden' }}>
             <CardBody>
               <HeadingText
@@ -133,7 +133,7 @@ export default function Results(props) {
             </CardBody>
           </Card>
         </StackItem>
-        <StackItem style={{ height: '100%', width: '49.2%' }}>
+        <StackItem style={{ height: '100%', width: '49.5%' }}>
           <Card>
             <CardBody style={{ marginBottom: '0px' }}>
               <div style={{ textAlign: 'right' }}>

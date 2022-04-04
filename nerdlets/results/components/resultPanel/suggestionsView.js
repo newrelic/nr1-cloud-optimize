@@ -57,7 +57,7 @@ function SuggestionsView(props) {
                   <SectionMessage
                     type={SectionMessage.TYPE.SUCCESS}
                     title="No suggestions found for this workload"
-                    description="Edit the suggestions configuration in the main screen by the row actions drop down."
+                    description="You can edit the suggestions configuration in the main screen by the row actions drop down if required."
                   />
                 </CardBody>
               </Card>
