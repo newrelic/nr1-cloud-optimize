@@ -36,6 +36,24 @@ export default function AwsRdsDbInstanceView(props) {
     { key: 'Name', value: ({ item }) => item.name },
     { key: 'Region', value: ({ item }) => item?.tags?.['aws.awsRegion']?.[0] },
     {
+      key: 'Max CPU %',
+      value: ({ item }) =>
+        item?.DatastoreSample?.['max.provider.cpuUtilization.Maximum']
+    },
+    {
+      key: 'Max Memory %',
+      value: ({ item }) => item?.DatastoreSample?.memoryUsage
+    },
+    {
+      key: 'Max Storage %',
+      value: ({ item }) => item?.DatastoreSample?.storageUsage
+    },
+    {
+      key: 'Max DB Connections',
+      value: ({ item }) =>
+        item?.DatastoreSample?.['max.provider.databaseConnections.Maximum']
+    },
+    {
       key: 'Instance Type',
       value: ({ item }) => item?.tags?.['aws.dbInstanceClass']?.[0]
     },
@@ -93,6 +111,27 @@ export default function AwsRdsDbInstanceView(props) {
                   <TableRowCell>
                     {item?.tags?.['aws.awsRegion']?.[0]}
                   </TableRowCell>
+
+                  <TableRowCell>
+                    {
+                      item?.DatastoreSample?.[
+                        'max.provider.cpuUtilization.Maximum'
+                      ]
+                    }
+                  </TableRowCell>
+                  <TableRowCell>
+                    {item?.DatastoreSample?.memoryUsage}
+                  </TableRowCell>
+                  <TableRowCell>
+                    {item?.DatastoreSample?.storageUsage}
+                  </TableRowCell>
+                  <TableRowCell>
+                    {
+                      item?.DatastoreSample?.[
+                        'max.provider.databaseConnections.Maximum'
+                      ]
+                    }
+                  </TableRowCell>
                   <TableRowCell
                     additionalValue={`CPU: ${attributes.vcpu} Mem (GiB): ${attributes.memory}`}
                   >
@@ -114,10 +153,18 @@ export default function AwsRdsDbInstanceView(props) {
               <TableHeaderCell />
               <TableHeaderCell />
               <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
+              <TableHeaderCell />
             </TableHeader>
             {() => {
               return (
                 <TableRow actions={[]}>
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
+                  <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />
                   <TableRowCell />

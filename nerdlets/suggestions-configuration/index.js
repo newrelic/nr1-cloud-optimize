@@ -158,9 +158,11 @@ function ConfigurationNerdlet() {
               );
             })}
             <Button
+              style={{ marginBottom: '15px' }}
               loading={writingDocument}
               onClick={() => writeDocument()}
               type={Button.TYPE.PRIMARY}
+              sizeType={Button.SIZE_TYPE.SMALL}
             >
               Save
             </Button>

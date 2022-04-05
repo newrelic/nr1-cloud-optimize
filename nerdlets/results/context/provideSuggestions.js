@@ -21,7 +21,7 @@ export default function(entity, config) {
           // run rule
           const {
             getValue,
-            direction,
+            operator,
             response,
             label,
             message,
@@ -32,8 +32,12 @@ export default function(entity, config) {
 
           if (value) {
             if (
-              (direction === 'below' && value < checkValue) ||
-              (direction === 'above' && value > checkValue)
+              (operator === 'below' && value < checkValue) ||
+              (operator === 'less' && value < checkValue) ||
+              (operator === 'above' && value > checkValue) ||
+              (operator === 'more' && value > checkValue) ||
+              (operator === 'equal' && value === checkValue) ||
+              (operator === 'exact' && value === checkValue)
             ) {
               entity.suggestions.push({
                 response,

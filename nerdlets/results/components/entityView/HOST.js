@@ -213,7 +213,7 @@ export default function HostView(props) {
             {({ item }) => {
               const { SystemSample } = item;
               const optimizedType = item.matches?.optimized?.[0];
-              console.log(item);
+              // console.log(item);
               return (
                 <TableRow actions={[]}>
                   {/* <TableRowCell

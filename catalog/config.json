@@ -2,8 +2,16 @@
   "tagline": "Right-size AWS, GCP, and Azure",
   "repository": "https://github.com/newrelic/nr1-cloud-optimize.git",
   "details": "Cloud Optimize analyzes your cloud environment using the New Relic Infrastructure cloud integrations. \n\n The application compares the size of your instances to their utilization, identifying resources that are sized larger than needed. Cloud Optimize will estimate your savings by optimizing resource size.\n\n Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.\n\n This application supports AWS, GCP, Azure and Alibaba cloud infrastructures.",
-  "categoryTerms": ["azure", "gcp", "aws"],
-  "keywords": ["infrastructure"],
+  "categoryTerms": [
+    "azure",
+    "gcp",
+    "aws",
+    "amazon",
+    "alicloud"
+  ],
+  "keywords": [
+    "infrastructure"
+  ],
   "support": {
     "issues": {
       "url": "https://github.com/newrelic/nr1-cloud-optimize/issues"
@@ -15,5 +23,5 @@
       "url": "https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936"
     }
   },
-  "whatsNew": "- Fixes and additional handling"
+  "whatsNew": "- V3 Release"
 }

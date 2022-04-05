@@ -16,6 +16,8 @@ function OptimizerRoot() {
 
   const platformContext = useContext(PlatformStateContext);
 
+  // console.log(window.location.href);
+
   return (
     <div>
       <DataProvider {...platformContext}>

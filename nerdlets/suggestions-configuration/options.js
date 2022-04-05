@@ -9,7 +9,7 @@ exports.options = [
         response: 'downsize',
         type: 'number',
         defaultValue: 5,
-        direction: 'below',
+        operator: 'below',
         getValue: data => data?.SystemSample?.['max.cpuPercent']
       },
       lowMemory: {
@@ -19,7 +19,7 @@ exports.options = [
         response: 'downsize',
         type: 'number',
         defaultValue: 5,
-        direction: 'below',
+        operator: 'below',
         getValue: data => data?.SystemSample?.['max.memoryPercent']
       },
       highCPU: {
@@ -28,8 +28,8 @@ exports.options = [
         message: '',
         response: 'upsize',
         type: 'number',
-        defaultValue: 85,
-        direction: 'above',
+        defaultValue: 90,
+        operator: 'above',
         getValue: data => data?.SystemSample?.['max.cpuPercent']
       },
       highMemory: {
@@ -38,9 +38,35 @@ exports.options = [
         message: '',
         response: 'upsize',
         type: 'number',
-        defaultValue: 85,
-        direction: 'above',
+        defaultValue: 90,
+        operator: 'above',
         getValue: data => data?.SystemSample?.['max.memoryPercent']
+      }
+    }
+  },
+  {
+    type: 'AWSRDSDBINSTANCE',
+    suggestionsConfig: {
+      highCPU: {
+        label: 'High CPU',
+        description: '',
+        message: '',
+        response: 'upsize',
+        type: 'number',
+        defaultValue: 90,
+        operator: 'above',
+        getValue: data =>
+          data?.DatastoreSample?.['max.provider.cpuUtilization.Maximum']
+      },
+      highMemory: {
+        label: 'High Memory',
+        description: '',
+        message: '',
+        response: 'upsize',
+        type: 'number',
+        defaultValue: 90,
+        operator: 'above',
+        getValue: data => data?.DatastoreSample?.memoryUsage
       }
     }
   }

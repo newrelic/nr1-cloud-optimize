@@ -1,5 +1,8 @@
 const { batchEntityQuery, fetchPricing } = require('./utils');
 
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
 const DbQuery = `SELECT \
 max(provider.readThroughput.Maximum), max(provider.writeThroughput.Maximum), \
 max(\`provider.networkReceiveThroughput.Maximum\`), max(\`provider.networkTransmitThroughput.Maximum\`), \
@@ -16,7 +19,29 @@ const pricingUrl = (region, type, engine) =>
 
 exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
   // milliseconds to hours - divide the time value by 3.6e+6
+  const { AWSRDSDBINSTANCE, defaultCloud, defaultRegions } = config;
+  // milliseconds to hours - divide the time value by 3.6e+6
   const operatingHours = totalPeriodMs / 3.6e6;
+
+  const conf = {
+    cloud: defaultCloud || 'amazon',
+    regions: {
+      amazon: defaultRegions?.amazon || 'us-east-1'
+    },
+    optimize: {
+      cpuRightSize: parseFloat(AWSRDSDBINSTANCE?.cpuRightSize || 0.5),
+      memRightSize: parseFloat(AWSRDSDBINSTANCE?.memRightSize || 0.5),
+      cpuMemUpperOperator: AWSRDSDBINSTANCE?.cpuMemUpperOperator || 'AND',
+      cpuUpper: parseFloat(AWSRDSDBINSTANCE?.cpuUpper || 50),
+      memUpper: parseFloat(AWSRDSDBINSTANCE?.memUpper || 50),
+      cpuMemUpperStaleOperator:
+        AWSRDSDBINSTANCE?.cpuMemUpperStaleOperator || 'AND',
+      staleCpu: parseFloat(AWSRDSDBINSTANCE?.staleCpu || 3),
+      staleMem: parseFloat(AWSRDSDBINSTANCE?.staleMem || 3),
+      staleConnections: parseFloat(AWSRDSDBINSTANCE?.staleConnections || 3),
+      staleStorageUsage: parseFloat(AWSRDSDBINSTANCE?.staleStorageUsage || 3)
+    }
+  };
 
   return new Promise(resolve => {
     const query = `query Query($guids: [EntityGuid]!) {
@@ -130,7 +155,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
       const pricingData = await Promise.all(pricingDataPromises);
 
-      entityData.forEach(e => {
+      const entitiesToOptimize = [];
+
+      entityData.forEach((e, entityIndex) => {
         const eRegion = e.tags?.['aws.awsRegion']?.[0];
         const eDbInstanceClass = e.tags?.['aws.dbInstanceClass']?.[0];
         const eMultiAz = e.tags?.['aws.multiAz']?.[0];
@@ -162,7 +189,130 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             }
           }
         });
+
+        e.DatastoreSample.storageUsage =
+          ((e.DatastoreSample['provider.allocatedStorageBytes'] -
+            e.DatastoreSample['min.provider.freeStorageSpaceBytes.Minimum']) /
+            e.DatastoreSample['provider.allocatedStorageBytes']) *
+          100;
+
+        const memoryBytes =
+          (e?.price?.attributes?.memory || '').split(' ')?.[0] * 1.074e9;
+
+        // calculate memory usage here as NR doesn't have the RDS instances available memory
+        e.DatastoreSample.memoryUsage =
+          ((memoryBytes -
+            e.DatastoreSample['max.provider.freeableMemoryBytes.Maximum']) /
+            memoryBytes) *
+          100;
+
+        // stale checks
+        // undecided to implement stale checks on backend or not
+        //   cpuMemUpperStaleOperator:
+        //   AWSRDSDBINSTANCE?.cpuMemUpperStaleOperator || 'AND',
+        // staleCpu: parseFloat(AWSRDSDBINSTANCE?.staleCpu || 5),
+        // staleMem: parseFloat(AWSRDSDBINSTANCE?.staleMem || 5),
+        // staleConnections: parseFloat(AWSRDSDBINSTANCE?.staleConnections || 5),
+        // if (e.DatastoreSample.storageUsage <= conf.optimize.staleStorageUsage) {
+        //   e.stale = true;
+        // }
+        // if (
+        //   e.DatastoreSample['max.provider.databaseConnections.Maximum'] <=
+        //   conf.optimize.staleConnections
+        // ) {
+        //   e.stale = true;
+        // }
+
+        const optimize = { cpu: false, memory: false };
+
+        optimize.cpu =
+          e.DatastoreSample['max.provider.cpuUtilization.Maximum'] <=
+          conf.optimize.cpuUpper;
+
+        optimize.memory =
+          e.DatastoreSample.memoryUsage <= conf.optimize.memUpper;
+
+        const performOptimization =
+          (conf.optimize.cpuMemUpperOperator === 'AND' &&
+            optimize.cpu &&
+            optimize.memory) ||
+          (conf.optimize.cpuMemUpperOperator === 'OR' &&
+            (optimize.cpu || optimize.memory));
+
+        if (performOptimization) {
+          entitiesToOptimize.push(entityIndex);
+        }
       });
+
+      // this can be written more optimally to not re-query the same pricing
+      const entityOptimizationPromises = entitiesToOptimize.map(entityIndex => {
+        return new Promise(resolve => {
+          const { tags, determinedEngine, price } = entityData[entityIndex];
+
+          const region = tags?.['aws.awsRegion']?.[0];
+          const eMultiAz = tags?.['aws.multiAz']?.[0];
+
+          fetch(
+            `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${determinedEngine}.json`
+          )
+            .then(response => {
+              return response.json();
+            })
+            .then(priceData => {
+              const filteredPrices = priceData
+                .filter(p => {
+                  const { vcpu, memory, deploymentOption } = p?.attributes;
+                  const cpu = parseFloat(vcpu);
+                  const mem = parseFloat(memory?.split(' ')?.[0] || 0);
+
+                  if (eMultiAz && deploymentOption === 'Single-AZ') {
+                    return false;
+                  }
+
+                  if (!eMultiAz && deploymentOption === 'Multi-AZ') {
+                    return false;
+                  }
+
+                  const cpuRightSized =
+                    price?.attributes?.vcpu * conf.optimize.cpuRightSize;
+                  const memRightSized =
+                    (price?.attributes?.memory.split(' ')?.[0] || 0) *
+                    conf.optimize.memRightSize;
+
+                  if (conf.optimize.cpuMemUpperOperator === 'AND') {
+                    if (cpu <= cpuRightSized && mem <= memRightSized) {
+                      return true;
+                    }
+                  } else if (conf.optimize.cpuMemUpperOperator === 'OR') {
+                    if (cpu <= cpuRightSized || mem <= memRightSized) {
+                      return true;
+                    }
+                  }
+
+                  return false;
+                })
+                .sort(
+                  (a, b) =>
+                    parseFloat(b.onDemandPrice.pricePerUnit.USD) -
+                    parseFloat(a.onDemandPrice.pricePerUnit.USD)
+                );
+
+              entityData[entityIndex].optimized =
+                filteredPrices?.[0] || undefined;
+
+              if (entityData[entityIndex].optimized) {
+                entityData[entityIndex].optimizedPeriodCost =
+                  operatingHours *
+                  (entityData[entityIndex].optimized?.onDemandPrice
+                    ?.pricePerUnit?.USD || 0);
+              }
+
+              resolve();
+            });
+        });
+      });
+
+      await Promise.all(entityOptimizationPromises);
 
       resolve(entityData);
     });
