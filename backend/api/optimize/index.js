@@ -3,15 +3,12 @@ const AWS = require('aws-sdk');
 // eslint-disable-line import/no-extraneous-dependencies
 const lambda = new AWS.Lambda();
 
-const baseHeaders = {
-  'Access-Control-Allow-Headers': '*',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': '*',
-  'Access-Control-Allow-Credentials': true
-};
+const { NERDGRAPH_URL, BASE_HEADERS } = require('../constants');
 
 module.exports = (event, context, cb) => {
-  const { body } = event;
+  const { body, headers } = event;
+  const nerdGraphUrl = NERDGRAPH_URL[headers?.['NR-REGION'] || 'US'];
+
   const errors = [];
 
   if (
@@ -37,7 +34,7 @@ module.exports = (event, context, cb) => {
   if (errors.length > 0) {
     cb(null, {
       statusCode: 400,
-      headers: { ...baseHeaders },
+      headers: { ...BASE_HEADERS },
       body: JSON.stringify({
         success: false,
         errors,
@@ -47,6 +44,7 @@ module.exports = (event, context, cb) => {
   } else {
     const jobId = uuidv4();
     event.jobId = jobId;
+    event.nerdGraphUrl = nerdGraphUrl;
 
     const params = {
       FunctionName: `optimizer-${process.env.STAGE}-optimize-processor`,
@@ -65,7 +63,7 @@ module.exports = (event, context, cb) => {
 
     cb(null, {
       statusCode: 200,
-      headers: { ...baseHeaders },
+      headers: { ...BASE_HEADERS },
       body: JSON.stringify({
         success: true,
         jobId,

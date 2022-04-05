@@ -6,12 +6,7 @@ const pathHandlers = {
   optimize: { POST: require('./optimize') }
 };
 
-const baseHeaders = {
-  'Access-Control-Allow-Headers': '*',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': '*',
-  'Access-Control-Allow-Credentials': true
-};
+const { NERDGRAPH_URL, BASE_HEADERS } = require('./constants');
 
 module.exports.router = async (event, context, callback) => {
   const path =
@@ -20,11 +15,13 @@ module.exports.router = async (event, context, callback) => {
   const nerdGraphKey =
     event.headers?.['NR-API-KEY'] || event.headers?.['nr-api-key'];
 
+  const nerdGraphUrl = NERDGRAPH_URL[event.headers?.['NR-REGION'] || 'US'];
+
   if (!nerdGraphKey) {
     const response = {
       statusCode: 400,
       headers: {
-        ...baseHeaders
+        ...BASE_HEADERS
       },
       body: JSON.stringify({
         success: false,
@@ -34,7 +31,7 @@ module.exports.router = async (event, context, callback) => {
     callback(null, response);
   } else {
     // validate api key
-    const response = await fetch('https://api.newrelic.com/graphql', {
+    const response = await fetch(nerdGraphUrl, {
       method: 'post',
       body: JSON.stringify({
         query:
@@ -53,7 +50,7 @@ module.exports.router = async (event, context, callback) => {
       const response = {
         statusCode: 403,
         headers: {
-          ...baseHeaders
+          ...BASE_HEADERS
         },
         body: JSON.stringify({
           success: false,
@@ -81,7 +78,7 @@ module.exports.router = async (event, context, callback) => {
       const response = {
         statusCode: 400,
         headers: {
-          ...baseHeaders
+          ...BASE_HEADERS
         },
         body: JSON.stringify({
           success: false,
@@ -98,7 +95,7 @@ module.exports.router = async (event, context, callback) => {
     const response = {
       statusCode: 405,
       headers: {
-        ...baseHeaders
+        ...BASE_HEADERS
       },
       body: JSON.stringify({
         success: false,

@@ -10,6 +10,7 @@ const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const logger = require('pino')();
 const { workloadEntityFetchQuery } = require('./queries');
+const { NERDGRAPH_URL } = require('./constants');
 
 const WORKLOAD_QUEUE_LIMIT = 5; // how many workloads to handle async
 const ENTITY_TYPE_QUEUE_LIMIT = 3; // how many entity types to process async
@@ -60,8 +61,9 @@ const processorMap = {
 
 module.exports.optimize = async (event, context, callback) => {
   const startedAt = new Date().getTime();
-  const { body, key, jobId } = event;
+  const { body, key, jobId, headers } = event;
   const logJob = logger.child({ jobId });
+  const nerdGraphUrl = NERDGRAPH_URL[headers?.['NR-REGION'] || 'US'];
 
   const {
     nerdpackUUID,
@@ -93,13 +95,15 @@ module.exports.optimize = async (event, context, callback) => {
   const { jobStatusCollection, jobStatusMain } = await getJobStatus(
     nerdpackUUID,
     accountId,
-    key
+    key,
+    nerdGraphUrl
   );
 
   logJob.info({ jobStatusCollection, jobStatusMain });
 
   // write a pending job status event into nerdstorage
   await writeJobStatusEvent(
+    nerdGraphUrl,
     startedAt,
     nerdpackUUID,
     accountId,
@@ -115,7 +119,11 @@ module.exports.optimize = async (event, context, callback) => {
   );
 
   // fetch all guids attached to each workload
-  const workloadEntityData = await getWorkloadEntityData(workloadGuids, key);
+  const workloadEntityData = await getWorkloadEntityData(
+    workloadGuids,
+    key,
+    nerdGraphUrl
+  );
 
   // logJob.info({ workloadEntityData });
 
@@ -136,13 +144,15 @@ module.exports.optimize = async (event, context, callback) => {
     workloadResults,
     nerdpackUUID,
     key,
-    jobId
+    jobId,
+    nerdGraphUrl
   );
 
   logJob.info({ writeData });
 
   // update nerdstorage status doc
   await writeJobStatusEvent(
+    nerdGraphUrl,
     startedAt,
     nerdpackUUID,
     accountId,
@@ -161,17 +171,23 @@ module.exports.optimize = async (event, context, callback) => {
 };
 
 // write results for each workload
-const workloadsResultsWriter = (workloadResults, uuid, key, jobId) => {
+const workloadsResultsWriter = (
+  workloadResults,
+  uuid,
+  key,
+  jobId,
+  nerdGraphUrl
+) => {
   return new Promise(resolve => {
     const writerPromises = workloadResults.map(w =>
-      writeResults(w, uuid, key, jobId)
+      writeResults(w, uuid, key, jobId, nerdGraphUrl)
     );
     Promise.all(writerPromises).then(values => resolve(values));
   });
 };
 
 // write the results to a specific workloads nerdstorage
-const writeResults = (workload, uuid, key, jobId) => {
+const writeResults = (workload, uuid, key, jobId, nerdGraphUrl) => {
   return new Promise(resolve => {
     const completedAt = new Date().getTime();
     const shards = { 1: [] };
@@ -205,7 +221,7 @@ const writeResults = (workload, uuid, key, jobId) => {
     }));
 
     const documentQueue = async.queue((document, callback) => {
-      fetch('https://api.newrelic.com/graphql', {
+      fetch(nerdGraphUrl, {
         method: 'post',
         body: JSON.stringify({
           query:
@@ -305,6 +321,7 @@ const processWorkload = (workload, key, config, timeNrql, totalPeriodMs) => {
       const { fullType, entities } = entityTypeGroup;
       const run = processorMap[fullType]?.run;
 
+      // eslint-disable-next-line no-console
       console.log(fullType);
 
       if (run) {
@@ -391,11 +408,11 @@ const buildCost = entities => {
 };
 
 // fetch entities attached to each workload
-const getWorkloadEntityData = (workloadGuids, key) => {
+const getWorkloadEntityData = (workloadGuids, key, nerdGraphUrl) => {
   return new Promise(resolve => {
     const workloadEntityData = [];
     const workloadEntityQueue = async.queue((guid, callback) => {
-      workloadGuidFetch(guid, key).then(value => {
+      workloadGuidFetch(guid, key, nerdGraphUrl).then(value => {
         const { name, entities } = value;
         const data = { guid, name, entities };
         workloadEntityData.push(data);
@@ -412,14 +429,14 @@ const getWorkloadEntityData = (workloadGuids, key) => {
 };
 
 // fetch entities attached to specific workload
-const workloadGuidFetch = (guid, key) => {
+const workloadGuidFetch = (guid, key, nerdGraphUrl) => {
   return new Promise(resolve => {
     let name = '';
     let entities = [];
     const entityQueue = async.queue((task, callback) => {
       const { query } = task;
       // ng call
-      fetch('https://api.newrelic.com/graphql', {
+      fetch(nerdGraphUrl, {
         method: 'post',
         body: JSON.stringify({
           query
@@ -457,8 +474,8 @@ const workloadGuidFetch = (guid, key) => {
   });
 };
 
-const getJobStatus = async (uuid, accountId, key) => {
-  const response = await fetch('https://api.newrelic.com/graphql', {
+const getJobStatus = async (uuid, accountId, key, nerdGraphUrl) => {
+  const response = await fetch(nerdGraphUrl, {
     method: 'post',
     body: JSON.stringify({
       operationName: 'AccountCollectionStorage',
@@ -494,6 +511,7 @@ const getJobStatus = async (uuid, accountId, key) => {
 };
 
 const writeJobStatusEvent = async (
+  nerdGraphUrl,
   startedAt,
   uuid,
   accountId,
@@ -520,7 +538,7 @@ const writeJobStatusEvent = async (
   if (identifier) document.identifier = identifier;
   if (status === 'complete') document.completedAt = new Date().getTime();
 
-  const response = await fetch('https://api.newrelic.com/graphql', {
+  const response = await fetch(nerdGraphUrl, {
     method: 'post',
     body: JSON.stringify({
       query: `mutation PlatformNerdStorageWriteDocumentMutation($collection: String!, $document: NerdStorageDocument!, $documentId: String!, $scopeByActor: Boolean = true, $scopeId: String!, $scopeName: NerdStorageScope!) { nerdStorageWriteDocument(collection: $collection, document: $document, documentId: $documentId, scope: {id: $scopeId, name: $scopeName}, scopeByActor: $scopeByActor) }`,
