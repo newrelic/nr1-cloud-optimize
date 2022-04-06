@@ -293,7 +293,10 @@ function postData(url = '', key, data = {}) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'NR-API-KEY': key
+        'NR-API-KEY': key,
+        'NR-REGION': (window?.location?.host || '').includes('one.eu.')
+          ? 'EU'
+          : undefined
       },
       body: JSON.stringify(data)
     })
