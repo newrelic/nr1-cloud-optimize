@@ -149,7 +149,7 @@ export default function HostView(props) {
                   column === 4 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
                 onClick={(event, data) => onClickTableHeaderCell(4, data)}
-                value={({ item }) => item.matches?.exact?.[0].type}
+                value={({ item }) => item.matches?.exact?.[0]?.type}
               >
                 Type
               </TableHeaderCell>
@@ -160,7 +160,7 @@ export default function HostView(props) {
                   column === 5 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
                 onClick={(event, data) => onClickTableHeaderCell(5, data)}
-                value={({ item }) => item.matches?.exact?.[0].onDemandPrice}
+                value={({ item }) => item.matches?.exact?.[0]?.onDemandPrice}
               >
                 Price Per Hour
               </TableHeaderCell>
@@ -170,7 +170,7 @@ export default function HostView(props) {
                   column === 6 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
                 onClick={(event, data) => onClickTableHeaderCell(5, data)}
-                value={({ item }) => item.matches?.optimized?.[0].type}
+                value={({ item }) => item.matches?.optimized?.[0]?.type}
               >
                 Optimized Type
               </TableHeaderCell>
@@ -181,7 +181,9 @@ export default function HostView(props) {
                   column === 7 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
                 onClick={(event, data) => onClickTableHeaderCell(6, data)}
-                value={({ item }) => item.matches?.optimized?.[0].onDemandPrice}
+                value={({ item }) =>
+                  item.matches?.optimized?.[0]?.onDemandPrice
+                }
               >
                 Optimized Price Per Hour
               </TableHeaderCell>
@@ -247,9 +249,9 @@ export default function HostView(props) {
                       (SystemSample?.memoryGb || 0).toFixed(2)
                     )}`}
                   />
-                  <TableRowCell>{item.matches?.exact?.[0].type}</TableRowCell>
+                  <TableRowCell>{item.matches?.exact?.[0]?.type}</TableRowCell>
                   <TableRowCell>
-                    {item.matches?.exact?.[0].onDemandPrice}
+                    {item.matches?.exact?.[0]?.onDemandPrice}
                   </TableRowCell>
                   <TableRowCell
                     additionalValue={

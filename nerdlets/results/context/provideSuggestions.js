@@ -2,8 +2,8 @@ const { options } = require('../../suggestions-configuration/options');
 
 export default function(entity, config) {
   entity.suggestions = [];
-  const rules = options.find(o => o.type === entity.type)?.suggestionsConfig;
-  const configuredSuggestions = config?.[entity.type] || {};
+  const rules = options.find(o => o.type === entity?.type)?.suggestionsConfig;
+  const configuredSuggestions = config?.[entity?.type] || {};
 
   if (rules) {
     const ruleKeys = Object.keys(rules);

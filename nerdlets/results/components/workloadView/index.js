@@ -10,7 +10,7 @@ export default function WorkloadView(props) {
   const dataContext = useContext(DataContext);
   const { selectedTags } = dataContext;
   const { workload } = props;
-  const groupedEntities = _.groupBy(workload.results, e => e.type);
+  const groupedEntities = _.groupBy(workload.results, e => e?.type);
 
   return (
     <>

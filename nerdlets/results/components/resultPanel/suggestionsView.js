@@ -64,7 +64,7 @@ function SuggestionsView(props) {
             );
           }
 
-          const groupedEntities = _.groupBy(filteredEntities, e => e.type);
+          const groupedEntities = _.groupBy(filteredEntities, e => e?.type);
 
           return Object.keys(groupedEntities).map(g => {
             const entities = groupedEntities[g];
