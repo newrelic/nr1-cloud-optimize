@@ -40,7 +40,7 @@ export default function CostSummary(props) {
                   </PopoverBody>
                 </Popover>
               </HeadingText>
-              <BlockText>${cost.known}</BlockText>
+              <BlockText>${(cost?.known || 0).toFixed(2)}</BlockText>
             </Tile>
           </StackItem>
           <StackItem>
@@ -58,7 +58,7 @@ export default function CostSummary(props) {
                   </PopoverBody>
                 </Popover>
               </HeadingText>
-              <BlockText>${cost.estimated}</BlockText>
+              <BlockText>${(cost?.estimated || 0).toFixed(2)}</BlockText>
             </Tile>
           </StackItem>
           <StackItem>
@@ -77,7 +77,9 @@ export default function CostSummary(props) {
                   </PopoverBody>
                 </Popover>
               </HeadingText>
-              <BlockText>${cost.known + cost.estimated}</BlockText>
+              <BlockText>
+                ${((cost?.known || 0) + (cost?.estimated || 0)).toFixed(2)}
+              </BlockText>
             </Tile>
           </StackItem>
           {/* <StackItem>
@@ -115,7 +117,7 @@ export default function CostSummary(props) {
                   </PopoverBody>
                 </Popover>
               </HeadingText>
-              <BlockText>${cost.potentialSaving}</BlockText>
+              <BlockText>${(cost?.potentialSaving || 0).toFixed(2)}</BlockText>
             </Tile>
           </StackItem>
         </Stack>

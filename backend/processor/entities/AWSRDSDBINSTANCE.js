@@ -14,6 +14,14 @@ max(\`provider.swapUsage\`), max(\`provider.swapUsageBytes.Maximum\`), \
 max(provider.cpuUtilization.Maximum), max(provider.freeableMemoryBytes.Maximum) \
 FROM DatastoreSample WHERE provider='RdsDbInstance' LIMIT 1`;
 
+const metricDbQuery = `SELECT \
+max(aws.rds.ReadThroughput), max(aws.rds.WriteThroughput), \
+max(aws.rds.NetworkTransmitThroughput), max(aws.rds.NetworkReceiveThroughput), \
+max(aws.rds.ReadIOPS), max(aws.rds.WriteIOPS), max(aws.rds.DatabaseConnections), \
+max(aws.rds.allocatedStorageBytes), min(aws.rds.FreeStorageSpace), \
+max(aws.rds.CPUUtilization), latest(aws.rds.engine), latest(aws.rds.engineVersion), latest(aws.rds.dbInstanceClass) \
+FROM Metric LIMIT 1`;
+
 const pricingUrl = (region, type, engine) =>
   `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`;
 
@@ -61,6 +69,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           DatastoreSample: nrdbQuery(nrql: "${DbQuery} ${timeNrql}") {
             results
           }
+          MetricSample: nrdbQuery(nrql: "${metricDbQuery} ${timeNrql}") {
+            results
+          }
         }
       }
     }`;
@@ -79,6 +90,10 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       entityData.forEach(e => {
         // move samples top level
         const DatastoreSample = e?.DatastoreSample?.results?.[0] || {};
+        const MetricSample = e?.MetricSample?.results?.[0] || {};
+
+        console.log(JSON.stringify(DatastoreSample));
+        console.log(JSON.stringify(MetricSample));
 
         // clean up keys
         Object.keys(DatastoreSample).forEach(key => {

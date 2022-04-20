@@ -20,7 +20,7 @@ const K8sContainerDataQuery = (hostname, timeRange) =>
   `FROM K8sContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', \
   latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuCoresUtilization) as 'maxCpuCoresUtilization', \
   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsedBytes) as 'maxMemoryUsedBytes', max(memoryUtilization) as 'maxMemoryUtilization' \
-  WHERE hostname = '${hostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
+  WHERE hostname = '${hostname}' OR host = '${hostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
 
 const simplifyProduct = priceData => {
   const {
