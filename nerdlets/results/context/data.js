@@ -214,8 +214,14 @@ export class DataProvider extends Component {
         );
         const entityTags = this.buildTags(workloadData);
 
-        this.setState({ workloadData, costSummary, entityTags }, () =>
-          resolve(workloadData)
+        this.setState(
+          {
+            workloadData,
+            costSummary,
+            entityTags,
+            fetchingWorkloadData: false
+          },
+          () => resolve(workloadData)
         );
       });
     });

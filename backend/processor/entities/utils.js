@@ -67,31 +67,36 @@ exports.batchEntityQuery = (key, query, entities, config) => {
           'Content-Type': 'application/json',
           'API-Key': key
         }
-      }).then(async response => {
-        const httpData = await response.json();
-        const entities = (httpData?.data?.actor?.entities || []).map(e => {
-          // perform some tag sanitization
-          const tags = {};
-          e.tags
-            .filter(
-              t =>
-                !ignoreTags.includes(t.key) &&
-                !ignoreTags.includes(t.key.toLowerCase()) &&
-                (t.key.startsWith('label.') || allowedTags.includes(t.key))
-            )
-            .forEach(t => {
-              tags[t.key] = t.values;
-            });
+      })
+        .then(async response => {
+          const httpData = await response.json();
+          const entities = (httpData?.data?.actor?.entities || []).map(e => {
+            // perform some tag sanitization
+            const tags = {};
+            e.tags
+              .filter(
+                t =>
+                  !ignoreTags.includes(t.key) &&
+                  !ignoreTags.includes(t.key.toLowerCase()) &&
+                  (t.key.startsWith('label.') || allowedTags.includes(t.key))
+              )
+              .forEach(t => {
+                tags[t.key] = t.values;
+              });
 
-          const entity = { ...e, tags };
+            const entity = { ...e, tags };
 
-          return entity;
+            return entity;
+          });
+
+          entityData = [...entityData, ...entities];
+
+          callback();
+        })
+        .catch(e => {
+          console.log('failed @ batchEntityQuery', e); // eslint-disable-line no-console
+          callback();
         });
-
-        entityData = [...entityData, ...entities];
-
-        callback();
-      });
     }, BATCH_QUEUE_LIMIT);
 
     entityQueue.push(guidChunks);
@@ -124,19 +129,29 @@ exports.nrqlQuery = (key, accountId, nrql) => {
         'Content-Type': 'application/json',
         'API-Key': key
       }
-    }).then(async response => {
-      const httpData = await response.json();
-      const nrqlData = httpData?.data?.actor?.account?.nrql;
-      resolve(nrqlData);
-    });
+    })
+      .then(async response => {
+        const httpData = await response.json();
+        const nrqlData = httpData?.data?.actor?.account?.nrql;
+        resolve(nrqlData);
+      })
+      .catch(e => {
+        console.log('nrqlQuery failed', e); // eslint-disable-line no-console
+        resolve();
+      });
   });
 };
 
 exports.fetchPricing = (url, cloud, region, engine, type) => {
   return new Promise(resolve => {
     fetch(url).then(async response => {
-      const httpData = await response.json();
-      resolve({ priceData: httpData, cloud, region, engine, type });
+      try {
+        const httpData = await response.json();
+        resolve({ priceData: httpData, cloud, region, engine, type });
+      } catch (e) {
+        console.log('failed @ fetchPricing', e); // eslint-disable-line no-console
+        resolve();
+      }
     });
   });
 };

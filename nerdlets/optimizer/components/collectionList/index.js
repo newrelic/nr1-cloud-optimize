@@ -76,7 +76,7 @@ export default function CollectionList(props) {
   const actions = hasResults => {
     const allActions = [
       {
-        label: 'Run',
+        label: 'Run (Analyze past 7 days)',
         onClick: async (evt, { item }) => {
           Toast.showToast({
             title: 'Requesting job',

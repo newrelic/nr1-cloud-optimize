@@ -323,6 +323,10 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
               }
 
               resolve();
+            })
+            .catch(e => {
+              console.log('failed @ RDS entityOptimizationPromises', e); // eslint-disable-line no-console
+              resolve();
             });
         });
       });

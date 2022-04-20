@@ -7,7 +7,8 @@ import {
   Link,
   StackItem,
   SegmentedControl,
-  SegmentedControlItem
+  SegmentedControlItem,
+  EmptyState
 } from 'nr1';
 import DataContext from '../../context/data';
 import WorkloadView from '../workloadView';
@@ -17,8 +18,26 @@ import SuggestionsView from './suggestionsView';
 // eslint-disable-next-line no-unused-vars
 export default function ResultsPanel(props) {
   const dataContext = useContext(DataContext);
-  const { workloadData, costSummary } = dataContext;
+  const { workloadData, costSummary, fetchingWorkloadData } = dataContext;
   const [view, setView] = useState('cost');
+
+  if (fetchingWorkloadData) {
+    return (
+      <StackItem
+        grow
+        style={{
+          paddingTop: '5px',
+          width: '99%',
+          backgroundColor: 'white'
+        }}
+      >
+        <EmptyState
+          title="Hold tight — we’re fetching your data"
+          type={EmptyState.TYPE.LOADING}
+        />
+      </StackItem>
+    );
+  }
 
   const suggestions = Object.keys(workloadData)
     .map(guid => workloadData[guid]?.results || [])

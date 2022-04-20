@@ -174,7 +174,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/optimizer/dev/1650440069312-2022-04-20T07:34:29.312Z/optimizer.zip"
+          "S3Key": "serverless/optimizer/dev/1650490161323-2022-04-20T21:29:21.323Z/optimizer.zip"
         },
         "Handler": "api/index.router",
         "Runtime": "nodejs14.x",
@@ -199,16 +199,6 @@
         "MainLogGroup"
       ]
     },
-    "MainLambdaVersionS7gkGsQeAyGcnwxg8nNHTeIoeG3AicBo5WuXyVus": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "MainLambdaFunction"
-        },
-        "CodeSha256": "Vp4KVKkBx3/mZi+1LImTlaWWhyEnjgzzY9CWPY5JQKk="
-      }
-    },
     "OptimizeDashprocessorLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -216,7 +206,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/optimizer/dev/1650440069312-2022-04-20T07:34:29.312Z/optimizer.zip"
+          "S3Key": "serverless/optimizer/dev/1650490161323-2022-04-20T21:29:21.323Z/optimizer.zip"
         },
         "Handler": "processor/index.optimize",
         "Runtime": "nodejs14.x",
@@ -241,14 +231,24 @@
         "OptimizeDashprocessorLogGroup"
       ]
     },
-    "OptimizeDashprocessorLambdaVersiondRFBW96npYsNeTop2YOOkf1QZDyeMm3CvndKZudLTf4": {
+    "MainLambdaVersion6JoCnKK6jlqNEYsuaLLV6vPZWwc7fIQiom42rDbBoY": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "MainLambdaFunction"
+        },
+        "CodeSha256": "qFaD283QhfWxQG80MH9CDsKk96w6aX0DbLPwkO5Qv/Y="
+      }
+    },
+    "OptimizeDashprocessorLambdaVersionbmTxttOVA3zx0wdoUzTc6jlo4JICiThUzvUcvXks5Y": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "OptimizeDashprocessorLambdaFunction"
         },
-        "CodeSha256": "Vp4KVKkBx3/mZi+1LImTlaWWhyEnjgzzY9CWPY5JQKk="
+        "CodeSha256": "qFaD283QhfWxQG80MH9CDsKk96w6aX0DbLPwkO5Qv/Y="
       }
     },
     "ApiGatewayRestApi": {
@@ -419,7 +419,10 @@
           }
         },
         "MethodResponses": []
-      }
+      },
+      "DependsOn": [
+        "MainLambdaPermissionApiGateway"
+      ]
     },
     "ApiGatewayMethodProxyVarAny": {
       "Type": "AWS::ApiGateway::Method",
@@ -462,9 +465,12 @@
           }
         },
         "MethodResponses": []
-      }
+      },
+      "DependsOn": [
+        "MainLambdaPermissionApiGateway"
+      ]
     },
-    "ApiGatewayDeployment1650440066433": {
+    "ApiGatewayDeployment1650490159487": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -521,18 +527,27 @@
     "ServerlessDeploymentBucketName": {
       "Value": {
         "Ref": "ServerlessDeploymentBucket"
+      },
+      "Export": {
+        "Name": "sls-optimizer-dev-ServerlessDeploymentBucketName"
       }
     },
     "MainLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "MainLambdaVersionS7gkGsQeAyGcnwxg8nNHTeIoeG3AicBo5WuXyVus"
+        "Ref": "MainLambdaVersion6JoCnKK6jlqNEYsuaLLV6vPZWwc7fIQiom42rDbBoY"
+      },
+      "Export": {
+        "Name": "sls-optimizer-dev-MainLambdaFunctionQualifiedArn"
       }
     },
     "OptimizeDashprocessorLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "OptimizeDashprocessorLambdaVersiondRFBW96npYsNeTop2YOOkf1QZDyeMm3CvndKZudLTf4"
+        "Ref": "OptimizeDashprocessorLambdaVersionbmTxttOVA3zx0wdoUzTc6jlo4JICiThUzvUcvXks5Y"
+      },
+      "Export": {
+        "Name": "sls-optimizer-dev-OptimizeDashprocessorLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -556,6 +571,9 @@
             "/dev"
           ]
         ]
+      },
+      "Export": {
+        "Name": "sls-optimizer-dev-ServiceEndpoint"
       }
     }
   }

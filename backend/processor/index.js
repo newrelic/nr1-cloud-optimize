@@ -442,28 +442,35 @@ const workloadGuidFetch = (guid, key, nerdGraphUrl) => {
           query
         }),
         headers: { 'Content-Type': 'application/json', 'API-Key': key }
-      }).then(async response => {
-        const httpData = await response.json();
-        name = httpData?.data?.actor?.entity?.name;
+      })
+        .then(async response => {
+          const httpData = await response.json();
+          name = httpData?.data?.actor?.entity?.name;
 
-        const relatedEntities =
-          httpData?.data?.actor?.entity?.relatedEntities || null;
+          const relatedEntities =
+            httpData?.data?.actor?.entity?.relatedEntities || null;
 
-        if (relatedEntities) {
-          const returnedEntities = (relatedEntities?.results || []).map(
-            r => r.target.entity
-          );
-          const cursor = relatedEntities?.nextCursor;
-          entities = [...entities, ...returnedEntities];
+          if (relatedEntities) {
+            const returnedEntities = (relatedEntities?.results || []).map(
+              r => r.target.entity
+            );
+            const cursor = relatedEntities?.nextCursor;
+            entities = [...entities, ...returnedEntities];
 
-          if (cursor) {
-            entityQueue.push({ query: workloadEntityFetchQuery(guid, cursor) });
+            if (cursor) {
+              entityQueue.push({
+                query: workloadEntityFetchQuery(guid, cursor)
+              });
+            }
+            callback();
+          } else {
+            callback();
           }
+        })
+        .catch(e => {
+          console.log('failed @ workloadGuidFetch', e); // eslint-disable-line no-console
           callback();
-        } else {
-          callback();
-        }
-      });
+        });
     }, WORKLOAD_QUEUE_LIMIT);
 
     entityQueue.push({ query: workloadEntityFetchQuery(guid) });

@@ -133,7 +133,7 @@ export default function AwsRdsDbInstanceView(props) {
                     }
                   </TableRowCell>
                   <TableRowCell
-                    additionalValue={`CPU: ${attributes.vcpu} Mem (GiB): ${attributes.memory}`}
+                    additionalValue={`CPU: ${attributes?.vcpu} Mem (GiB): ${attributes?.memory}`}
                   >
                     {item?.tags?.['aws.dbInstanceClass']?.[0]}
                   </TableRowCell>
