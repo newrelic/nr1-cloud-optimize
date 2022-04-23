@@ -44,7 +44,6 @@ The application shows cost and performance metrics per service and the potential
 ![Screenshot #2](catalog/screenshots/nr1-cloud-optimize-2.png)
 ![Screenshot #3](catalog/screenshots/nr1-cloud-optimize-3.png)
 
-> In-Context Application Optimization requires APM
 
 ## Open Source License
 
