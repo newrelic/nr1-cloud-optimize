@@ -107,6 +107,10 @@ export default function AwsRdsDbInstanceView(props) {
                   <EntityTitleTableRowCell
                     value={item}
                     onClick={() => navigation.openStackedEntity(item.guid)}
+                    additionalValue={
+                      item?.tags?.['aws.storageType']?.[0] &&
+                      item?.tags?.['aws.storageType']?.[0]
+                    }
                   />
                   <TableRowCell>
                     {item?.tags?.['aws.awsRegion']?.[0]}
@@ -133,7 +137,10 @@ export default function AwsRdsDbInstanceView(props) {
                     }
                   </TableRowCell>
                   <TableRowCell
-                    additionalValue={`CPU: ${attributes?.vcpu} Mem (GiB): ${attributes?.memory}`}
+                    additionalValue={
+                      attributes?.vcpu &&
+                      `CPU: ${attributes?.vcpu} Mem (GiB): ${attributes?.memory}`
+                    }
                   >
                     {item?.tags?.['aws.dbInstanceClass']?.[0]}
                   </TableRowCell>

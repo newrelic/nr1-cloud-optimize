@@ -150,7 +150,7 @@ exports.fetchPricing = (url, cloud, region, engine, type) => {
         resolve({ priceData: httpData, cloud, region, engine, type });
       } catch (e) {
         console.log('failed @ fetchPricing', e); // eslint-disable-line no-console
-        resolve();
+        resolve({});
       }
     });
   });

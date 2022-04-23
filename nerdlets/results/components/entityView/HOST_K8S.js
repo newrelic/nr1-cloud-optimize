@@ -215,6 +215,8 @@ export default function HostKubernetesView(props) {
             {({ item }) => {
               const { SystemSample } = item;
               const optimizedType = item.matches?.optimized?.[0];
+              const exactType = item.matches?.exact?.[0];
+
               // console.log(item);
               return (
                 <TableRow actions={[]}>
@@ -232,7 +234,9 @@ export default function HostKubernetesView(props) {
                   <EntityTitleTableRowCell
                     value={item}
                     onClick={() => navigation.openStackedEntity(item.guid)}
-                    additionalValue={item.isSpot ? 'spot instance' : ''}
+                    additionalValue={
+                      item?.tags?.['label.KubernetesCluster']?.[0]
+                    }
                   />
                   <TableRowCell additionalValue={item.cloudRegion}>
                     {item.cloud}
@@ -249,7 +253,15 @@ export default function HostKubernetesView(props) {
                       (SystemSample?.memoryGb || 0).toFixed(2)
                     )}`}
                   />
-                  <TableRowCell>{item.matches?.exact?.[0]?.type}</TableRowCell>
+                  <TableRowCell
+                    additionalValue={
+                      exactType
+                        ? `CPU: ${exactType.cpu} Memory: ${exactType.memory}`
+                        : undefined
+                    }
+                  >
+                    {exactType?.type}
+                  </TableRowCell>
                   <TableRowCell>
                     {item.matches?.exact?.[0]?.onDemandPrice}
                   </TableRowCell>

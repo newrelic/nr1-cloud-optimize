@@ -197,7 +197,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/optimizer/dev/1650614958445-2022-04-22T08:09:18.445Z/optimizer.zip"
+                "S3Key": "serverless/optimizer/dev/1650699450443-2022-04-23T07:37:30.443Z/optimizer.zip"
               },
               "Handler": "api/index.router",
               "Runtime": "nodejs14.x",
@@ -229,7 +229,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/optimizer/dev/1650614958445-2022-04-22T08:09:18.445Z/optimizer.zip"
+                "S3Key": "serverless/optimizer/dev/1650699450443-2022-04-23T07:37:30.443Z/optimizer.zip"
               },
               "Handler": "processor/index.optimize",
               "Runtime": "nodejs14.x",
@@ -254,24 +254,24 @@
               "OptimizeDashprocessorLogGroup"
             ]
           },
-          "MainLambdaVersiongpXKw9q1d32YGZOMb832t4jtoePnA8SnXQZUjien2B0": {
+          "MainLambdaVersionbLa4uFBobruk4fuifYJqxYYmcsSuX39VtN2QW4Zqes": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "MainLambdaFunction"
               },
-              "CodeSha256": "i9x9l3leyCS049jBP+LEBURGV8Aem5o62IavacERJTI="
+              "CodeSha256": "mg4lAJODS3Rtrc2iYx8U4pFfFczIb+tP4pg/fCMoDo4="
             }
           },
-          "OptimizeDashprocessorLambdaVersionSowLQWu0EOlyE9rbJhFRjO2RXu4s6GNuR0tkudjdowc": {
+          "OptimizeDashprocessorLambdaVersionRHubhexHIiAniGOXsQo8ZHlLTtl2m0zSxcIiZvh1mU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "OptimizeDashprocessorLambdaFunction"
               },
-              "CodeSha256": "i9x9l3leyCS049jBP+LEBURGV8Aem5o62IavacERJTI="
+              "CodeSha256": "mg4lAJODS3Rtrc2iYx8U4pFfFczIb+tP4pg/fCMoDo4="
             }
           },
           "ApiGatewayRestApi": {
@@ -493,7 +493,7 @@
               "MainLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1650614956755": {
+          "ApiGatewayDeployment1650699448735": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -558,7 +558,7 @@
           "MainLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "MainLambdaVersiongpXKw9q1d32YGZOMb832t4jtoePnA8SnXQZUjien2B0"
+              "Ref": "MainLambdaVersionbLa4uFBobruk4fuifYJqxYYmcsSuX39VtN2QW4Zqes"
             },
             "Export": {
               "Name": "sls-optimizer-dev-MainLambdaFunctionQualifiedArn"
@@ -567,7 +567,7 @@
           "OptimizeDashprocessorLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "OptimizeDashprocessorLambdaVersionSowLQWu0EOlyE9rbJhFRjO2RXu4s6GNuR0tkudjdowc"
+              "Ref": "OptimizeDashprocessorLambdaVersionRHubhexHIiAniGOXsQo8ZHlLTtl2m0zSxcIiZvh1mU"
             },
             "Export": {
               "Name": "sls-optimizer-dev-OptimizeDashprocessorLambdaFunctionQualifiedArn"
@@ -733,7 +733,7 @@
         "memory": 256,
         "runtime": "nodejs14.x",
         "vpc": {},
-        "versionLogicalId": "MainLambdaVersiongpXKw9q1d32YGZOMb832t4jtoePnA8SnXQZUjien2B0"
+        "versionLogicalId": "MainLambdaVersionbLa4uFBobruk4fuifYJqxYYmcsSuX39VtN2QW4Zqes"
       },
       "optimize-processor": {
         "timeout": 900,
@@ -744,7 +744,7 @@
         "memory": 256,
         "runtime": "nodejs14.x",
         "vpc": {},
-        "versionLogicalId": "OptimizeDashprocessorLambdaVersionSowLQWu0EOlyE9rbJhFRjO2RXu4s6GNuR0tkudjdowc"
+        "versionLogicalId": "OptimizeDashprocessorLambdaVersionRHubhexHIiAniGOXsQo8ZHlLTtl2m0zSxcIiZvh1mU"
       }
     },
     "configValidationMode": "warn",
@@ -765,7 +765,7 @@
     "artifact": "/home/kav/newrelic/nr1-apps/nr1-cloud-optimize/backend/.serverless/optimizer.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/optimizer/dev/1650614958445-2022-04-22T08:09:18.445Z",
+    "artifactDirectoryName": "serverless/optimizer/dev/1650699450443-2022-04-23T07:37:30.443Z",
     "artifact": "optimizer.zip"
   }
 }

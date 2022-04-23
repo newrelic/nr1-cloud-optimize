@@ -90,10 +90,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       entityData.forEach(e => {
         // move samples top level
         const DatastoreSample = e?.DatastoreSample?.results?.[0] || {};
-        const MetricSample = e?.MetricSample?.results?.[0] || {};
-
-        console.log(JSON.stringify(DatastoreSample));
-        console.log(JSON.stringify(MetricSample));
+        // const MetricSample = e?.MetricSample?.results?.[0] || {};
+        // console.log(JSON.stringify(DatastoreSample));
+        // console.log(JSON.stringify(MetricSample));
 
         // clean up keys
         Object.keys(DatastoreSample).forEach(key => {
@@ -113,29 +112,16 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         const dbInstanceClass = e.tags?.['aws.dbInstanceClass']?.[0];
 
         let determinedEngine = '';
+        const engines = ['mysql', 'mariadb', 'oracle', 'postgres', 'sqlserver'];
 
-        if (engine.includes('aurora')) {
-          if (engineVersion.includes('mysql')) {
-            determinedEngine = 'mysql';
+        for (let z = 0; z < engines.length; z++) {
+          if (
+            engine.includes(engines[z]) ||
+            engineVersion.includes(engines[z])
+          ) {
+            determinedEngine = engines[z];
+            break;
           }
-          if (engineVersion.includes('mariadb')) {
-            determinedEngine = 'mariadb';
-          }
-          if (engineVersion.includes('oracle')) {
-            determinedEngine = 'oracle';
-          }
-          if (engineVersion.includes('postgres')) {
-            determinedEngine = 'postgresql';
-          }
-          if (engineVersion.includes('sqlserver')) {
-            determinedEngine = 'sqlserver';
-          }
-        } else {
-          if (engine.includes('sqlserver')) determinedEngine = 'sqlserver';
-          if (engine.includes('oracle')) determinedEngine = 'oracle';
-          if (engine.includes('postgres')) determinedEngine = 'postgresql';
-          if (engine.includes('mysql')) determinedEngine = 'mysql';
-          if (engine.includes('mariadb')) determinedEngine = 'mariadb';
         }
 
         e.determinedEngine = determinedEngine;
@@ -179,6 +165,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         pricingData.forEach(({ priceData, region, engine, type }) => {
           if (
+            priceData &&
             region === eRegion &&
             engine === e.determinedEngine &&
             type === eDbInstanceClass

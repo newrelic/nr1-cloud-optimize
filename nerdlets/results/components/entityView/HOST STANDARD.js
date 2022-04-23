@@ -200,6 +200,7 @@ export default function HostStandardView(props) {
 
             {({ item }) => {
               const { SystemSample } = item;
+              const exactType = item.matches?.exact?.[0];
               const optimizedType = item.matches?.optimized?.[0];
               // console.log(item);
               return (
@@ -235,7 +236,15 @@ export default function HostStandardView(props) {
                       (SystemSample?.memoryGb || 0).toFixed(2)
                     )}`}
                   />
-                  <TableRowCell>{item.matches?.exact?.[0]?.type}</TableRowCell>
+                  <TableRowCell
+                    additionalValue={
+                      exactType
+                        ? `CPU: ${exactType.cpu} Memory: ${exactType.memory}`
+                        : undefined
+                    }
+                  >
+                    {exactType?.type}
+                  </TableRowCell>
                   <TableRowCell>
                     {item.matches?.exact?.[0]?.onDemandPrice}
                   </TableRowCell>
