@@ -119,7 +119,7 @@ export default function CollectionList(props) {
             if (data?.success) {
               Toast.showToast({
                 title: 'Job sent successfully',
-                description: 'Processing...',
+                description: 'Processing... can take up to 15m',
                 type: Toast.TYPE.NORMAL
               });
             }

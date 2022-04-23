@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Badge,
   navigation,
   Table,
   TableHeader,
@@ -40,6 +41,8 @@ function SuggestionsView(props) {
   return (
     <>
       <StackItem grow style={{ width: '99%' }}>
+        <Badge type={Badge.TYPE.INFO}>BETA</Badge>
+
         {Object.keys(workloadData).map(guid => {
           const data = workloadData[guid];
 

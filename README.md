@@ -8,11 +8,37 @@
 
 Optimizer analyzes your cloud environment using the [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure) cloud integrations.
 
-The application compares the size of your instances to their utilization, identifying resources that are sized larger than needed. Optimizer will estimate your savings by optimizing resource size.
+The application shows cost and performance metrics per service and the potential impact to your environment as well as cost optimization suggestions.
 
-Users of Optimizer are able to select the hosts, regions and other configurations to specify their unique business use cases.
 
-This application supports AWS, GCP, Azure and Alibaba cloud infrastructures.
+### Features
+- Historical Tracking
+  - Compare & analysis before and after or against major events eg. Black friday
+
+- Time range support
+  - Isolate costs during specific periods
+
+- Tag filtering
+  - Isolate costs during specific periods
+
+- Tuneable suggestions system
+  - Provide high level insights and recommendations to teams
+
+###  Service support
+
+| AWS              | Azure     | GCP    | Alibaba Cloud | Other          | 
+| ---------------- | --------- | ------ | ------------- | -------------  |
+| EC2              | VMS       | VMS    | ECS           | K8s Containers |
+| RDS              |           |        |               |                |
+| APIGATEWAY       |           |        |               |                |
+| ALB
+| ELB
+| SQS
+| ELASTICSEARCH
+| ELASTICACHE
+| LAMBDA
+
+### Screenshots
 
 ![Screenshot #1](catalog/screenshots/nr1-cloud-optimize-1.png)
 ![Screenshot #2](catalog/screenshots/nr1-cloud-optimize-2.png)

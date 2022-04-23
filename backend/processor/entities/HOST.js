@@ -9,18 +9,18 @@ const BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
 
 const SystemSampleQuery = `FROM SystemSample SELECT \
                                       latest(timestamp), latest(provider.instanceLifecycle), \
-                                      latest(entityGuid), latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(configName), \
+                                      latest(entityGuid), latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(fullHostname), latest(configName), \
                                       latest(awsRegion), latest(regionName), latest(zone), latest(regionId), latest(ec2InstanceId), latest(ec2InstanceType), latest(instanceType),\
                                       latest(coreCount), latest(processorCount), latest(memoryTotalBytes), latest(diskTotalBytes), latest(operatingSystem), \
                                       max(cpuPercent), max(memoryUsedBytes), max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' LIMIT 1`;
 
 const NetworkSampleQuery = `FROM NetworkSample SELECT max(receiveBytesPerSecond), max(transmitBytesPerSecond) FACET interfaceName`;
 
-const K8sContainerDataQuery = (hostname, timeRange) =>
+const K8sContainerDataQuery = (hostname, fullHostname, timeRange) =>
   `FROM K8sContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', \
   latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuCoresUtilization) as 'maxCpuCoresUtilization', \
   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsedBytes) as 'maxMemoryUsedBytes', max(memoryUtilization) as 'maxMemoryUtilization' \
-  WHERE hostname = '${hostname}' OR host = '${hostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
+  WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
 
 const simplifyProduct = priceData => {
   const {
@@ -172,6 +172,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             e.k8s = true;
             k8sHosts.push({
               hostname: e?.SystemSample?.hostname,
+              fullHostname: e?.SystemSample?.fullHostname,
               accountId: e.tags?.accountId?.[0],
               guid: e.guid
             });
@@ -188,7 +189,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             nrqlQuery(
               key,
               parseInt(k.accountId),
-              K8sContainerDataQuery(k.hostname, timeNrql)
+              K8sContainerDataQuery(k.hostname, k.fullHostname, timeNrql)
             ).then(data => {
               resolve({ data, hostname: k.hostname, guid: k.guid });
             });
