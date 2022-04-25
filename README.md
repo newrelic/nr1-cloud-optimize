@@ -39,7 +39,7 @@ The application shows cost and performance metrics per service and the potential
 | LAMBDA
 
 ### Contributing and improving
-We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think off.
+We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think off. Please raise an issue with as much detail as possible.
 
 ### Screenshots
 
