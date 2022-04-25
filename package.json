@@ -13,7 +13,8 @@
     "o": "39d3665c-8670-4f9f-aa79-1a18f23d3960",
     "dv2": "ec734258-b5ca-41b2-84ef-d97352e0ea19",
     "tls": "0197dff1-7829-4663-b21e-196eafbe2c33",
-    "xps": "e84e5818-7009-4b76-af86-105e1f6abb87"
+    "xps": "e84e5818-7009-4b76-af86-105e1f6abb87",
+    "md": "133e5293-34d4-4f77-9be8-ae096e4b9936"
   },
   "bugs": {
     "email": "opensource@newrelic.com"
@@ -26,10 +27,12 @@
     "lodash": "^4.17.21",
     "prop-types": "^15.6.2",
     "react-json-to-csv": "^1.0.4",
+    "react-modal": "^3.14.4",
     "react-select": "^3.1.1",
     "react-toastify": "^5.5.0",
     "semantic-ui-react": "^0.88.2",
-    "semver": "^7.3.4"
+    "semver": "^7.3.4",
+    "uuid": "^8.3.2"
   },
   "browserslist": [
     "last 2 versions",
@@ -42,7 +45,7 @@
     "@semantic-release/git": "^9.0.0",
     "eslint": "^6.8.0",
     "prettier": "^1.19.1",
-    "react": "16.6.3",
-    "react-dom": "16.6.3"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   }
 }

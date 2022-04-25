@@ -1,24 +1,52 @@
 [![New Relic One Catalog Project header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/New_Relic_One_Catalog_Project.png)](https://opensource.newrelic.com/oss-category/#new-relic-one-catalog-project)
 
-# Cloud Optimize (nr1-cloud-optimize)
+# Optimizer (nr1-cloud-optimize)
 
 ![CI](https://github.com/newrelic/nr1-cloud-optimize/workflows/CI/badge.svg) ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-cloud-optimize?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-cloud-optimize/badge.svg)](https://snyk.io/test/github/newrelic/nr1-cloud-optimize)
 
 ## Usage
 
-Cloud Optimize analyzes your cloud environment using the [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure) cloud integrations.
+This application analyzes your environment using various integrations eg. Cloud Integrations, Infrastructure Agent, Kubernetes etc.
 
-The application compares the size of your instances to their utilization, identifying resources that are sized larger than needed. Cloud Optimize will estimate your savings by optimizing resource size.
+The application shows cost and performance metrics per service and the potential impact to your environment as well as cost optimization suggestions.
 
-Users of Cloud Optimize are able to select the hosts, regions and other configurations to specify their unique business use cases.
 
-This application supports AWS, GCP, Azure and Alibaba cloud infrastructures.
+### Features
+- Historical Tracking
+  - Compare & analysis before and after or against major events eg. Black friday
+
+- Time range support
+  - Isolate costs during specific periods
+
+- Tag filtering
+  - Isolate costs during specific periods
+
+- Tuneable suggestions system (beta)
+  - Provide high level insights and recommendations to teams
+
+###  Service support
+
+| AWS              | Azure     | GCP    | Alibaba Cloud | Other          | 
+| ---------------- | --------- | ------ | ------------- | -------------  |
+| EC2              | VMS       | VMS    | ECS           | K8s            |
+| RDS              |           |        |               |                |
+| APIGATEWAY       |           |        |               |                |
+| ALB
+| ELB
+| SQS
+| ELASTICSEARCH
+| ELASTICACHE
+| LAMBDA
+
+### Contributing and improving
+We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think off. Please raise an issue with as much detail as possible.
+
+### Screenshots
 
 ![Screenshot #1](catalog/screenshots/nr1-cloud-optimize-1.png)
 ![Screenshot #2](catalog/screenshots/nr1-cloud-optimize-2.png)
 ![Screenshot #3](catalog/screenshots/nr1-cloud-optimize-3.png)
 
-> In-Context Application Optimization requires APM
 
 ## Open Source License
 
@@ -34,6 +62,8 @@ You'll get the best possible data out of this application if you also:
 - [Activate the Azure VMs integration](https://docs.newrelic.com/docs/integrations/microsoft-azure-integrations/azure-integrations-list/azure-vms-monitoring-integration) to group by your Azure cloud provider account.
 - [Activate the Google Compute integration](https://docs.newrelic.com/docs/integrations/google-cloud-platform-integrations/gcp-integrations-list/google-compute-engine-monitoring-integration) to group by your GCP cloud provider account.
 - [Install APM on your applications](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#apm-install) to group by application.
+- [Install the Kubernetes integration](https://docs.newrelic.com/docs/kubernetes-pixie/kubernetes-integration/installation/kubernetes-integration-install-configure/) for node and container optimizations
+
 
 ## Getting started
 
@@ -80,7 +110,7 @@ New Relic hosts and moderates an online forum where you can interact with New Re
 
 [https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936](https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936)
 
-Please do not report issues with Cloud Optimize to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
+Please do not report issues with Optimizer to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
 
 ## Issues / Enhancement Requests
 
