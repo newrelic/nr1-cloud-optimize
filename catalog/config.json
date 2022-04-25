@@ -6,9 +6,10 @@
     "azure",
     "gcp",
     "aws",
-    "amazon",
-    "alicloud",
-    "optimize"
+    "containers",
+    "kubernetes",
+    "infrastructure",
+    "network"
   ],
   "keywords": [
     "infrastructure"
