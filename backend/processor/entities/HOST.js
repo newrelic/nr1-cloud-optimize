@@ -22,6 +22,14 @@ const K8sContainerDataQuery = (hostname, fullHostname, timeRange) =>
   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsedBytes) as 'maxMemoryUsedBytes', max(memoryUtilization) as 'maxMemoryUtilization' \
   WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
 
+// future
+// const ContainerDataQuery = (hostname, fullHostname, timeRange) =>
+//   `FROM ContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', \
+//   latest(ecsClusterName) as 'ecsClusterName', latest(ecsContainerName) as 'ecsContainerName', latest(ecsTaskDefinitionFamily) as 'ecsTaskDefinitionFamily', \
+//   latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuUsedCoresPercent) as 'maxCpuUsedCoresPercent', \
+//   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsageBytes) as 'maxMemoryUsedBytes', max(memoryUsageLimitPercent) as 'maxMemoryUsageLimitPercent' \
+//   WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
+
 const simplifyProduct = priceData => {
   const {
     onDemandPrice,

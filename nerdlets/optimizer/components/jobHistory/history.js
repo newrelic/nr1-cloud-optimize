@@ -56,6 +56,8 @@ export default function History(props) {
   //   });
   // };
 
+  const currentTime = new Date().getTime();
+
   const onClickTableHeaderCell = (nextColumn, { nextSortingType }) => {
     if (nextColumn === column) {
       setSortingType(nextSortingType);
@@ -131,9 +133,10 @@ export default function History(props) {
 
           {({ item }) => {
             const { document, wlCollectionName } = item;
-            const { startedAt, completedAt } = document;
+            const { startedAt, completedAt, status } = document;
             const startTime = new Date(startedAt).toLocaleString();
             const endTime = new Date(completedAt).toLocaleString();
+            const failed = currentTime - startedAt > 900000 && !completedAt; // 15m
 
             return (
               <TableRow actions={actions()}>
@@ -142,13 +145,21 @@ export default function History(props) {
                 >
                   {wlCollectionName || item.id}
                 </TableRowCell>
-                <TableRowCell
-                  additionalValue={
-                    completedAt ? `Start:  ${startTime}` : undefined
-                  }
-                >
-                  {completedAt ? `Finish: ${endTime}` : `Start:   ${startTime}`}
-                </TableRowCell>
+                {failed ? (
+                  <TableRowCell style={{ color: 'red', fontWeight: 'bold' }}>
+                    FAILED
+                  </TableRowCell>
+                ) : (
+                  <TableRowCell
+                    additionalValue={
+                      completedAt ? `Start:  ${startTime}` : status
+                    }
+                  >
+                    {completedAt
+                      ? `Finish: ${endTime}`
+                      : `Start:   ${startTime}`}
+                  </TableRowCell>
+                )}
               </TableRow>
             );
           }}

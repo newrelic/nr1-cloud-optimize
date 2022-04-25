@@ -86,14 +86,10 @@ export default function Results(props) {
     <>
       <Stack directionType={Stack.DIRECTION_TYPE.VERTICAL} fullWidth>
         <StackItem grow style={{ width: '99%' }}>
-          <Card>
-            <CardBody>
-              <SectionMessage
-                title="Please note all information should be considered best effort as it is based on public pricing and available usage data."
-                description="The data should be used as general guidance to help you find optimization opportunities"
-              />
-            </CardBody>
-          </Card>
+          <SectionMessage
+            title="Please note all information should be considered best effort as it is based on public pricing and available usage data."
+            description="The data should be used as general guidance to help you find optimization opportunities"
+          />
         </StackItem>
       </Stack>
       <Stack

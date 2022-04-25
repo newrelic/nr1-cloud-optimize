@@ -93,7 +93,7 @@ export default function CollectionList(props) {
             if (data?.success) {
               Toast.showToast({
                 title: 'Job sent successfully',
-                description: 'Processing...',
+                description: 'Processing... can take up to 15m',
                 type: Toast.TYPE.NORMAL
               });
             }
@@ -211,8 +211,13 @@ export default function CollectionList(props) {
     },
     {
       value: ({ item }) => item?.history?.[0]?.document?.startedAt,
-      width: '25%',
-      key: 'Last Optimized At'
+      width: '15%',
+      key: 'Last Optimization Request'
+    },
+    {
+      value: ({ item }) => item?.history?.[0]?.document?.status,
+      key: 'Latest status',
+      alignmentType: TableRowCell.ALIGNMENT_TYPE.RIGHT
     }
   ];
 
@@ -245,14 +250,22 @@ export default function CollectionList(props) {
         {({ item }) => {
           const { id, document, history } = item;
 
-          const isRunning = false;
-
-          const startedAt = history?.[0]
-            ? new Date(history?.[0]?.document?.startedAt).toLocaleString()
+          const currentTime = new Date().getTime();
+          const lastHistory = history?.[0];
+          const startedAt = lastHistory?.document?.startedAt;
+          const startedAtText = lastHistory
+            ? new Date(startedAt).toLocaleString()
             : undefined;
 
-          const hasResults = (history || []).length > 0;
+          const failed =
+            startedAt &&
+            currentTime - startedAt > 900000 &&
+            !lastHistory?.document?.completedAt; // 15m
 
+          const isRunning =
+            lastHistory?.document?.status === 'pending' && !failed;
+
+          const hasResults = (history || []).length > 0;
           return (
             <TableRow actions={actions(hasResults)}>
               <TableRowCell additionalValue={id}>{document.name}</TableRowCell>
@@ -265,18 +278,15 @@ export default function CollectionList(props) {
                 {document.createdBy}
               </TableRowCell>
 
-              <TableRowCell>{startedAt}</TableRowCell>
+              <TableRowCell>{startedAtText}</TableRowCell>
 
               {isRunning ? (
                 <TableRowCell style={{ textAlign: 'right' }}>
                   <Spinner inline type={Spinner.TYPE.DOT} />
                 </TableRowCell>
               ) : (
-                <TableRowCell
-                  style={{ textAlign: 'right' }}
-                  additionalValue="additionalFailValue"
-                >
-                  lastResultText
+                <TableRowCell style={{ textAlign: 'right' }}>
+                  {failed ? 'FAILED' : lastHistory?.document?.status}
                 </TableRowCell>
               )}
             </TableRow>

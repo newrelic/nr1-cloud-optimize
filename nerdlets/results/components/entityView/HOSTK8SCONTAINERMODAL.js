@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  navigation,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -39,8 +38,8 @@ export default function HostK8sContainerModal(props) {
     SystemSample.memoryTotalBytes / 1000 / 1000 / 1000;
   const costPerComputeUnit = (exactPeriodCost || 0) / hostComputeUnits;
 
-  let totalContainerCost = 0;
-  let totalContainerCostConfigured = 0;
+  // let totalContainerCost = 0;
+  // let totalContainerCostConfigured = 0;
 
   const containers = (K8sContainerData || [])
     .map(c => {
@@ -78,7 +77,7 @@ export default function HostK8sContainerModal(props) {
       const cpuCost = maxCpuUsedCores * coreMultiplier * costPerComputeUnit;
       const memCost = memoryUsedGb * costPerComputeUnit;
       const estimatedCost = cpuCost + memCost;
-      totalContainerCost += estimatedCost || 0;
+      // totalContainerCost += estimatedCost || 0;
 
       //
       const confCpuCost =
@@ -86,8 +85,8 @@ export default function HostK8sContainerModal(props) {
       const confMemCost = (memoryLimitGb || 0) * costPerComputeUnit;
       const estimatedCostConfigured = confCpuCost + confMemCost;
 
-      totalContainerCostConfigured +=
-        estimatedCostConfigured || estimatedCost || 0;
+      // totalContainerCostConfigured +=
+      //   estimatedCostConfigured || estimatedCost || 0;
 
       return {
         ...c,
@@ -102,7 +101,7 @@ export default function HostK8sContainerModal(props) {
 
   return (
     <>
-      <Card collapsible style={{ marginLeft: '0px', height: '95%' }}>
+      <Card style={{ marginLeft: '0px', height: '92%' }}>
         <CardHeader
           style={{ marginLeft: '0px', width: '80%' }}
           title={`${entity.name} - Kubernetes Containers (${containers.length})`}

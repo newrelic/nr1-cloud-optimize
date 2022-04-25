@@ -11,7 +11,8 @@ import {
   EntityTitleTableRowCell,
   Card,
   CardHeader,
-  CardBody
+  CardBody,
+  Badge
 } from 'nr1';
 import Modal from 'react-modal';
 import HostK8sContainerModal from './HOSTK8SCONTAINERMODAL';
@@ -80,7 +81,11 @@ export default function HostKubernetesView(props) {
 
   return (
     <>
-      <Modal isOpen={modalData} contentLabel="Minimal Modal Example">
+      <Modal
+        isOpen={modalData}
+        contentLabel="K8s Container Modal"
+        ariaHideApp={false}
+      >
         <Button
           onClick={() => setModal(false)}
           type={Button.TYPE.PRIMARY}
@@ -89,6 +94,8 @@ export default function HostKubernetesView(props) {
         >
           Close
         </Button>
+        <br /> <br />
+        <Badge type={Badge.TYPE.INFO}>BETA</Badge>
         <HostK8sContainerModal entity={modalData} setModal={setModal} />
       </Modal>
       <Card collapsible style={{ marginLeft: '0px' }}>
@@ -278,7 +285,7 @@ export default function HostKubernetesView(props) {
                   <TableRowCell>{item.potentialSaving}</TableRowCell>
                   <TableRowCell>{item.exactPeriodCost}</TableRowCell>
                   <TableRowCell>
-                    {item.K8sContainerData && item.K8sContainerData.length > 0 && (
+                    {(item?.K8sContainerData || []).length > 0 && (
                       <Button
                         onClick={() => setModal(item)}
                         type={Button.TYPE.PRIMARY}

@@ -195,7 +195,6 @@ export default function HostStandardView(props) {
               >
                 Cost (Price Per Hour * Hours)
               </TableHeaderCell>
-              <TableHeaderCell>&nbsp;</TableHeaderCell>
             </TableHeader>
 
             {({ item }) => {
