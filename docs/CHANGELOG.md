@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.1.0...v3.2.0) (2022-04-25)
+
+
+### Features
+
+* update category terms ([99a3f00](https://github.com/newrelic/nr1-cloud-optimize/commit/99a3f00db12eab221fc71fca71c2b3e649091151))
+
 # [3.1.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.0.0...v3.1.0) (2022-04-25)
 
 
