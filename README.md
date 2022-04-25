@@ -6,7 +6,7 @@
 
 ## Usage
 
-Optimizer analyzes your cloud environment using the [`New Relic Infrastructure`](https://newrelic.com/products/infrastructure) cloud integrations.
+This application analyzes your environment using various integrations eg. Cloud Integrations, Infrastructure Agent, Kubernetes etc.
 
 The application shows cost and performance metrics per service and the potential impact to your environment as well as cost optimization suggestions.
 
@@ -21,14 +21,14 @@ The application shows cost and performance metrics per service and the potential
 - Tag filtering
   - Isolate costs during specific periods
 
-- Tuneable suggestions system
+- Tuneable suggestions system (beta)
   - Provide high level insights and recommendations to teams
 
 ###  Service support
 
 | AWS              | Azure     | GCP    | Alibaba Cloud | Other          | 
 | ---------------- | --------- | ------ | ------------- | -------------  |
-| EC2              | VMS       | VMS    | ECS           | K8s Containers |
+| EC2              | VMS       | VMS    | ECS           | K8s            |
 | RDS              |           |        |               |                |
 | APIGATEWAY       |           |        |               |                |
 | ALB
@@ -37,6 +37,9 @@ The application shows cost and performance metrics per service and the potential
 | ELASTICSEARCH
 | ELASTICACHE
 | LAMBDA
+
+### Contributing and improving
+We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think off.
 
 ### Screenshots
 
@@ -59,6 +62,8 @@ You'll get the best possible data out of this application if you also:
 - [Activate the Azure VMs integration](https://docs.newrelic.com/docs/integrations/microsoft-azure-integrations/azure-integrations-list/azure-vms-monitoring-integration) to group by your Azure cloud provider account.
 - [Activate the Google Compute integration](https://docs.newrelic.com/docs/integrations/google-cloud-platform-integrations/gcp-integrations-list/google-compute-engine-monitoring-integration) to group by your GCP cloud provider account.
 - [Install APM on your applications](https://docs.newrelic.com/docs/agents/manage-apm-agents/installation/install-agent#apm-install) to group by application.
+- [Install the Kubernetes integration](https://docs.newrelic.com/docs/kubernetes-pixie/kubernetes-integration/installation/kubernetes-integration-install-configure/) for node and container optimizations
+
 
 ## Getting started
 
