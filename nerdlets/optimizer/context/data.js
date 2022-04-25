@@ -168,7 +168,7 @@ export class DataProvider extends Component {
                 accountCollection: data,
                 accountSelectError: foundAccount
                   ? null
-                  : 'You are either not authorized to query this account or this account is not subscribed to use this application.'
+                  : 'Please change account or subscribe this application to the relevant accounts'
               },
               () => {
                 this.fetchJobStatus();
