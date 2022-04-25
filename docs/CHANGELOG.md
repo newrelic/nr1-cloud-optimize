@@ -1,3 +1,17 @@
+# [3.0.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.13.0...v3.0.0) (2022-04-25)
+
+
+* BREAKING CHANGE: v3 release (#106) ([bc7e26d](https://github.com/newrelic/nr1-cloud-optimize/commit/bc7e26d0d8b19464c8c8a8b6b5a9afb84cc3442a)), closes [#106](https://github.com/newrelic/nr1-cloud-optimize/issues/106)
+
+
+### BREAKING CHANGES
+
+* v3 docs update
+
+* feat: update docs
+
+* fix: eslint
+
 # [2.13.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v2.12.2...v2.13.0) (2022-03-28)
 
 
