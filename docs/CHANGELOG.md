@@ -1,3 +1,10 @@
+# [3.4.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.3.0...v3.4.0) (2022-04-26)
+
+
+### Features
+
+* clear checkbox values ([5bbda28](https://github.com/newrelic/nr1-cloud-optimize/commit/5bbda282b9c9de43a37e8d6949a1f717bf499b03))
+
 # [3.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.2.0...v3.3.0) (2022-04-26)
 
 
