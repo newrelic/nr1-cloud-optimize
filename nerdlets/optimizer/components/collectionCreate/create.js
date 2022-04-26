@@ -68,7 +68,7 @@ export default function CollectionCreate(props) {
   };
 
   return (
-    <>
+    <div>
       <HeadingText
         type={HeadingText.TYPE.HEADING_3}
         style={{ fontSize: '18px' }}
@@ -139,6 +139,6 @@ export default function CollectionCreate(props) {
       >
         Close
       </Button>
-    </>
+    </div>
   );
 }

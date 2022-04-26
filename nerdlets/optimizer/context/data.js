@@ -155,7 +155,8 @@ export class DataProvider extends Component {
           fetchingAccountCollection: true,
           email,
           userId,
-          selectedAccount: foundAccount || { id: accountId, name: null }
+          selectedAccount: foundAccount || { id: accountId, name: null },
+          fetchingAccessibleWorkloads: false // reset so it can be re-queried
         },
         () => {
           AccountStorageQuery.query({
@@ -326,7 +327,7 @@ export class DataProvider extends Component {
   // fetch workloads at the provider level
   // this allows us to avoid refreshing if the modal is open and closed multiple times and we can track if a fetch is in progress
   fetchAccessibleWorkloads = () => {
-    const { fetchingAccessibleWorkloads } = this.state;
+    const { fetchingAccessibleWorkloads, accountId } = this.state;
 
     if (!fetchingAccessibleWorkloads) {
       this.setState({ fetchingAccessibleWorkloads: true }, async () => {
@@ -345,14 +346,14 @@ export class DataProvider extends Component {
 
             workloads = [...workloads, ...workloadEntities];
             if (cursor) {
-              workloadQueue.push(workloadDiscoveryQuery(cursor));
+              workloadQueue.push(workloadDiscoveryQuery(accountId, cursor));
             }
 
             callback();
           });
         }, QUEUE_LIMIT);
 
-        workloadQueue.push({ query: workloadDiscoveryQuery() });
+        workloadQueue.push({ query: workloadDiscoveryQuery(accountId) });
 
         await workloadQueue.drain();
 

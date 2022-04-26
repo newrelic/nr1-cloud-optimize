@@ -30,10 +30,10 @@ export const catalogNerdpacksQuery = ngql`{
   }
 }`;
 
-export const workloadDiscoveryQuery = cursor => ngql`
+export const workloadDiscoveryQuery = (accountId, cursor) => ngql`
 {
   actor {
-    entitySearch(query: "type = 'WORKLOAD'") {
+    entitySearch(query: "type = 'WORKLOAD' and tags.accountId = '${accountId}'") {
       results${cursor ? `(cursor: "${cursor}")` : ''} {
         entities {
           ... on WorkloadEntityOutline {
