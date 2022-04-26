@@ -82,7 +82,7 @@ export default function History(props) {
   };
 
   return (
-    <>
+    <div>
       <HeadingText
         type={HeadingText.TYPE.HEADING_3}
         style={{ fontSize: '18px' }}
@@ -183,6 +183,6 @@ export default function History(props) {
       >
         Close
       </Button>
-    </>
+    </div>
   );
 }
