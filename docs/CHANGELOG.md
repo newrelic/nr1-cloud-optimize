@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.2.0...v3.3.0) (2022-04-26)
+
+
+### Features
+
+* create collection filter to accountId ([7921aa6](https://github.com/newrelic/nr1-cloud-optimize/commit/7921aa6eed239652f6077bfd3508db4cdf6904f9))
+
 # [3.2.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.1.0...v3.2.0) (2022-04-25)
 
 
