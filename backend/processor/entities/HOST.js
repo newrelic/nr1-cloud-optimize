@@ -222,10 +222,14 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       await Promise.all(pricingPromises).then(pricingValues => {
         pricingValues.forEach(pv => {
           const { cloud, region, priceData } = pv;
-          // sort on demand pricing low to high
-          pricing[cloud][region] = priceData.products.sort(
-            (a, b) => a.onDemandPrice - b.onDemandPrice
-          );
+          if (cloud && region && priceData) {
+            if (!pricing[cloud]) pricing[cloud] = {};
+
+            // sort on demand pricing low to high
+            pricing[cloud][region] = (priceData.products || []).sort(
+              (a, b) => a.onDemandPrice - b.onDemandPrice
+            );
+          }
         });
       });
 

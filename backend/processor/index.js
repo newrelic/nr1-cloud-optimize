@@ -325,13 +325,19 @@ const processWorkload = (workload, key, config, timeNrql, totalPeriodMs) => {
       console.log(fullType);
 
       if (run) {
-        run(entities, key, config || {}, timeNrql, totalPeriodMs).then(
-          values => {
-            entityTypeData[fullType] = values;
-            entityTypeCost[fullType] = buildCost(values);
-            callback();
-          }
-        );
+        try {
+          run(entities, key, config || {}, timeNrql, totalPeriodMs).then(
+            values => {
+              entityTypeData[fullType] = values;
+              entityTypeCost[fullType] = buildCost(values);
+              callback();
+            }
+          );
+        } catch (e) {
+          console.log(`${fullType} run failed`, e); // eslint-disable-line no-console
+          entityTypeData[fullType] = entities;
+          callback();
+        }
       } else {
         entityTypeData[fullType] = entities;
         callback();
