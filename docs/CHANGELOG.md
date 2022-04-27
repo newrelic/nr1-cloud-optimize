@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.4.0...v3.5.0) (2022-04-27)
+
+
+### Features
+
+* add backend docs ([dd8c3d9](https://github.com/newrelic/nr1-cloud-optimize/commit/dd8c3d9ec9cb1e2ec3f39542a2c1ec0534c54431))
+
 # [3.4.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.3.0...v3.4.0) (2022-04-26)
 
 
