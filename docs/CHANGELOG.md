@@ -1,3 +1,10 @@
+# [3.6.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.5.0...v3.6.0) (2022-05-02)
+
+
+### Features
+
+* add settings/obfuscate ([7ed13a0](https://github.com/newrelic/nr1-cloud-optimize/commit/7ed13a0c6c3c2059cecd4ea9b4e6d64c698c875f))
+
 # [3.5.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.4.0...v3.5.0) (2022-04-27)
 
 
