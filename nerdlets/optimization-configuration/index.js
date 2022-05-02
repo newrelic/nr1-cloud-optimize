@@ -130,14 +130,14 @@ function ConfigurationNerdlet() {
             { title: 'OR', value: 'OR' }
           ]
         },
-        includedInstanceTypes: {
-          label: 'Included Instance Types',
-          description:
-            'Only return instances that are matched from this comma separated list',
-          type: 'string',
-          defaultValue: '',
-          placeholder: 'Enter a comma separated list'
-        },
+        // includedInstanceTypes: {
+        //   label: 'Included Instance Types',
+        //   description:
+        //     'Only return instances that are matched from this comma separated list',
+        //   type: 'string',
+        //   defaultValue: '',
+        //   placeholder: 'Enter a comma separated list'
+        // },
         excludedInstanceTypes: {
           label: 'Excluded Instance Types',
           description:
@@ -226,7 +226,7 @@ function ConfigurationNerdlet() {
                         value={formConfig?.[o.type]?.[key] || defaultValue}
                         onChange={e =>
                           updateValue(
-                            'number',
+                            'string',
                             o.type,
                             key,
                             e.target.value,

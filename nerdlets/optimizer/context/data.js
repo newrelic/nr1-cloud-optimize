@@ -59,7 +59,8 @@ export class DataProvider extends Component {
       fetchingJobStatus: false,
       timeRange: null,
       messages: [],
-      userConfig: null
+      userConfig: null,
+      obfuscate: false
     };
   }
 
@@ -190,6 +191,13 @@ export class DataProvider extends Component {
                       iconType: Icon.TYPE.DATE_AND_TIME__DATE_AND_TIME__DATE,
                       onClick: () =>
                         this.updateDataState({ jobHistoryOpen: true })
+                    },
+                    {
+                      label: 'Settings',
+                      type: 'secondary',
+                      iconType: Icon.TYPE.INTERFACE__OPERATIONS__CONFIGURE,
+                      onClick: () =>
+                        this.updateDataState({ settingsModalOpen: true })
                     }
                   ]
                 });

@@ -4,12 +4,20 @@ import _ from 'lodash';
 import EntityView from '../entityView';
 import { checkTags } from '../../context/calculate';
 import { StackItem, Card, CardBody } from 'nr1';
+import { generateFakeName } from '../../../shared/utils';
 
 // eslint-disable-next-line no-unused-vars
 export default function WorkloadView(props) {
   const dataContext = useContext(DataContext);
-  const { selectedTags } = dataContext;
+  const { selectedTags, obfuscate } = dataContext;
   const { workload } = props;
+
+  if (obfuscate) {
+    workload.results.forEach(e => {
+      e.name = generateFakeName();
+    });
+  }
+
   const groupedEntities = _.groupBy(workload.results, e => e?.type);
 
   return (

@@ -26,7 +26,8 @@ export default function CollectionList(props) {
     optimizerKey,
     uuid,
     timeRange,
-    email
+    email,
+    obfuscate
   } = dataContext;
 
   // const [name, setName] = useState("");
@@ -178,7 +179,8 @@ export default function CollectionList(props) {
             urlState: {
               wlCollectionId: item.id,
               ...item.document,
-              account: selectedAccount
+              account: selectedAccount,
+              obfuscate
             }
           };
 

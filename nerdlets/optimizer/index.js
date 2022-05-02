@@ -5,6 +5,7 @@ import CollectionCreateModal from './components/collectionCreate';
 import Optimizer from './components/optimizer';
 import CollectionEditModal from './components/collectionEdit';
 import JobHistoryModal from './components/jobHistory';
+import SettingsModal from './components/settings/modal';
 
 function OptimizerRoot() {
   useEffect(() => {
@@ -24,6 +25,7 @@ function OptimizerRoot() {
         <CollectionEditModal />
         <CollectionCreateModal />
         <JobHistoryModal />
+        <SettingsModal />
         <Optimizer />
       </DataProvider>
     </div>

@@ -316,9 +316,12 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
               (cpuMemUpperOp === 'OR' && (cpuOptimize || memOptimize))
             ) {
               // optimize
-              const { cpu, memory } = e.matches.exact?.[0];
+              const exact = e.matches.exact?.[0];
+              const cpu = exact?.cpu;
+              const memory = exact?.memory;
+
               const cpuCount = parseFloat(
-                cpu || e.SystemSample['latest.coreCount']
+                cpu || e.SystemSample['latest.coreCount'] || 1
               );
               const memGb = parseFloat(
                 memory || e.SystemSample['latest.memoryTotalBytes'] * 1e-9

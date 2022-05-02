@@ -225,12 +225,15 @@ export default function HostStandardView(props) {
                   </TableRowCell>
                   <MetricTableRowCell
                     type={MetricTableRowCell.TYPE.PERCENTAGE}
-                    value={SystemSample['max.cpuPercent'] / 100}
-                    additionalValue={`Core Count: ${SystemSample?.coreCount}`}
+                    value={(SystemSample?.['max.cpuPercent'] || 0) / 100}
+                    additionalValue={
+                      SystemSample?.coreCount &&
+                      `Core Count: ${SystemSample?.coreCount}`
+                    }
                   />
                   <MetricTableRowCell
                     type={MetricTableRowCell.TYPE.PERCENTAGE}
-                    value={SystemSample['max.memoryPercent'] / 100}
+                    value={(SystemSample?.['max.memoryPercent'] || 0) / 100}
                     additionalValue={`Memory GB: ${Math.round(
                       (SystemSample?.memoryGb || 0).toFixed(2)
                     )}`}

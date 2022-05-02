@@ -96,7 +96,8 @@ module.exports.optimize = async (event, context, callback) => {
     nerdpackUUID,
     accountId,
     key,
-    nerdGraphUrl
+    nerdGraphUrl,
+    callback
   );
 
   logJob.info({ jobStatusCollection, jobStatusMain });
@@ -487,7 +488,7 @@ const workloadGuidFetch = (guid, key, nerdGraphUrl) => {
   });
 };
 
-const getJobStatus = async (uuid, accountId, key, nerdGraphUrl) => {
+const getJobStatus = async (uuid, accountId, key, nerdGraphUrl, callback) => {
   const response = await fetch(nerdGraphUrl, {
     method: 'post',
     body: JSON.stringify({
@@ -516,6 +517,11 @@ const getJobStatus = async (uuid, accountId, key, nerdGraphUrl) => {
 
   const httpData = await response.json();
   const nerdStoreData = httpData?.data?.actor?.account?.nerdStorage;
+
+  if (!nerdStoreData) {
+    logger.info('failed to get nerdstorage data', httpData);
+    callback(null, null);
+  }
 
   return {
     jobStatusCollection: nerdStoreData.collection,
