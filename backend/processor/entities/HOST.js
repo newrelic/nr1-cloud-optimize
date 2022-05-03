@@ -148,6 +148,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         const NetworkSample = e?.NetworkSample?.results?.[0] || {};
         e.NetworkSample = NetworkSample;
+        e.clusterName =
+          e?.tags?.clusterName?.[0] ||
+          e?.tags?.['label.KubernetesCluster']?.[0];
 
         const { awsRegion, regionName, zone, regionId } = SystemSample;
 

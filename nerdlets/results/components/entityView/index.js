@@ -18,7 +18,7 @@ export default function EntityView(props) {
   const renderView = (group, entities) => {
     switch (group) {
       case 'HOST':
-        return <HostView entities={entities} />;
+        return <HostView entities={entities} obfuscate={obfuscate} />;
       case 'AWSAPIGATEWAYAPI':
         return <AwsAPIGatewayView entities={entities} />;
       case 'AWSELASTICSEARCHNODE':

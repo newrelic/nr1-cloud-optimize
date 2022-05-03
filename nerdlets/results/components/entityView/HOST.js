@@ -4,7 +4,7 @@ import HostKubernetesView from './HOST_K8S';
 
 // eslint-disable-next-line no-unused-vars
 export default function HostView(props) {
-  const { entities } = props;
+  const { entities, obfuscate } = props;
 
   const standardHosts = [];
   const k8sHosts = [];
@@ -20,9 +20,11 @@ export default function HostView(props) {
   return (
     <>
       {standardHosts.length > 0 && (
-        <HostStandardView entities={standardHosts} />
+        <HostStandardView entities={standardHosts} obfuscate={obfuscate} />
       )}
-      {k8sHosts.length > 0 && <HostKubernetesView entities={k8sHosts} />}
+      {k8sHosts.length > 0 && (
+        <HostKubernetesView entities={k8sHosts} obfuscate={obfuscate} />
+      )}
     </>
   );
 }
