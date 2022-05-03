@@ -1,3 +1,10 @@
+# [3.10.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.9.0...v3.10.0) (2022-05-03)
+
+
+### Features
+
+* nrql retry, update grouping, add podName ([45fc1a4](https://github.com/newrelic/nr1-cloud-optimize/commit/45fc1a4e069468faed524de700394d587fc845a1))
+
 # [3.9.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.8.0...v3.9.0) (2022-05-03)
 
 
