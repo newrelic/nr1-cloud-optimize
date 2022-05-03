@@ -1,3 +1,10 @@
+# [3.8.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.7.0...v3.8.0) (2022-05-03)
+
+
+### Features
+
+* update table naming ([da6ae5c](https://github.com/newrelic/nr1-cloud-optimize/commit/da6ae5cdf3430dbdb3d432efa8de75590d10ca83))
+
 # [3.7.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.6.0...v3.7.0) (2022-05-03)
 
 
