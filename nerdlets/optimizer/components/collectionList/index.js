@@ -38,6 +38,7 @@ export default function CollectionList(props) {
     TableHeaderCell.SORTING_TYPE.NONE
   );
   const isLocal = !window.location.href.includes('https://one.newrelic.com');
+  console.log(window.location.href); // eslint-disable-line no-console
   const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const deleteWorkloadCollection = documentId => {

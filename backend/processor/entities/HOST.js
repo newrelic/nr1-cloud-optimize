@@ -9,7 +9,7 @@ const BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
 
 const SystemSampleQuery = `FROM SystemSample SELECT \
                                       latest(timestamp), latest(provider.instanceLifecycle), \
-                                      latest(entityGuid), latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(fullHostname), latest(configName), \
+                                      latest(entityGuid), latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(fullHostname), latest(configName), latest(clusterName), \
                                       latest(awsRegion), latest(regionName), latest(zone), latest(regionId), latest(ec2InstanceId), latest(ec2InstanceType), latest(instanceType),\
                                       latest(coreCount), latest(processorCount), latest(memoryTotalBytes), latest(diskTotalBytes), latest(operatingSystem), \
                                       max(cpuPercent), max(memoryUsedBytes), max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' LIMIT 1`;
@@ -150,7 +150,8 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         e.NetworkSample = NetworkSample;
         e.clusterName =
           e?.tags?.clusterName?.[0] ||
-          e?.tags?.['label.KubernetesCluster']?.[0];
+          e?.tags?.['label.KubernetesCluster']?.[0] ||
+          e.SystemSample.clusterName;
 
         const { awsRegion, regionName, zone, regionId } = SystemSample;
 
@@ -176,18 +177,32 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           pricing[e.cloud][e.cloudRegion] = null;
         }
 
-        // check if k8s host
-        const keys = Object.keys(e?.tags || {});
-        for (let z = 0; z < keys.length; z++) {
-          if (keys[z].includes('k8s') || keys[z].includes('kubernetes')) {
-            e.k8s = true;
-            k8sHosts.push({
-              hostname: e?.SystemSample?.hostname,
-              fullHostname: e?.SystemSample?.fullHostname,
-              accountId: e.tags?.accountId?.[0],
-              guid: e.guid
-            });
-            break;
+        // check if aks or eks k8s host
+        if (
+          e.clusterName &&
+          (e.name.startsWith('gke-') || e.name.startsWith('aks-'))
+        ) {
+          e.k8s = true;
+          k8sHosts.push({
+            hostname: e?.SystemSample?.hostname,
+            fullHostname: e?.SystemSample?.fullHostname,
+            accountId: e.tags?.accountId?.[0],
+            guid: e.guid
+          });
+        } else {
+          // check if standard k8s host
+          const keys = Object.keys(e?.tags || {});
+          for (let z = 0; z < keys.length; z++) {
+            if (keys[z].includes('k8s') || keys[z].includes('kubernetes')) {
+              e.k8s = true;
+              k8sHosts.push({
+                hostname: e?.SystemSample?.hostname,
+                fullHostname: e?.SystemSample?.fullHostname,
+                accountId: e.tags?.accountId?.[0],
+                guid: e.guid
+              });
+              break;
+            }
           }
         }
       });
@@ -238,7 +253,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
       // determine instance and pricing
       entityData.forEach(e => {
-        if (e.k8s) {
+        if (e.k8s || e.k8sMaybe) {
           e.K8sContainerData =
             (k8sContainerData || []).find(d => d.guid === e.guid)?.data
               ?.results || [];
