@@ -66,10 +66,10 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             key
             values
           }
-          DatastoreSample: nrdbQuery(nrql: "${DbQuery} ${timeNrql}") {
+          DatastoreSample: nrdbQuery(nrql: "${DbQuery} ${timeNrql}", timeout: 120) {
             results
           }
-          MetricSample: nrdbQuery(nrql: "${metricDbQuery} ${timeNrql}") {
+          MetricSample: nrdbQuery(nrql: "${metricDbQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

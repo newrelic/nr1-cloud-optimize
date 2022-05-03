@@ -29,7 +29,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             key
             values
           }
-          NodeSample: nrdbQuery(nrql: "${NodeQuery} ${timeNrql}") {
+          NodeSample: nrdbQuery(nrql: "${NodeQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

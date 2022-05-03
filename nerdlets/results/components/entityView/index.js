@@ -13,7 +13,7 @@ import HostView from './HOST';
 
 // eslint-disable-next-line no-unused-vars
 export default function EntityView(props) {
-  const { entities, group } = props;
+  const { entities, group, obfuscate } = props;
 
   const renderView = (group, entities) => {
     switch (group) {
@@ -22,9 +22,16 @@ export default function EntityView(props) {
       case 'AWSAPIGATEWAYAPI':
         return <AwsAPIGatewayView entities={entities} />;
       case 'AWSELASTICSEARCHNODE':
-        return <AwsElasticsearchNodeView entities={entities} />;
+        return (
+          <AwsElasticsearchNodeView entities={entities} obfuscate={obfuscate} />
+        );
       case 'AWSELASTICACHEREDISNODE':
-        return <AwsElasticacheRedisNodeView entities={entities} />;
+        return (
+          <AwsElasticacheRedisNodeView
+            entities={entities}
+            obfuscate={obfuscate}
+          />
+        );
       case 'AWSELB':
         return <AwsElbView entities={entities} />;
       case 'AWSALB':

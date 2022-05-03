@@ -16,12 +16,11 @@ function OptimizerRoot() {
   }, []);
 
   const platformContext = useContext(PlatformStateContext);
-
-  // console.log(window.location.href);
+  const isLocal = !window.location.href.includes('https://one.newrelic.com');
 
   return (
     <div>
-      <DataProvider {...platformContext}>
+      <DataProvider {...platformContext} isLocal={isLocal}>
         <CollectionEditModal />
         <CollectionCreateModal />
         <JobHistoryModal />
