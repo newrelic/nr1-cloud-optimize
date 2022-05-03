@@ -6,11 +6,5 @@
       "Customers unanimously wanted more services and to view the cost and performance by workload.",
       "We had to re-architect the application completely so we can continue to add new services and functionality easily."
     ]
-  },
-  {
-    "title":"2022-05-03 - Updates are being deployed!",
-    "messages":[
-      "The backend is currently being updated, the 'Run' functionality will not work appropriately during this period."
-    ]
   }
 ]

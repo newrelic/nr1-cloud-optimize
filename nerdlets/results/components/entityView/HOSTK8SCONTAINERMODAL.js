@@ -127,6 +127,16 @@ export default function HostK8sContainerModal(props) {
                   column === 1 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
                 onClick={(event, data) => onClickTableHeaderCell(1, data)}
+                value={({ item }) => item.podName}
+              >
+                Pod
+              </TableHeaderCell>
+              <TableHeaderCell
+                sortable
+                sortingType={
+                  column === 2 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                }
+                onClick={(event, data) => onClickTableHeaderCell(2, data)}
                 value={({ item }) => item.cpuLimitCores}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
@@ -135,9 +145,9 @@ export default function HostK8sContainerModal(props) {
               <TableHeaderCell
                 sortable
                 sortingType={
-                  column === 2 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                  column === 3 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(2, data)}
+                onClick={(event, data) => onClickTableHeaderCell(3, data)}
                 value={({ item }) => item.maxCpuUsedCores}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
@@ -146,9 +156,9 @@ export default function HostK8sContainerModal(props) {
               <TableHeaderCell
                 sortable
                 sortingType={
-                  column === 3 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                  column === 4 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(3, data)}
+                onClick={(event, data) => onClickTableHeaderCell(4, data)}
                 value={({ item }) => item.maxCpuCoresUtilization}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
@@ -157,9 +167,9 @@ export default function HostK8sContainerModal(props) {
               <TableHeaderCell
                 sortable
                 sortingType={
-                  column === 4 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                  column === 5 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(4, data)}
+                onClick={(event, data) => onClickTableHeaderCell(5, data)}
                 value={({ item }) => item.memoryLimitBytes}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
@@ -169,9 +179,9 @@ export default function HostK8sContainerModal(props) {
               <TableHeaderCell
                 sortable
                 sortingType={
-                  column === 5 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                  column === 6 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(5, data)}
+                onClick={(event, data) => onClickTableHeaderCell(6, data)}
                 value={({ item }) => item.maxMemoryUsedBytes}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
@@ -181,25 +191,13 @@ export default function HostK8sContainerModal(props) {
               <TableHeaderCell
                 sortable
                 sortingType={
-                  column === 6 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                  column === 7 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
                 }
-                onClick={(event, data) => onClickTableHeaderCell(6, data)}
+                onClick={(event, data) => onClickTableHeaderCell(7, data)}
                 value={({ item }) => item.maxMemoryUtilization}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
                 Memory Utilization
-              </TableHeaderCell>
-
-              <TableHeaderCell
-                sortable
-                sortingType={
-                  column === 7 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
-                }
-                onClick={(event, data) => onClickTableHeaderCell(7, data)}
-                value={({ item }) => item.estimatedCost}
-                alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
-              >
-                Estimated Cost (usage)
               </TableHeaderCell>
 
               <TableHeaderCell
@@ -211,12 +209,25 @@ export default function HostK8sContainerModal(props) {
                 value={({ item }) => item.estimatedCost}
                 alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
               >
+                Estimated Cost (usage)
+              </TableHeaderCell>
+
+              <TableHeaderCell
+                sortable
+                sortingType={
+                  column === 9 ? sortingType : TableHeaderCell.SORTING_TYPE.NONE
+                }
+                onClick={(event, data) => onClickTableHeaderCell(9, data)}
+                value={({ item }) => item.estimatedCost}
+                alignmentType={TableHeaderCell.ALIGNMENT_TYPE.RIGHT}
+              >
                 Estimated Cost (limit)
               </TableHeaderCell>
             </TableHeader>
             {({ item }) => (
               <TableRow>
                 <TableRowCell>{item.containerName}</TableRowCell>
+                <TableRowCell>{item.podName}</TableRowCell>
 
                 <MetricTableRowCell
                   type={MetricTableRowCell.TYPE.COUNT}

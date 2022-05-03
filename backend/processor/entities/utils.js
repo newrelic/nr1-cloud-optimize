@@ -11,6 +11,10 @@ const chunk = (arr, size) =>
 
 const BATCH_QUEUE_LIMIT = 5;
 const ENTITY_SEARCH_CHUNK_MAX = 25;
+const retryConfig = {
+  times: 7,
+  interval: retryCount => 50 * Math.pow(2, retryCount)
+};
 
 // ignore tags
 const defaultIgnoreTags = [
@@ -94,8 +98,8 @@ exports.batchEntityQuery = (key, query, entities, config) => {
 
           callback();
         })
-        .catch(e => {
-          console.log('failed @ batchEntityQuery', e); // eslint-disable-line no-console
+        .catch(error => {
+          logger.info({ message: 'failed @ batchEntityQuery', error });
           callback();
         });
     }, BATCH_QUEUE_LIMIT);
@@ -109,6 +113,41 @@ exports.batchEntityQuery = (key, query, entities, config) => {
 };
 
 exports.nrqlQuery = (key, accountId, nrql, timeout) => {
+  return new Promise(resolve => {
+    async.retry(
+      retryConfig,
+      callback => {
+        this.doNrqlQuery(key, accountId, nrql, timeout).then(nrqlResult => {
+          const { nrqlData, error, errors } = nrqlResult;
+
+          if (!error && !errors) {
+            callback(null, nrqlData);
+          } else if (error) {
+            callback({ error }, nrqlData);
+          } else if (errors) {
+            callback({ errors }, nrqlData);
+          } else {
+            callback({ error: 'unknown error' }, nrqlData);
+          }
+        });
+      },
+      (err, result) => {
+        if (err) {
+          logger.info({
+            accountId,
+            nrql,
+            error: err,
+            message: 'nrqlQuery unsuccessful',
+            result
+          });
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
+exports.doNrqlQuery = (key, accountId, nrql, timeout) => {
   return new Promise(resolve => {
     const query = `query NrqlQuery($accountId: Int!, $nrql: Nrql!) {
       actor {
@@ -137,14 +176,13 @@ exports.nrqlQuery = (key, accountId, nrql, timeout) => {
         const errors = httpData?.errors || [];
 
         if (errors.length > 0) {
-          logger.info({ accountId, nrql, errors });
+          resolve({ errors });
+        } else {
+          resolve({ nrqlData });
         }
-
-        resolve(nrqlData);
       })
-      .catch(e => {
-        console.log('nrqlQuery failed', e); // eslint-disable-line no-console
-        resolve();
+      .catch(error => {
+        resolve({ error });
       });
   });
 };

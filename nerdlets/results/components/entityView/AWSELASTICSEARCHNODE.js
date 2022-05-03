@@ -13,7 +13,9 @@ export default function AwsElasticsearchNodeView(props) {
     <Card collapsible style={{ marginLeft: '0px' }}>
       <CardHeader
         style={{ marginLeft: '0px', width: '80%' }}
-        title="AWS ELASTICSEARCH CLUSTERS"
+        title={`AWS ELASTICSEARCH CLUSTERS (${
+          Object.keys(groupedEntities).length
+        })`}
         additionalInfoLink={{
           label: `Pricing`,
           to: 'https://aws.amazon.com/opensearch-service/pricing/'

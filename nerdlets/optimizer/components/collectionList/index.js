@@ -22,7 +22,8 @@ export default function CollectionList(props) {
     selectedAccount,
     accountCollection,
     updateDataState,
-    apiUrl,
+    apiUrlDev,
+    apiUrlProd,
     optimizerKey,
     uuid,
     timeRange,
@@ -36,6 +37,8 @@ export default function CollectionList(props) {
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
   );
+  const isLocal = !window.location.href.includes('https://one.newrelic.com');
+  const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const deleteWorkloadCollection = documentId => {
     return new Promise(resolve => {
@@ -84,6 +87,7 @@ export default function CollectionList(props) {
             type: Toast.TYPE.NORMAL
           });
           const config = await getLatestConfiguration(item.id);
+
           postData(`${apiUrl}/optimize`, optimizerKey.key, {
             workloadGuids: item.document.workloads.map(w => w.guid),
             accountId: selectedAccount.id,

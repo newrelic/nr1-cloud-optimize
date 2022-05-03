@@ -218,7 +218,8 @@ const writeResults = (workload, uuid, key, jobId, nerdGraphUrl) => {
       jobId,
       shardNo: parseInt(no),
       completedAt,
-      results: shards[no]
+      results: shards[no],
+      STAGE: process.env.STAGE
     }));
 
     const documentQueue = async.queue((document, callback) => {
@@ -550,7 +551,8 @@ const writeJobStatusEvent = async (
     status: status || 'pending',
     timeNrql,
     timeRange,
-    totalPeriodMs
+    totalPeriodMs,
+    STAGE: process.env.STAGE
   };
 
   if (collectionId) document.collectionId = collectionId;

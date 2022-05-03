@@ -13,7 +13,7 @@ export default function HostKubernetesView(props) {
     <Card collapsible style={{ marginLeft: '0px' }}>
       <CardHeader
         style={{ marginLeft: '0px', width: '80%' }}
-        title="KUBERNETES CLUSTERS"
+        title={`KUBERNETES CLUSTERS (${Object.keys(groupedEntities).length})`}
       />
       <CardBody>
         {Object.keys(groupedEntities).map(groupKey => {

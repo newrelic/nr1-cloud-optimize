@@ -13,7 +13,9 @@ export default function AwsElasticacheRedisNodeView(props) {
     <Card collapsible style={{ marginLeft: '0px' }}>
       <CardHeader
         style={{ marginLeft: '0px', width: '80%' }}
-        title="AWS ELASTICACHE CLUSTERS"
+        title={`AWS ELASTICACHE CLUSTERS (${
+          Object.keys(groupedEntities).length
+        })`}
         additionalInfoLink={{
           label: `Pricing`,
           to: 'https://aws.amazon.com/elasticache/pricing/'
@@ -21,7 +23,9 @@ export default function AwsElasticacheRedisNodeView(props) {
       />
       <CardBody>
         {Object.keys(groupedEntities).map(groupKey => {
-          let groupName = obfuscate ? generateFakeName() : groupKey;
+          let groupName = obfuscate
+            ? generateFakeName()
+            : groupKey || 'Unknown';
           groupName = groupName === 'undefined' ? 'Unknown' : groupName;
 
           return (

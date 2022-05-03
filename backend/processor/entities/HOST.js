@@ -17,7 +17,7 @@ const SystemSampleQuery = `FROM SystemSample SELECT \
 const NetworkSampleQuery = `FROM NetworkSample SELECT max(receiveBytesPerSecond), max(transmitBytesPerSecond) FACET interfaceName`;
 
 const K8sContainerDataQuery = (hostname, fullHostname, timeRange) =>
-  `FROM K8sContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', \
+  `FROM K8sContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', latest(podName) as 'podName', \
   latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuCoresUtilization) as 'maxCpuCoresUtilization', \
   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsedBytes) as 'maxMemoryUsedBytes', max(memoryUtilization) as 'maxMemoryUtilization' \
   WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
