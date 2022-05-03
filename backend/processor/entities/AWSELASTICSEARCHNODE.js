@@ -8,7 +8,7 @@ const {
 const NodeQuery = `FROM DatastoreSample SELECT latest(provider.domainName), max(provider.CPUUtilization.Maximum), max(provider.ReadIOPS.Maximum), max(provider.WriteIOPS.Maximum), max(provider.ReadThroughput.Maximum), max(provider.WriteThroughput.Maximum), max(provider.SearchRate.Maximum) WHERE provider='ElasticsearchNode' LIMIT 1`;
 
 const ClusterDataQuery = (clusterName, timeNrql) =>
-  `FROM DatastoreSample SELECT latest(awsRegion), latest(provider.instanceType), latest(entityName) WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' LIMIT 1 ${timeNrql}`;
+  `FROM DatastoreSample SELECT latest(awsRegion), latest(provider.instanceType), latest(entityName) WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' OR provider.domainName = '${clusterName}' LIMIT 1 ${timeNrql}`;
 
 exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
   // milliseconds to hours - divide the time value by 3.6e+6
@@ -29,7 +29,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             key
             values
           }
-          NodeSample: nrdbQuery(nrql: "${NodeQuery} ${timeNrql}") {
+          NodeSample: nrdbQuery(nrql: "${NodeQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

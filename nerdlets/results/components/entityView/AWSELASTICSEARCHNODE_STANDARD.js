@@ -17,7 +17,7 @@ import calculate from '../../context/calculate';
 // eslint-disable-next-line no-unused-vars
 export default function AwsElasticsearchNodeViewStandard(props) {
   const { entities, groupTitle, groupName } = props;
-  const [hideUndetected, setUndetected] = useState(true);
+  const [hideUndetected, setUndetected] = useState(false);
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE

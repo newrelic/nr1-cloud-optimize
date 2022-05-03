@@ -21,7 +21,8 @@ export default function AwsElasticacheRedisNodeView(props) {
       />
       <CardBody>
         {Object.keys(groupedEntities).map(groupKey => {
-          const groupName = obfuscate ? generateFakeName() : groupKey;
+          let groupName = obfuscate ? generateFakeName() : groupKey;
+          groupName = groupName === 'undefined' ? 'Unknown' : groupName;
 
           return (
             <AwsElasticacheRedisNodeViewStandard

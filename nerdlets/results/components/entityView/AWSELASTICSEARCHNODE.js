@@ -21,7 +21,10 @@ export default function AwsElasticsearchNodeView(props) {
       />
       <CardBody>
         {Object.keys(groupedEntities).map(groupKey => {
-          const groupName = obfuscate ? generateFakeName() : groupKey;
+          let groupName = obfuscate
+            ? generateFakeName()
+            : groupKey || 'Unknown';
+          groupName = groupName === 'undefined' ? 'Unknown' : groupName;
 
           return (
             <AwsElasticsearchNodeViewStandard
