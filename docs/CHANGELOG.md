@@ -1,3 +1,10 @@
+# [3.9.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.8.0...v3.9.0) (2022-05-03)
+
+
+### Features
+
+* add k8s cluster grouping ([0a5ff91](https://github.com/newrelic/nr1-cloud-optimize/commit/0a5ff9160f0ccde18c6661292d5324878714e1f7))
+
 # [3.8.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.7.0...v3.8.0) (2022-05-03)
 
 
