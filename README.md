@@ -7,8 +7,7 @@
 ## Usage
 
 This application analyzes your environment using various integrations eg. Cloud Integrations, Infrastructure Agent, Kubernetes etc.
-
-The application shows cost and performance metrics per service and the potential impact to your environment as well as cost optimization suggestions.
+It shows cost and performance metrics per service so you can understand the potential impact to your environment as well as utilize the cost optimization suggestions.
 
 
 ### Features
