@@ -18,7 +18,7 @@ exports.run = (entities, key, config, timeNrql) => {
             key
             values
           }
-          LambdaSample: nrdbQuery(nrql: "${LambdaQuery} ${timeNrql}") {
+          LambdaSample: nrdbQuery(nrql: "${LambdaQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

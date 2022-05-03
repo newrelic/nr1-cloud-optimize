@@ -103,10 +103,10 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             key
             values
           }
-          SystemSample: nrdbQuery(nrql: "${SystemSampleQuery} ${timeNrql}") {
+          SystemSample: nrdbQuery(nrql: "${SystemSampleQuery} ${timeNrql}", timeout: 120) {
             results
           }
-          NetworkSample: nrdbQuery(nrql: "${NetworkSampleQuery} ${timeNrql}") {
+          NetworkSample: nrdbQuery(nrql: "${NetworkSampleQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

@@ -5,10 +5,10 @@ const {
   BASE_URL
 } = require('./utils');
 
-const NodeQuery = `SELECT latest(provider.domainName), max(provider.CPUUtilization.Maximum), max(provider.ReadIOPS.Maximum), max(provider.WriteIOPS.Maximum), max(provider.ReadThroughput.Maximum), max(provider.WriteThroughput.Maximum), max(provider.SearchRate.Maximum) FROM DatastoreSample WHERE provider='ElasticsearchNode' LIMIT 1`;
+const NodeQuery = `FROM DatastoreSample SELECT latest(provider.domainName), max(provider.CPUUtilization.Maximum), max(provider.ReadIOPS.Maximum), max(provider.WriteIOPS.Maximum), max(provider.ReadThroughput.Maximum), max(provider.WriteThroughput.Maximum), max(provider.SearchRate.Maximum) WHERE provider='ElasticsearchNode' LIMIT 1`;
 
 const ClusterDataQuery = (clusterName, timeNrql) =>
-  `SELECT latest(awsRegion), latest(provider.instanceType), latest(entityName) FROM DatastoreSample WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' LIMIT 1 ${timeNrql}`;
+  `FROM DatastoreSample SELECT latest(awsRegion), latest(provider.instanceType), latest(entityName) WHERE provider='ElasticsearchCluster' WHERE entityName = '${clusterName}' LIMIT 1 ${timeNrql}`;
 
 exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
   // milliseconds to hours - divide the time value by 3.6e+6
@@ -63,9 +63,10 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             }
           });
           e.NodeSample = NodeSample;
-          e.clusterName = NodeSample?.['provider.domainName'];
-
+          const awsDomainName = e.tags?.['aws.domainName']?.[0];
           const accountId = e.tags?.accountId?.[0];
+          e.clusterName = NodeSample?.['provider.domainName'] || awsDomainName;
+
           const foundCluster = clusters.find(c => c.name === e.clusterName);
           if (!foundCluster) {
             clusters.push({

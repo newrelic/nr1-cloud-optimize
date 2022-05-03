@@ -20,7 +20,7 @@ exports.run = (entities, key, config, timeNrql) => {
             key
             values
           }
-          QueueSample: nrdbQuery(nrql: "${SnsQuery} ${timeNrql}") {
+          QueueSample: nrdbQuery(nrql: "${SnsQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

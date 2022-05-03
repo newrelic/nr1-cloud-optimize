@@ -18,7 +18,7 @@ exports.run = (entities, key, config, timeNrql) => {
             key
             values
           }
-          ApiGatewaySample: nrdbQuery(nrql: "${GatewaySampleQuery} ${timeNrql}") {
+          ApiGatewaySample: nrdbQuery(nrql: "${GatewaySampleQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

@@ -31,7 +31,12 @@ export default function WorkloadView(props) {
           <StackItem key={g} grow style={{ width: '99%' }}>
             <Card>
               <CardBody style={{ marginTop: 0, marginBottom: 0 }}>
-                <EntityView key={g} group={g} entities={filteredEntities} />
+                <EntityView
+                  key={g}
+                  group={g}
+                  entities={filteredEntities}
+                  obfuscate={obfuscate}
+                />
               </CardBody>
             </Card>
           </StackItem>

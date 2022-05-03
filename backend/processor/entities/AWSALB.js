@@ -21,7 +21,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
             key
             values
           }
-          LoadBalancerSample: nrdbQuery(nrql: "${LoadBalancerQuery} ${timeNrql}") {
+          LoadBalancerSample: nrdbQuery(nrql: "${LoadBalancerQuery} ${timeNrql}", timeout: 120) {
             results
           }
         }

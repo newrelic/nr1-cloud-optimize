@@ -1,4 +1,5 @@
 const async = require('async');
+const logger = require('pino')();
 // https://github.com/node-fetch/node-fetch#commonjs
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -107,12 +108,12 @@ exports.batchEntityQuery = (key, query, entities, config) => {
   });
 };
 
-exports.nrqlQuery = (key, accountId, nrql) => {
+exports.nrqlQuery = (key, accountId, nrql, timeout) => {
   return new Promise(resolve => {
     const query = `query NrqlQuery($accountId: Int!, $nrql: Nrql!) {
       actor {
         account(id: $accountId) {
-          nrql(query: $nrql) {
+          nrql(query: $nrql, timeout: ${timeout || 120}) {
             results
           }
         }
@@ -133,6 +134,12 @@ exports.nrqlQuery = (key, accountId, nrql) => {
       .then(async response => {
         const httpData = await response.json();
         const nrqlData = httpData?.data?.actor?.account?.nrql;
+        const errors = httpData?.errors || [];
+
+        if (errors.length > 0) {
+          logger.info({ accountId, nrql, errors });
+        }
+
         resolve(nrqlData);
       })
       .catch(e => {
