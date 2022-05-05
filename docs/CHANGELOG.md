@@ -1,3 +1,10 @@
+# [3.11.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.10.0...v3.11.0) (2022-05-03)
+
+
+### Features
+
+* handle aks & gke ([579290c](https://github.com/newrelic/nr1-cloud-optimize/commit/579290c80e68914481009d6048f63ed6419efd66))
+
 # [3.10.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.9.0...v3.10.0) (2022-05-03)
 
 
