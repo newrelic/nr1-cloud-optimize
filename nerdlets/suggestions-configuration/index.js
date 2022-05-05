@@ -24,6 +24,7 @@ function ConfigurationNerdlet() {
   const suggestionsConfig = document?.suggestionsConfig || {};
   const [formConfig, updateConfig] = useState(suggestionsConfig);
   const [writingDocument, setWriteState] = useState(false);
+  console.log(window.location.href); // eslint-disable-line no-console
 
   const writeDocument = () => {
     setWriteState(true);

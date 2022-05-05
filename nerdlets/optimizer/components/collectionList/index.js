@@ -38,7 +38,6 @@ export default function CollectionList(props) {
     TableHeaderCell.SORTING_TYPE.NONE
   );
   const isLocal = !window.location.href.includes('https://one.newrelic.com');
-  console.log(window.location.href); // eslint-disable-line no-console
   const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const deleteWorkloadCollection = documentId => {
@@ -102,6 +101,13 @@ export default function CollectionList(props) {
                 description: 'Processing... can take up to 15m',
                 type: Toast.TYPE.NORMAL
               });
+            } else {
+              Toast.showToast({
+                title: 'Job failed to send',
+                description:
+                  data?.message || 'Check... console & network logs for errors',
+                type: Toast.TYPE.CRITICAL
+              });
             }
           });
         }
@@ -127,6 +133,13 @@ export default function CollectionList(props) {
                 title: 'Job sent successfully',
                 description: 'Processing... can take up to 15m',
                 type: Toast.TYPE.NORMAL
+              });
+            } else {
+              Toast.showToast({
+                title: 'Job failed to send',
+                description:
+                  data?.message || 'Check... console & network logs for errors',
+                type: Toast.TYPE.CRITICAL
               });
             }
           });
@@ -321,9 +334,9 @@ function postData(url = '', key, data = {}) {
         const responseData = await response.json();
         resolve(responseData);
       })
-      .catch(err => {
+      .catch(error => {
         // eslint-disable-next-line no-console
-        console.error(err.text);
+        resolve({ success: false, error });
         resolve();
       });
   });

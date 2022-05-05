@@ -265,7 +265,7 @@ export class DataProvider extends Component {
         nerdGraphData?.data?.apiAccessCreateKeys?.createdKeys || [];
 
       if (createdKeys.length === 1) {
-        this.setState({ optimizerKey: createdKeys[0].key });
+        this.setState({ optimizerKey: createdKeys[0] });
       } else {
         console.log(
           'unable to automatically create user api key',
