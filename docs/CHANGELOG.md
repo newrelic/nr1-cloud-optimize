@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.11.0...v3.12.0) (2022-05-05)
+
+
+### Features
+
+* return error toast on job failure ([91d26d8](https://github.com/newrelic/nr1-cloud-optimize/commit/91d26d8e8c1b1c60d847cd0597102a7c32d8cf8e))
+
 # [3.11.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.10.0...v3.11.0) (2022-05-03)
 
 
