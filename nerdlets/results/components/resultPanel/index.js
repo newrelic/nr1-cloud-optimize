@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import {
   SectionMessage,
+  Button,
   Card,
   CardHeader,
   CardBody,
@@ -43,6 +44,19 @@ export default function ResultsPanel(props) {
     .map(guid => workloadData[guid]?.results || [])
     .flat()
     .filter(e => e.suggestions);
+
+  const exportWorkloadData = async data => {
+    const timestamp = new Date().getTime();
+    const json = JSON.stringify(data);
+    const blob = new Blob([json], { type: 'application/json' });
+    const href = await URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = `cloud-optimize-export-${timestamp}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <>
@@ -88,6 +102,14 @@ export default function ResultsPanel(props) {
                   <h4 style={{ paddingBottom: '10px' }}>Total Cost Summary</h4>
                   <CostSummary cost={costSummary} tileType="OUTLINE" />
                 </div>
+                <Button
+                  iconType={Button.ICON_TYPE.INTERFACE__OPERATIONS__DOWNLOAD}
+                  type={Button.TYPE.PRIMARY}
+                  onClick={() => exportWorkloadData(workloadData)}
+                  sizeType={Button.SIZE_TYPE.SMALL}
+                >
+                  Export JSON Data
+                </Button>
               </CardBody>
             </Card>
           </StackItem>
