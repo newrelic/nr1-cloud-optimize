@@ -1,3 +1,10 @@
+# [3.13.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.12.0...v3.13.0) (2022-05-06)
+
+
+### Features
+
+* raw json export ([df11732](https://github.com/newrelic/nr1-cloud-optimize/commit/df117321a471e716e0d1aa0e98a2c7d459fec436))
+
 # [3.12.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.11.0...v3.12.0) (2022-05-05)
 
 
