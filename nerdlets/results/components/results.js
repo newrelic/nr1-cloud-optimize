@@ -95,7 +95,7 @@ export default function Results(props) {
       <Stack
         fullWidth
         verticalType={Stack.VERTICAL_TYPE.TOP}
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: '10px', backgroundColor: 'white', width: '99%' }}
         gapType={Stack.GAP_TYPE.NONE}
       >
         <StackItem style={{ width: '49.5%' }}>
