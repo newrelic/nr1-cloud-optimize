@@ -71,15 +71,15 @@ export default function Results(props) {
   if (!timeRange) {
     const start = new Date(document.startedAt);
     const end = new Date(document.startedAt - 86400000 * 7);
-    timeText = `Data between: ${end.toLocaleString()} to ${start.toLocaleString()} for -${hoursRan} hours`;
+    timeText = `Data between: ${start.toLocaleString()} to ${end.toLocaleString()} for -${hoursRan} hours`;
   } else if (timeRange.duration) {
     const start = new Date(document.startedAt);
     const end = new Date(document.startedAt - timeRange.duration);
-    timeText = `Data between: ${end.toLocaleString()} to ${start.toLocaleString()} for ~${hoursRan} hours`;
+    timeText = `Data between: ${start.toLocaleString()} to ${end.toLocaleString()} for ~${hoursRan} hours`;
   } else if (timeRange.begin_time && timeRange.end_time) {
     const start = new Date(timeRange.begin_time);
     const end = new Date(timeRange.end_time);
-    timeText = `Data between: ${end.toLocaleString()} to ${start.toLocaleString()} for ~${hoursRan} hours`;
+    timeText = `Data between: ${start.toLocaleString()} to ${end.toLocaleString()} for ~${hoursRan} hours`;
   }
 
   return (

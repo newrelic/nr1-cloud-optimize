@@ -81,14 +81,14 @@ module.exports.optimize = async (event, context, callback) => {
 
   // default 7 days
   if (!timeRange) {
-    totalPeriodMs = startedAt - new Date(startedAt - 86400000 * 7).getTime();
+    totalPeriodMs = new Date(startedAt - 86400000 * 7).getTime() - startedAt;
   } else if (timeRange.duration) {
     totalPeriodMs =
-      startedAt - new Date(startedAt - timeRange.duration).getTime();
+      new Date(startedAt - timeRange.duration).getTime() - startedAt;
   } else if (timeRange.begin_time && timeRange.end_time) {
     const start = new Date(timeRange.begin_time);
     const end = new Date(timeRange.end_time);
-    totalPeriodMs = start.getTime() - end.getTime();
+    totalPeriodMs = end.getTime() - start.getTime();
   }
 
   // perform a nerdstorage check to see if same UUIDs inflight
