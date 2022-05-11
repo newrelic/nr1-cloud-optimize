@@ -1,3 +1,10 @@
+## [3.13.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.13.0...v3.13.1) (2022-05-11)
+
+
+### Bug Fixes
+
+* negative operating hours ([8566c0f](https://github.com/newrelic/nr1-cloud-optimize/commit/8566c0f572e1eef30f697d5e50a0c6543f13f78c))
+
 # [3.13.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.12.0...v3.13.0) (2022-05-06)
 
 
