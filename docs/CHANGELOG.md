@@ -1,3 +1,10 @@
+# [3.15.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.14.0...v3.15.0) (2022-05-12)
+
+
+### Features
+
+* apply obfuscation to container table ([e07a329](https://github.com/newrelic/nr1-cloud-optimize/commit/e07a329dc76bd11bfdefba4b53167dda1e3703b5))
+
 # [3.14.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.13.1...v3.14.0) (2022-05-12)
 
 
