@@ -1,3 +1,10 @@
+# [3.14.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.13.1...v3.14.0) (2022-05-12)
+
+
+### Features
+
+* add white bg ([1bbfe29](https://github.com/newrelic/nr1-cloud-optimize/commit/1bbfe29d5e976159bd5431a29f791b4f5192134b))
+
 ## [3.13.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.13.0...v3.13.1) (2022-05-11)
 
 
