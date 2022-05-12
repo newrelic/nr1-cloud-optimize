@@ -10,10 +10,11 @@ import {
   CardHeader,
   CardBody
 } from 'nr1';
+import { generateFakeName } from '../../../shared/utils';
 
 // eslint-disable-next-line no-unused-vars
 export default function HostK8sContainerModal(props) {
-  const { entity } = props;
+  const { entity, obfuscate } = props;
   if (!entity) {
     return '';
   }
@@ -226,8 +227,12 @@ export default function HostK8sContainerModal(props) {
             </TableHeader>
             {({ item }) => (
               <TableRow>
-                <TableRowCell>{item.containerName}</TableRowCell>
-                <TableRowCell>{item.podName}</TableRowCell>
+                <TableRowCell>
+                  {obfuscate ? generateFakeName() : item.containerName}
+                </TableRowCell>
+                <TableRowCell>
+                  {obfuscate ? generateFakeName() : item.podName}
+                </TableRowCell>
 
                 <MetricTableRowCell
                   type={MetricTableRowCell.TYPE.COUNT}

@@ -27,6 +27,7 @@ export default function HostKubernetesView(props) {
               key={groupKey}
               groupTitle={`CLUSTER: ${groupName}`}
               groupName={groupName}
+              obfuscate={obfuscate}
               entities={groupedEntities[groupKey]}
             />
           );

@@ -19,7 +19,7 @@ import HostK8sContainerModal from './HOSTK8SCONTAINERMODAL';
 
 // eslint-disable-next-line no-unused-vars
 export default function HostKubernetesViewStandard(props) {
-  const { entities, groupTitle, groupName } = props;
+  const { entities, groupTitle, groupName, obfuscate } = props;
   const [column, setColumn] = useState(0);
   const [modalData, setModal] = useState(false);
   const [sortingType, setSortingType] = useState(
@@ -96,7 +96,11 @@ export default function HostKubernetesViewStandard(props) {
         </Button>
         <br /> <br />
         <Badge type={Badge.TYPE.INFO}>BETA</Badge>
-        <HostK8sContainerModal entity={modalData} setModal={setModal} />
+        <HostK8sContainerModal
+          entity={modalData}
+          setModal={setModal}
+          obfuscate={obfuscate}
+        />
       </Modal>
       <Card collapsible style={{ marginLeft: '0px' }}>
         <CardHeader
