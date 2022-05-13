@@ -30,3 +30,28 @@ exports.workloadEntityFetchQuery = (guid, cursor) => {
     }
   `;
 };
+
+exports.k8sClusterExpansionQuery = (guid, cursor) => {
+  return `query k8sClusterExpansionQuery($clusterGuid: EntityGuid!) {
+    actor {
+      entity(guid: "${guid}") {
+        relatedEntities(filter: {direction: OUTBOUND, entityDomainTypes: {include: {type: "HOST", domain: "INFRA"}}} ${
+          cursor ? `,cursor: "${cursor}"` : ''
+        }) {
+          results {
+            target {
+              entity {
+                guid
+                name
+                domain
+                type
+                entityType
+              }
+            }
+          }
+          nextCursor
+        }
+      }
+    }
+  }`;
+};

@@ -81,10 +81,10 @@ module.exports.optimize = async (event, context, callback) => {
 
   // default 7 days
   if (!timeRange) {
-    totalPeriodMs = new Date(startedAt - 86400000 * 7).getTime() - startedAt;
+    totalPeriodMs = startedAt - new Date(startedAt - 86400000 * 7).getTime();
   } else if (timeRange.duration) {
     totalPeriodMs =
-      new Date(startedAt - timeRange.duration).getTime() - startedAt;
+      startedAt - new Date(startedAt - timeRange.duration).getTime();
   } else if (timeRange.begin_time && timeRange.end_time) {
     const start = new Date(timeRange.begin_time);
     const end = new Date(timeRange.end_time);
@@ -314,6 +314,19 @@ const processWorkload = (workload, key, config, timeNrql, totalPeriodMs) => {
     const sortedGroupedEntities = Object.keys(
       groupedEntities
     ).map(fullType => ({ fullType, entities: groupedEntities[fullType] }));
+
+    // // cluster to host expansion
+    // if (
+    //   sortedGroupedEntities[
+    //     'INFRA::KUBERNETESCLUSTER::GENERIC_INFRASTRUCTURE_ENTITY'
+    //   ]
+    // ) {
+    //   sortedGroupedEntities[
+    //     'INFRA::KUBERNETESCLUSTER::GENERIC_INFRASTRUCTURE_ENTITY'
+    //   ].forEach(k8sCluster => {
+    //     //
+    //   });
+    // }
 
     // control how many groups of entity types are queried simulataneously
     const entityTypeData = {};
