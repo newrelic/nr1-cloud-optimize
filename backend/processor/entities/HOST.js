@@ -179,8 +179,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         // check if aks or eks k8s host
         if (
-          e.clusterName &&
-          (e.name.startsWith('gke-') || e.name.startsWith('aks-'))
+          e.clusterName ||
+          e.name.startsWith('gke-') ||
+          e.name.startsWith('aks-')
         ) {
           e.k8s = true;
           k8sHosts.push({
