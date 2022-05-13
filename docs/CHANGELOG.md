@@ -1,3 +1,10 @@
+# [3.17.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.16.0...v3.17.0) (2022-05-13)
+
+
+### Features
+
+* attempt k8s discovery on any host with clusterName tag ([3b31245](https://github.com/newrelic/nr1-cloud-optimize/commit/3b31245975b20345d1d3752d360dd271f25d87c1))
+
 # [3.16.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.15.0...v3.16.0) (2022-05-13)
 
 
