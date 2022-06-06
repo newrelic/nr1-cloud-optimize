@@ -9,12 +9,18 @@ const BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
 
 const SystemSampleQuery = `FROM SystemSample SELECT \
                                       latest(timestamp), latest(provider.instanceLifecycle), \
-                                      latest(entityGuid), latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(fullHostname), latest(configName), latest(clusterName), \
+                                      latest(apmApplicationNames), latest(providerAccountName), latest(hostname), latest(fullHostname), latest(configName), latest(clusterName), \
                                       latest(awsRegion), latest(regionName), latest(zone), latest(regionId), latest(ec2InstanceId), latest(ec2InstanceType), latest(instanceType),\
                                       latest(coreCount), latest(processorCount), latest(memoryTotalBytes), latest(diskTotalBytes), latest(operatingSystem), \
-                                      max(cpuPercent), max(memoryUsedBytes), max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' LIMIT 1`;
+                                      max(cpuPercent), max(memoryUsedBytes), max(memoryUsedBytes/memoryTotalBytes)*100 as 'max.memoryPercent' FACET entityGuid LIMIT 1`;
 
 const NetworkSampleQuery = `FROM NetworkSample SELECT max(receiveBytesPerSecond), max(transmitBytesPerSecond) FACET interfaceName`;
+
+const AnsibleSystemSampleQuery = `FROM AnsibleSystemSample SELECT \
+                                      latest(timestamp), \
+                                      latest(entity.guid) as 'entityGuid', latest(providerAccountName), latest(cluster), latest(datacenter), latest(esxiHostname), \
+                                      latest(processorVcpus) as 'coreCount', latest(processorThreadsPerCore), latest(processorCores), latest(memoryTotalMB / 1024) as 'memoryGb', latest(operatingSystem), \
+                                      max(cpuPercent), max(memoryTotalMB - memoryFreeMB)*1024*1024 as 'memoryUsedBytes', max((memoryTotalMB-memoryFreeMB)/memoryTotalMB)*100 as 'max.memoryPercent' FACET entity.guid LIMIT 1`;
 
 const K8sContainerDataQuery = (hostname, fullHostname, timeRange) =>
   `FROM K8sContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', latest(podName) as 'podName', \
@@ -109,6 +115,9 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           NetworkSample: nrdbQuery(nrql: "${NetworkSampleQuery} ${timeNrql}", timeout: 120) {
             results
           }
+          AnsibleSystemSample: nrdbQuery(nrql: "${AnsibleSystemSampleQuery} ${timeNrql}", timeout: 120) {
+            results
+          }
         }
       }
     }`;
@@ -128,7 +137,15 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       // massage entity data
       entityData.forEach(e => {
         // move samples top level
-        const SystemSample = e?.SystemSample?.results?.[0] || {};
+        const SystemSample =
+          e?.SystemSample?.results?.[0] ||
+          e?.AnsibleSystemSample?.results?.[0] ||
+          {};
+
+        if (e?.AnsibleSystemSample?.results?.[0]) {
+          delete e.AnsibleSystemSample;
+          e['co.sourceEvent'] = 'AnsibleSystemSample';
+        }
 
         // clean up keys
         Object.keys(SystemSample).forEach(key => {
@@ -141,7 +158,8 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           }
         });
         e.SystemSample = SystemSample;
-        e.SystemSample.memoryGb = SystemSample.memoryTotalBytes * 1e-9;
+        e.SystemSample.memoryGb =
+          e.SystemSample.memoryGb || SystemSample.memoryTotalBytes * 1e-9;
 
         e.isSpot =
           SystemSample?.['provider.instanceLifecycle'] === 'spot' || false;
