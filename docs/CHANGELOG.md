@@ -1,3 +1,10 @@
+# [3.18.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.17.0...v3.18.0) (2022-06-06)
+
+
+### Features
+
+* improve region handling ([42b0e9b](https://github.com/newrelic/nr1-cloud-optimize/commit/42b0e9bf9f2dda0478ac82aba69df57e56f19ea3))
+
 # [3.17.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.16.0...v3.17.0) (2022-05-13)
 
 
