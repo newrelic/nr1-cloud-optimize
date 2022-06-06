@@ -63,7 +63,10 @@ module.exports.optimize = async (event, context, callback) => {
   const startedAt = new Date().getTime();
   const { body, key, jobId, headers } = event;
   const logJob = logger.child({ jobId });
-  const nerdGraphUrl = NERDGRAPH_URL[headers?.['NR-REGION'] || 'US'];
+
+  const region =
+    event?.headers?.['NR-REGION'] || event?.headers?.['nr-region'] || 'US';
+  const nerdGraphUrl = NERDGRAPH_URL[region] || NERDGRAPH_URL.US;
 
   const {
     nerdpackUUID,

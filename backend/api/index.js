@@ -15,7 +15,9 @@ module.exports.router = async (event, context, callback) => {
   const nerdGraphKey =
     event.headers?.['NR-API-KEY'] || event.headers?.['nr-api-key'];
 
-  const nerdGraphUrl = NERDGRAPH_URL[event.headers?.['NR-REGION'] || 'US'];
+  const region =
+    event?.headers?.['NR-REGION'] || event?.headers?.['nr-region'] || 'US';
+  const nerdGraphUrl = NERDGRAPH_URL[region] || NERDGRAPH_URL.US;
 
   if (!nerdGraphKey) {
     const response = {
