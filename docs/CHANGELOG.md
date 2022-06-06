@@ -1,3 +1,10 @@
+# [3.19.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.18.0...v3.19.0) (2022-06-06)
+
+
+### Features
+
+* update backend to support AnsisbleSystemSample for EXT-HOST entities ([206d9f0](https://github.com/newrelic/nr1-cloud-optimize/commit/206d9f071ff5efb4ac855ae1f49b368a16489897))
+
 # [3.18.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.17.0...v3.18.0) (2022-06-06)
 
 
