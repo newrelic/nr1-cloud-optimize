@@ -1,3 +1,10 @@
+# [3.20.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.19.0...v3.20.0) (2022-06-13)
+
+
+### Features
+
+* metric support for AWS RDS ([1db7a51](https://github.com/newrelic/nr1-cloud-optimize/commit/1db7a512195d80db8f34dc096225fcba83d3d9d4))
+
 # [3.19.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.18.0...v3.19.0) (2022-06-06)
 
 
