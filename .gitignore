@@ -4,3 +4,4 @@ tmp*
 dist*
 old*
 .serverless*
+backend/.serverless*

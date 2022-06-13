@@ -12,15 +12,17 @@ max(provider.databaseConnections.Maximum), \
 max(\`provider.readLatency.Maximum\`), max(\`provider.writeLatency.Maximum\`), \
 max(\`provider.swapUsage\`), max(\`provider.swapUsageBytes.Maximum\`), \
 max(provider.cpuUtilization.Maximum), max(provider.freeableMemoryBytes.Maximum) \
-FROM DatastoreSample WHERE provider='RdsDbInstance' LIMIT 1`;
+FROM DatastoreSample WHERE provider='RdsDbInstance' FACET entity.name, entityName LIMIT 1`;
 
 const metricDbQuery = `SELECT \
-max(aws.rds.ReadThroughput), max(aws.rds.WriteThroughput), \
-max(aws.rds.NetworkTransmitThroughput), max(aws.rds.NetworkReceiveThroughput), \
-max(aws.rds.ReadIOPS), max(aws.rds.WriteIOPS), max(aws.rds.DatabaseConnections), \
-max(aws.rds.allocatedStorageBytes), min(aws.rds.FreeStorageSpace), \
-max(aws.rds.CPUUtilization), latest(aws.rds.engine), latest(aws.rds.engineVersion), latest(aws.rds.dbInstanceClass) \
-FROM Metric LIMIT 1`;
+max(aws.rds.ReadThroughput) as 'max.provider.readThroughput.Maximum', max(aws.rds.WriteThroughput) as 'max.provider.WriteThroughput.Maximum', \
+max(aws.rds.FreeableMemory) as 'max.provider.freeableMemoryBytes.Maximum', \
+max(aws.rds.NetworkTransmitThroughput) as 'max.provider.networkTransmitThroughput.Maximum', max(aws.rds.NetworkReceiveThroughput) as 'max.provider.networkReceiveThroughput.Maximum', \
+max(aws.rds.ReadIOPS) as 'max.provider.readIops.Maximum', max(aws.rds.WriteIOPS) as 'max.provider.writeIOPS.Maximum', max(aws.rds.DatabaseConnections) as 'max.provider.databaseConnections.Maximum', \
+latest(aws.rds.allocatedStorageBytes) as 'provider.allocatedStorageBytes', min(aws.rds.FreeStorageSpace) as 'min.provider.freeStorageSpaceBytes.Minimum', \
+max(aws.rds.CPUUtilization) as 'max.provider.cpuUtilization.Maximum', latest(aws.rds.multiAz) as 'aws.multiAz', \
+latest(aws.region) as 'aws.region', latest(aws.rds.engine) as 'aws.engine', latest(aws.rds.engineVersion) as 'aws.engineVersion', latest(aws.rds.dbInstanceClass) as 'aws.dbInstanceClass' \
+FROM Metric FACET entity.name, entityName LIMIT 1`;
 
 const pricingUrl = (region, type, engine) =>
   `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`;
@@ -89,10 +91,17 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
       entityData.forEach(e => {
         // move samples top level
-        const DatastoreSample = e?.DatastoreSample?.results?.[0] || {};
-        // const MetricSample = e?.MetricSample?.results?.[0] || {};
-        // console.log(JSON.stringify(DatastoreSample));
-        // console.log(JSON.stringify(MetricSample));
+        // const DatastoreSample = e?.DatastoreSample?.results?.[0] || {};
+
+        const DatastoreSample =
+          e?.MetricSample?.results?.[0] ||
+          e?.DatastoreSample?.results?.[0] ||
+          {};
+
+        if (e?.MetricSample?.results?.[0]) {
+          delete e.MetricSample;
+          e['co.sourceEvent'] = 'MetricSample';
+        }
 
         // clean up keys
         Object.keys(DatastoreSample).forEach(key => {
@@ -106,10 +115,29 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         });
         e.DatastoreSample = DatastoreSample;
 
-        const region = e.tags?.['aws.awsRegion']?.[0];
-        const engine = e.tags?.['aws.engine']?.[0];
-        const engineVersion = e.tags?.['aws.engineVersion']?.[0];
-        const dbInstanceClass = e.tags?.['aws.dbInstanceClass']?.[0];
+        const region =
+          e.tags?.['aws.awsRegion']?.[0] ||
+          e.DatastoreSample?.['aws.region'] ||
+          '';
+        const engine =
+          e.tags?.['aws.engine']?.[0] ||
+          e.DatastoreSample?.['aws.engine'] ||
+          '';
+        const engineVersion =
+          e.tags?.['aws.engineVersion']?.[0] ||
+          e.DatastoreSample?.['aws.engineVersion'] ||
+          '';
+        const dbInstanceClass =
+          e.tags?.['aws.dbInstanceClass']?.[0] ||
+          e.DatastoreSample?.['aws.dbInstanceClass'] ||
+          '';
+
+        // metric generated entities do not have this tag, so manually stitching in
+        if (e.DatastoreSample?.['aws.dbInstanceClass']) {
+          e.tags['aws.dbInstanceClass'] = [
+            e.DatastoreSample?.['aws.dbInstanceClass']
+          ];
+        }
 
         let determinedEngine = '';
         const engines = ['mysql', 'mariadb', 'oracle', 'postgres', 'sqlserver'];
@@ -159,9 +187,14 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       const entitiesToOptimize = [];
 
       entityData.forEach((e, entityIndex) => {
-        const eRegion = e.tags?.['aws.awsRegion']?.[0];
-        const eDbInstanceClass = e.tags?.['aws.dbInstanceClass']?.[0];
-        const eMultiAz = e.tags?.['aws.multiAz']?.[0];
+        const eRegion =
+          e.DatastoreSample?.['aws.awsRegion'] ||
+          e.tags?.['aws.awsRegion']?.[0];
+        const eDbInstanceClass =
+          e.DatastoreSample?.['aws.dbInstanceClass'] ||
+          e.tags?.['aws.dbInstanceClass']?.[0];
+        const eMultiAz =
+          e.DatastoreSample?.['aws.multiAz'] || e.tags?.['aws.multiAz']?.[0];
 
         pricingData.forEach(({ priceData, region, engine, type }) => {
           if (
@@ -249,10 +282,14 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       // this can be written more optimally to not re-query the same pricing
       const entityOptimizationPromises = entitiesToOptimize.map(entityIndex => {
         return new Promise(resolve => {
-          const { tags, determinedEngine, price } = entityData[entityIndex];
+          const { tags, determinedEngine, price, DatastoreSample } = entityData[
+            entityIndex
+          ];
 
-          const region = tags?.['aws.awsRegion']?.[0];
-          const eMultiAz = tags?.['aws.multiAz']?.[0];
+          const region =
+            DatastoreSample?.['aws.awsRegion'] || tags?.['aws.awsRegion']?.[0];
+          const eMultiAz =
+            DatastoreSample?.['aws.multiAz'] || tags?.['aws.multiAz']?.[0];
 
           fetch(
             `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${determinedEngine}.json`
@@ -311,8 +348,8 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
               resolve();
             })
-            .catch(e => {
-              console.log('failed @ RDS entityOptimizationPromises', e); // eslint-disable-line no-console
+            .catch(err => {
+              console.log('failed @ RDS entityOptimizationPromises', err); // eslint-disable-line no-console
               resolve();
             });
         });
