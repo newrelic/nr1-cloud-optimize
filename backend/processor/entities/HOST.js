@@ -246,13 +246,20 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       // get cloud pricing
       const pricingPromises = Object.keys(pricing)
         .map(cloud =>
-          Object.keys(pricing[cloud]).map(region =>
-            fetchPricing(
-              `${BASE_URL}/${cloud}/compute/pricing/${region}.json`,
+          Object.keys(pricing[cloud]).map(region => {
+            let adjustedRegion = region;
+
+            if (cloud === 'google') {
+              const regionSplit = region.split('-');
+              adjustedRegion = `${regionSplit[0]}-${regionSplit[1]}`;
+            }
+
+            return fetchPricing(
+              `${BASE_URL}/${cloud}/compute/pricing/${adjustedRegion}.json`,
               cloud,
               region
-            )
-          )
+            );
+          })
         )
         .flat();
 
