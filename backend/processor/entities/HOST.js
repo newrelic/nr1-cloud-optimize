@@ -171,7 +171,12 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           e?.tags?.['label.KubernetesCluster']?.[0] ||
           e.SystemSample.clusterName;
 
-        const { awsRegion, regionName, zone, regionId } = SystemSample;
+        let { awsRegion, regionName, zone, regionId } = SystemSample;
+
+        awsRegion = awsRegion || e?.tags?.['aws.awsRegion']?.[0];
+        regionName = regionName || e?.tags?.['azure.regionname']?.[0];
+        zone = zone || e?.tags?.['gcp.zone']?.[0];
+        regionId = regionId || e?.tags?.['alibaba.regionid']?.[0];
 
         if (awsRegion) {
           e.cloud = 'amazon';
