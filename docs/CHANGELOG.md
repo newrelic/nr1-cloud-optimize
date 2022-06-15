@@ -1,3 +1,10 @@
+## [3.20.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.20.0...v3.20.1) (2022-06-14)
+
+
+### Bug Fixes
+
+* update region parsing for google hosts ([ac4f96e](https://github.com/newrelic/nr1-cloud-optimize/commit/ac4f96eec2d5839fb35a572456c10cc1500f7fc1))
+
 # [3.20.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.19.0...v3.20.0) (2022-06-13)
 
 
