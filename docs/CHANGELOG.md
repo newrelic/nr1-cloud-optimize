@@ -1,3 +1,10 @@
+# [3.22.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.21.0...v3.22.0) (2022-06-23)
+
+
+### Features
+
+* backend improve region and type support ([49284b5](https://github.com/newrelic/nr1-cloud-optimize/commit/49284b56c4d985ca34cd1c9abf12d097cca4a486))
+
 # [3.21.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.20.1...v3.21.0) (2022-06-15)
 
 
