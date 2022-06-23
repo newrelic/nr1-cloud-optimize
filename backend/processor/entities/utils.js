@@ -44,7 +44,8 @@ const defaultAllowedTags = [
   'aws.storageType',
   'aws.storageEncrypted',
   'aws.clusterInstance',
-  'aws.multiAz'
+  'aws.multiAz',
+  'tags.ecs-cluster'
 ];
 
 exports.BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
