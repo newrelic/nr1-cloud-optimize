@@ -173,7 +173,11 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         let { awsRegion, regionName, zone, regionId } = SystemSample;
 
-        awsRegion = awsRegion || e?.tags?.['aws.awsRegion']?.[0];
+        awsRegion =
+          awsRegion ||
+          e?.tags?.['aws.awsRegion']?.[0] ||
+          e?.tags?.['aws.region']?.[0] ||
+          e?.tags?.awsRegion?.[0];
         regionName = regionName || e?.tags?.['azure.regionname']?.[0];
         zone = zone || e?.tags?.['gcp.zone']?.[0];
         regionId = regionId || e?.tags?.['alibaba.regionid']?.[0];
@@ -294,6 +298,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         const selectedType =
           e.SystemSample.instanceType ||
           e.tags?.instanceType?.[0] ||
+          e.tags?.['aws.ec2.instanceType']?.[0] ||
           e.tags?.type?.[0];
 
         const { memoryGb, coreCount } = e.SystemSample;
