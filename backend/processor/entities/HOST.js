@@ -1,4 +1,8 @@
 const {
+  fetchAwsEc2Locations,
+  fetchAwsEc2RegionPricing
+} = require('../utils/AWS_HOST');
+const {
   batchEntityQuery,
   fetchPricing,
   roundHalf,
@@ -58,6 +62,20 @@ const simplifyProduct = priceData => {
 
   if (gpusPerVm) result.gpu = gpusPerVm;
   if (ntwPerfCategory) result.ntwPerfCategory = ntwPerfCategory;
+
+  return result;
+};
+
+const simplifyAwsProductV2 = priceData => {
+  const memSplit = (priceData?.Memory || '').split(' ');
+  const result = {
+    onDemandPrice: priceData?.price,
+    cpu: priceData?.vCPU,
+    memory: memSplit[0],
+    category: priceData?.['plc:InstanceFamily'],
+    ntwPerfCategory: priceData?.['Network Performance'],
+    type: priceData?.['Instance Type']
+  };
 
   return result;
 };
@@ -128,6 +146,10 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         azure: {},
         google: {},
         alibaba: {}
+      };
+
+      const pricingV2 = {
+        amazon: {}
       };
 
       pricing[conf.cloud][conf.regions[conf.cloud]] = null;
@@ -202,6 +224,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         if (pricing[e.cloud]) {
           pricing[e.cloud][e.cloudRegion] = null;
+          pricingV2[e.cloud][e.cloudRegion] = null;
         }
 
         // check if aks or eks k8s host
@@ -252,6 +275,30 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
       const k8sContainerData = await Promise.all(k8sContainerPromises);
 
+      // AMAZON V2 PRICING FETCH
+      const awsEc2Locations =
+        Object.keys(pricingV2.amazon).length > 0
+          ? await fetchAwsEc2Locations()
+          : null;
+
+      if (awsEc2Locations) {
+        const { locationData } = awsEc2Locations;
+
+        const awsPricingPromises = Object.keys(pricingV2.amazon).map(region =>
+          fetchAwsEc2RegionPricing(region, locationData)
+        );
+
+        await Promise.all(awsPricingPromises).then(pricingValues => {
+          pricingValues.forEach(value => {
+            const { pricingData, region } = value;
+            pricingV2.amazon[region] = pricingData;
+          });
+        });
+      }
+
+      // ---------------------------
+
+      // V1 PRICING FETCH
       // get cloud pricing
       const pricingPromises = Object.keys(pricing)
         .map(cloud =>
@@ -271,6 +318,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           })
         )
         .flat();
+      // -----------------------------
 
       await Promise.all(pricingPromises).then(pricingValues => {
         pricingValues.forEach(pv => {
@@ -310,12 +358,29 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           pricing?.[e.cloud || conf.cloud]?.[
             e.cloudRegion || conf.regions[conf.cloud]
           ];
+
+        const v2Pricing =
+          pricingV2?.amazon?.[e.cloudRegion || conf.regions[conf.cloud]];
+
+        if (e.cloud === 'amazon' && selectedType && v2Pricing) {
+          // attempt amazon V2 price match
+          for (let z = 0; z < v2Pricing.length; z++) {
+            const product = v2Pricing[z];
+            if (product['Instance Type'] === selectedType) {
+              e.matches.exact.push(simplifyAwsProductV2(product));
+            }
+          }
+        }
+
         if (cloudPrices) {
           // attempt to find exact match
           if (e.cloud) {
-            for (let z = 0; z < cloudPrices.length; z++) {
-              if (selectedType && cloudPrices[z].type === selectedType) {
-                e.matches.exact.push(simplifyProduct(cloudPrices[z]));
+            // fallback on v1
+            if (Object.keys(e.matches.exact).length === 0) {
+              for (let z = 0; z < cloudPrices.length; z++) {
+                if (selectedType && cloudPrices[z].type === selectedType) {
+                  e.matches.exact.push(simplifyProduct(cloudPrices[z]));
+                }
               }
             }
           }
@@ -323,11 +388,30 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
           // attempt to find closest match if no exact matches from each category
           if (e.matches.exact.length === 0) {
             e.matches.closest = {};
-            for (let z = 0; z < cloudPrices.length; z++) {
-              const { cpusPerVm, memPerVm, category } = cloudPrices[z];
-              if (cpusPerVm >= cpu && memPerVm >= mem) {
-                if (!e.matches.closest[category]) {
-                  e.matches.closest[category] = simplifyProduct(cloudPrices[z]);
+
+            if (e.cloud === 'amazon' && selectedType && v2Pricing) {
+              // attempt amazon V2 price match
+              for (let z = 0; z < v2Pricing.length; z++) {
+                const product = simplifyAwsProductV2(v2Pricing[z]);
+
+                if (product.cpu >= cpu && product.memory >= mem) {
+                  if (!e.matches.closest[product.category]) {
+                    e.matches.closest[product.category] = product;
+                  }
+                }
+              }
+            }
+
+            // fallback on v1
+            if (Object.keys(e.matches.closest).length === 0) {
+              for (let z = 0; z < cloudPrices.length; z++) {
+                const { cpusPerVm, memPerVm, category } = cloudPrices[z];
+                if (cpusPerVm >= cpu && memPerVm >= mem) {
+                  if (!e.matches.closest[category]) {
+                    e.matches.closest[category] = simplifyProduct(
+                      cloudPrices[z]
+                    );
+                  }
                 }
               }
             }
@@ -387,20 +471,47 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
               const onDemandPriceExact = e.matches.exact?.[0]?.onDemandPrice;
 
               e.matches.optimized = [];
-              for (let z = 0; z < cloudPrices.length; z++) {
-                const { cpusPerVm, memPerVm, onDemandPrice } = cloudPrices[z];
-                if (
-                  cpusPerVm >= optimizedCpuCount &&
-                  memPerVm >= optimizedMemGb
-                ) {
+
+              if (e.cloud === 'amazon' && selectedType && v2Pricing) {
+                // attempt amazon V2 price match
+                for (let z = 0; z < v2Pricing.length; z++) {
+                  const product = simplifyAwsProductV2(v2Pricing[z]);
+
                   if (
-                    !onDemandPriceExact ||
-                    (onDemandPriceExact && onDemandPriceExact > onDemandPrice)
+                    product.cpu >= optimizedCpuCount &&
+                    product.memory >= optimizedMemGb
                   ) {
-                    if (!e.matches.optimized) {
-                      e.matches.optimized = [];
+                    if (
+                      !onDemandPriceExact ||
+                      (onDemandPriceExact &&
+                        onDemandPriceExact > product.onDemandPrice)
+                    ) {
+                      if (!e.matches.optimized) {
+                        e.matches.optimized = [];
+                      }
+                      e.matches.optimized.push(product);
                     }
-                    e.matches.optimized.push(simplifyProduct(cloudPrices[z]));
+                  }
+                }
+              }
+
+              // fallback on v1
+              if (Object.keys(e.matches.optimized).length === 0) {
+                for (let z = 0; z < cloudPrices.length; z++) {
+                  const { cpusPerVm, memPerVm, onDemandPrice } = cloudPrices[z];
+                  if (
+                    cpusPerVm >= optimizedCpuCount &&
+                    memPerVm >= optimizedMemGb
+                  ) {
+                    if (
+                      !onDemandPriceExact ||
+                      (onDemandPriceExact && onDemandPriceExact > onDemandPrice)
+                    ) {
+                      if (!e.matches.optimized) {
+                        e.matches.optimized = [];
+                      }
+                      e.matches.optimized.push(simplifyProduct(cloudPrices[z]));
+                    }
                   }
                 }
               }
