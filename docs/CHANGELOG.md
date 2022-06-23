@@ -1,3 +1,10 @@
+# [3.21.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.20.1...v3.21.0) (2022-06-15)
+
+
+### Features
+
+* aadd event to tag handling for HOST entities ([b22c886](https://github.com/newrelic/nr1-cloud-optimize/commit/b22c8868c324ddd9df0156788d786d12f5f9e36b))
+
 ## [3.20.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.20.0...v3.20.1) (2022-06-14)
 
 
