@@ -1,3 +1,10 @@
+# [3.23.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.22.0...v3.23.0) (2022-06-23)
+
+
+### Features
+
+* get ec2 pricing from AWS directly ([7574553](https://github.com/newrelic/nr1-cloud-optimize/commit/75745537c33654e82b5f8b17da111d37af03b8f0))
+
 # [3.22.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.21.0...v3.22.0) (2022-06-23)
 
 
