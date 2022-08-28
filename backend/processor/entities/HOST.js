@@ -236,6 +236,8 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         if (pricing[e.cloud]) {
           pricing[e.cloud][e.cloudRegion] = null;
+        }
+        if (pricingV2[e.cloud]) {
           pricingV2[e.cloud][e.cloudRegion] = null;
         }
 
