@@ -1,3 +1,10 @@
+## [3.23.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.23.1...v3.23.2) (2022-09-05)
+
+
+### Bug Fixes
+
+* eu address ([d7177e7](https://github.com/newrelic/nr1-cloud-optimize/commit/d7177e70c34f7baad41fb3fc5c0ac146114fd7a9))
+
 ## [3.23.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.23.0...v3.23.1) (2022-09-05)
 
 
