@@ -37,7 +37,9 @@ export default function CollectionList(props) {
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
   );
-  const isLocal = !/^https:\/\/one\.(eu\.){0,1}newrelic\.com/.test(window.location.href);
+  const isLocal =
+    !window.location.href.includes('https://one.newrelic.com') &&
+    !window.location.href.includes('https://one.newrelic.com');
   const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const deleteWorkloadCollection = documentId => {
