@@ -1,3 +1,10 @@
+## [3.23.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.23.0...v3.23.1) (2022-09-05)
+
+
+### Bug Fixes
+
+* support EU region of newrelic ([#112](https://github.com/newrelic/nr1-cloud-optimize/issues/112)) ([4341886](https://github.com/newrelic/nr1-cloud-optimize/commit/43418869b951b9b8ef862380f9357e27d66c229e))
+
 # [3.23.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.22.0...v3.23.0) (2022-06-23)
 
 
