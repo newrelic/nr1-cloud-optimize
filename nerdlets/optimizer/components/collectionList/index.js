@@ -39,7 +39,7 @@ export default function CollectionList(props) {
   );
   const isLocal =
     !window.location.href.includes('https://one.newrelic.com') &&
-    !window.location.href.includes('https://one.newrelic.com');
+    !window.location.href.includes('https://one.eu.newrelic.com');
   const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const deleteWorkloadCollection = documentId => {
