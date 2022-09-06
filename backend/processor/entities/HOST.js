@@ -32,13 +32,12 @@ const K8sContainerDataQuery = (hostname, fullHostname, timeRange) =>
   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsedBytes) as 'maxMemoryUsedBytes', max(memoryUtilization) as 'maxMemoryUtilization' \
   WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
 
-// future
-// const ContainerDataQuery = (hostname, fullHostname, timeRange) =>
-//   `FROM ContainerSample SELECT latest(containerName) as 'containerName', latest(containerImage) as 'imageName', \
-//   latest(ecsClusterName) as 'ecsClusterName', latest(ecsContainerName) as 'ecsContainerName', latest(ecsTaskDefinitionFamily) as 'ecsTaskDefinitionFamily', \
-//   latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuUsedCoresPercent) as 'maxCpuUsedCoresPercent', \
-//   latest(memoryLimitBytes) as 'memoryLimitBytes', max(memoryUsageBytes) as 'maxMemoryUsedBytes', max(memoryUsageLimitPercent) as 'maxMemoryUsageLimitPercent' \
-//   WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerID, entityGuid LIMIT MAX ${timeRange}`;
+const EcsContainerDataQuery = (hostname, fullHostname, timeRange) =>
+  `FROM ContainerSample SELECT latest(ecsContainerName) as 'containerName', latest(imageName) as 'imageName', \
+  latest(ecsClusterName) as 'ecsClusterName', latest(ecsContainerName) as 'ecsContainerName', latest(ecsTaskDefinitionFamily) as 'ecsTaskDefinitionFamily', \
+  latest(cpuLimitCores) as 'cpuLimitCores', max(cpuUsedCores) as 'maxCpuUsedCores', max(cpuUsedCoresPercent) as 'maxCpuUsedCoresPercent', \
+  latest(memorySizeLimitBytes) as 'memoryLimitBytes', max(memoryUsageBytes) as 'maxMemoryUsedBytes', max(memoryUsageLimitPercent) as 'maxMemoryUsageLimitPercent' \
+  WHERE hostname = '${hostname}' OR host = '${hostname}' OR fullHostname = '${fullHostname}' FACET containerId, entityGuid LIMIT MAX ${timeRange}`;
 
 const simplifyProduct = priceData => {
   const {
@@ -155,6 +154,7 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       pricing[conf.cloud][conf.regions[conf.cloud]] = null;
 
       const k8sHosts = [];
+      const ecsHosts = [];
 
       // massage entity data
       entityData.forEach(e => {
@@ -191,7 +191,19 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         e.clusterName =
           e?.tags?.clusterName?.[0] ||
           e?.tags?.['label.KubernetesCluster']?.[0] ||
-          e.SystemSample.clusterName;
+          e?.SystemSample?.clusterName;
+
+        e.ecsCluster = e?.tags?.['tags.ecs-cluster']?.[0];
+
+        if (e.ecsCluster) {
+          e.ecs = true;
+          ecsHosts.push({
+            hostname: e?.SystemSample?.hostname,
+            fullHostname: e?.SystemSample?.fullHostname,
+            accountId: e.tags?.accountId?.[0],
+            guid: e.guid
+          });
+        }
 
         let { awsRegion, regionName, zone, regionId } = SystemSample;
 
@@ -224,6 +236,8 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
 
         if (pricing[e.cloud]) {
           pricing[e.cloud][e.cloudRegion] = null;
+        }
+        if (pricingV2[e.cloud]) {
           pricingV2[e.cloud][e.cloudRegion] = null;
         }
 
@@ -274,6 +288,23 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
       );
 
       const k8sContainerData = await Promise.all(k8sContainerPromises);
+
+      // get ecs data
+      // the container sample has their own guids so we need to stitch the container data afterwards
+      const ecsContainerPromises = ecsHosts.map(
+        k =>
+          new Promise(resolve => {
+            nrqlQuery(
+              key,
+              parseInt(k.accountId),
+              EcsContainerDataQuery(k.hostname, k.fullHostname, timeNrql)
+            ).then(data => {
+              resolve({ data, hostname: k.hostname, guid: k.guid });
+            });
+          })
+      );
+
+      const ecsContainerData = await Promise.all(ecsContainerPromises);
 
       // AMAZON V2 PRICING FETCH
       const awsEc2Locations =
@@ -339,6 +370,12 @@ exports.run = (entities, key, config, timeNrql, totalPeriodMs) => {
         if (e.k8s || e.k8sMaybe) {
           e.K8sContainerData =
             (k8sContainerData || []).find(d => d.guid === e.guid)?.data
+              ?.results || [];
+        }
+
+        if (e.ecs) {
+          e.EcsContainerData =
+            (ecsContainerData || []).find(d => d.guid === e.guid)?.data
               ?.results || [];
         }
 

@@ -63,7 +63,7 @@ export default function ResultsPanel(props) {
       <StackItem grow style={{ paddingTop: '5px', width: '99%' }}>
         <Card fullWidth>
           <CardBody>
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'center', zIndex: '-99999' }}>
               <SegmentedControl
                 className="segmentControl"
                 onChange={(evt, value) => setView(value)}
