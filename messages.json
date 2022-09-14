@@ -6,5 +6,13 @@
       "Customers unanimously wanted more services and to view the cost and performance by workload.",
       "We had to re-architect the application completely so we can continue to add new services and functionality easily."
     ]
-  }
+  },
+  {
+    "title":"Upcoming updates",
+    "messages":[
+      "Hi everyone! New Relic Labs here, and we wanted to let you know that some changes will be coming to Cloud Optimize over the next few months. We're undertaking a full refresh of the app interface; while it will have the same functionality, we will be giving it a facelift with a focus on making it easier to use.",
+      "If you'd like a sense for what's coming, take a look at our Github project [https://github.com/orgs/newrelic/projects/70/views/1] - the project README has more details. And as we get ready to release changes, we'll be giving you a heads-up here, so you know what to expect, and when.",
+      "While we go through the project, we'd love to hear your input - if you have thoughts to share, please post a comment in the project discussion thread (https://github.com/newrelic/nr1-cloud-optimize/discussions/127)."
+    ]
+  },
 ]
