@@ -202,14 +202,14 @@ export class DataProvider extends Component {
                         this.updateDataState({ settingsModalOpen: true })
                     },
                     {
-                      label: 'Switch to beta',
+                      label: 'Switch to stable',
                       type: 'secondary',
                       // type: nerdlet.ACTION_CONTROL_BUTTON_TYPES.SECONDARY,
-                      hint: 'Switch to the beta release',
+                      hint: 'Switch to the stable release',
                       iconType:
                         Icon.TYPE.INTERFACE__ARROW__ARROW_RIGHT__V_ALTERNATE,
                       onClick: () =>
-                        navigation.replaceNerdlet({ id: 'optimizer-beta' })
+                        navigation.replaceNerdlet({ id: 'optimizer' })
                     }
                   ]
                 });
