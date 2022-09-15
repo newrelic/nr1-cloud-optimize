@@ -1,3 +1,10 @@
+# [3.24.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.23.2...v3.24.0) (2022-09-15)
+
+
+### Features
+
+* rework quickstart [#116](https://github.com/newrelic/nr1-cloud-optimize/issues/116) ([#128](https://github.com/newrelic/nr1-cloud-optimize/issues/128)) ([5cd3bf0](https://github.com/newrelic/nr1-cloud-optimize/commit/5cd3bf0fad3a2cf7a7c31f11ad0df20985213679))
+
 ## [3.23.2](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.23.1...v3.23.2) (2022-09-05)
 
 
