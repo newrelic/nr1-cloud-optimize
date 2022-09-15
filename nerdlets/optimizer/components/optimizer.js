@@ -7,6 +7,7 @@ import {
   BlockText,
   Layout,
   LayoutItem,
+  CollapsibleLayoutItem,
   Stack,
   StackItem,
   HeadingText,
@@ -165,7 +166,6 @@ export default function Optimizer(props) {
               )}
 
               <Messages />
-              <QuickStart />
 
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
@@ -177,6 +177,13 @@ export default function Optimizer(props) {
             </StackItem>
           </Stack>
         </LayoutItem>
+
+        <CollapsibleLayoutItem
+          triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
+          type={LayoutItem.TYPE.SPLIT_RIGHT}
+        >
+          <QuickStart />
+        </CollapsibleLayoutItem>
       </Layout>
     </>
   );
