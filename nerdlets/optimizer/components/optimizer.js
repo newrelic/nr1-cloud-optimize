@@ -11,7 +11,8 @@ import {
   CardBody,
   Button,
   navigation,
-  Icon
+  Icon,
+  UserStorageMutation
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -94,9 +95,20 @@ export default function Optimizer(props) {
                       <Button
                         style={{ marginTop: '2px' }}
                         sizeType={Button.SIZE_TYPE.SMALL}
-                        onClick={() =>
-                          navigation.replaceNerdlet({ id: 'optimizer-beta' })
-                        }
+                        onClick={() => {
+                          UserStorageMutation.mutate({
+                            actionType:
+                              UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+                            collection: 'USER_CONFIG',
+                            documentId: 'config',
+                            document: {
+                              ...userConfig,
+                              lastNerdlet: 'optimizer-beta'
+                            }
+                          }).then(() => {
+                            navigation.replaceNerdlet({ id: 'optimizer-beta' });
+                          });
+                        }}
                         iconType={
                           Icon.TYPE.INTERFACE__ARROW__ARROW_RIGHT__V_ALTERNATE
                         }

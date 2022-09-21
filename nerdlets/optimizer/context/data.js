@@ -28,6 +28,8 @@ import {
 } from './queries';
 import queue from 'async/queue';
 
+const nr1json = require('../nr1.json');
+
 const QUEUE_LIMIT = 5;
 const STATUS_COLLECTION = 'jobStatus';
 
@@ -66,9 +68,16 @@ export class DataProvider extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getNerdpackUuid();
-    this.getUserConfig();
+    const userConfig = await this.getUserConfig();
+    if (
+      userConfig &&
+      userConfig.lastNerdlet &&
+      userConfig.lastNerdlet !== nr1json.id
+    ) {
+      navigation.replaceNerdlet({ id: userConfig.lastNerdlet });
+    }
     this.getMessages();
     this.pollJobStatus = setInterval(() => {
       this.fetchJobStatus();
