@@ -1,5 +1,11 @@
-import React, { useContext } from 'react';
-import { Steps, StepsItem, Button, HeadingText } from 'nr1';
+import React, { useContext, useState } from 'react';
+import {
+  Steps,
+  StepsItem,
+  Button,
+  HeadingText,
+  UserStorageMutation
+} from 'nr1';
 import DataContext from '../../context/data';
 import runOption from '../../images/runOption.png';
 import histOption from '../../images/histOption.png';
@@ -7,7 +13,20 @@ import histOption from '../../images/histOption.png';
 // eslint-disable-next-line no-unused-vars
 export default function QuickStart(props) {
   const dataContext = useContext(DataContext);
-  const { updateDataState } = dataContext;
+  const { updateDataState, getUserConfig, userConfig } = dataContext;
+  const [dismissing, setDismissing] = useState(false);
+
+  const dismissQuickStart = async () => {
+    setDismissing(true);
+    await UserStorageMutation.mutate({
+      actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+      collection: 'USER_CONFIG',
+      documentId: 'config',
+      document: { ...userConfig, quickstartDismissed: true }
+    });
+    await getUserConfig();
+    setDismissing(false);
+  };
 
   return (
     <div
@@ -23,7 +42,7 @@ export default function QuickStart(props) {
 
       <Steps
         defaultValue="create-workload-entities"
-        style={{ paddingLeft: '25px' }}
+        style={{ paddingLeft: '25px', paddingBottom: '25px' }}
       >
         <StepsItem label="Create a collection" value="create-collection">
           A collection is a group of workloads stored under an account but can
@@ -68,6 +87,14 @@ export default function QuickStart(props) {
           <img src={histOption} alt="History" />
         </StepsItem>
       </Steps>
+
+      <Button
+        onClick={() => dismissQuickStart()}
+        sizeType={Button.SIZE_TYPE.SMALL}
+        loading={dismissing}
+      >
+        Dismiss
+      </Button>
     </div>
   );
 }

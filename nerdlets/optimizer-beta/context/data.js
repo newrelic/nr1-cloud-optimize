@@ -99,12 +99,18 @@ export class DataProvider extends Component {
     }
   }
 
-  getUserConfig() {
-    UserStorageQuery.query({
-      collection: 'USER_CONFIG',
-      documentId: 'config'
-    }).then(document => this.setState({ userConfig: document?.data || {} }));
-  }
+  getUserConfig = () => {
+    return new Promise(resolve => {
+      UserStorageQuery.query({
+        collection: 'USER_CONFIG',
+        documentId: 'config'
+      }).then(document => {
+        this.setState({ userConfig: document?.data || {} }, () => {
+          resolve(document?.data);
+        });
+      });
+    });
+  };
 
   handleUpdate = props => {
     if (props.accountId !== this.state.accountId) {
@@ -200,16 +206,6 @@ export class DataProvider extends Component {
                       iconType: Icon.TYPE.INTERFACE__OPERATIONS__CONFIGURE,
                       onClick: () =>
                         this.updateDataState({ settingsModalOpen: true })
-                    },
-                    {
-                      label: 'Switch to stable',
-                      type: 'secondary',
-                      // type: nerdlet.ACTION_CONTROL_BUTTON_TYPES.SECONDARY,
-                      hint: 'Switch to the stable release',
-                      iconType:
-                        Icon.TYPE.INTERFACE__ARROW__ARROW_RIGHT__V_ALTERNATE,
-                      onClick: () =>
-                        navigation.replaceNerdlet({ id: 'optimizer' })
                     }
                   ]
                 });

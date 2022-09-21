@@ -1,9 +1,5 @@
 import React, { useContext } from 'react';
 import {
-  Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverBody,
   BlockText,
   Layout,
   LayoutItem,
@@ -13,7 +9,9 @@ import {
   HeadingText,
   Card,
   CardBody,
-  Button
+  Button,
+  navigation,
+  Icon
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -29,7 +27,8 @@ export default function Optimizer(props) {
     fetchingAccountCollection,
     accountCollection,
     selectedAccount,
-    updateDataState
+    updateDataState,
+    userConfig
   } = dataContext;
 
   if (fetchingAccountCollection) {
@@ -45,32 +44,12 @@ export default function Optimizer(props) {
     );
   }
 
-  const createText = (
-    <span
-      onClick={() => updateDataState({ createCollectionOpen: true })}
-      style={{
-        cursor: 'pointer',
-        color: '#017c86',
-        fontWeight: 'bold'
-      }}
-    >
-      create
-    </span>
-  );
-
-  const subText =
-    accountCollection && accountCollection.length > 0 ? (
-      <>Select or {createText}</>
-    ) : (
-      <>To begin {createText}</>
-    );
-
   const { id, name } = selectedAccount;
   const account = name || id;
 
   return (
     <>
-      <Layout fullHeight>
+      <Layout fullHeight style={{ overflowY: 'hidden' }}>
         <LayoutItem>
           <Stack directionType={Stack.DIRECTION_TYPE.VERTICAL} fullWidth>
             <StackItem grow style={{ width: '100%' }}>
@@ -96,8 +75,10 @@ export default function Optimizer(props) {
                   </Card>
                 </>
               ) : (
-                <Card>
+                <Card style={{ overflowY: 'hidden' }}>
                   <CardBody>
+                    <Messages />
+
                     <HeadingText
                       type={HeadingText.TYPE.HEADING_3}
                       style={{
@@ -106,24 +87,38 @@ export default function Optimizer(props) {
                         fontSize: '18px'
                       }}
                     >
-                      BETA: Workload Collections from {account}
+                      <span style={{ paddingRight: '10px' }}>
+                        Workload Collections from {account}
+                      </span>
+
+                      <Button
+                        style={{ marginTop: '2px' }}
+                        sizeType={Button.SIZE_TYPE.SMALL}
+                        onClick={() =>
+                          navigation.replaceNerdlet({ id: 'optimizer' })
+                        }
+                        iconType={
+                          Icon.TYPE.INTERFACE__ARROW__ARROW_RIGHT__V_ALTERNATE
+                        }
+                      >
+                        Switch to stable
+                      </Button>
                     </HeadingText>
                     <BlockText
                       type={BlockText.TYPE.PARAGRAPH}
-                      style={{ float: 'left' }}
+                      style={{ float: 'left', paddingTop: '10px' }}
                     >
-                      {subText} a collection of workload(s) to Optimize{' '}
-                      <Popover openOnHover>
-                        <PopoverTrigger>
-                          <Icon type={Icon.TYPE.INTERFACE__INFO__INFO} />
-                        </PopoverTrigger>
-                        <PopoverBody>
-                          <BlockText>
-                            &nbsp;A collection is stored under a account but can
-                            contain workloads from other accounts&nbsp;
-                          </BlockText>
-                        </PopoverBody>
-                      </Popover>
+                      <Button
+                        sizeType={Button.SIZE_TYPE.SMALL}
+                        onClick={() =>
+                          updateDataState({ createCollectionOpen: true })
+                        }
+                        iconType={
+                          Button.ICON_TYPE.DOCUMENTS__DOCUMENTS__NOTES__A_ADD
+                        }
+                      >
+                        Create Collection
+                      </Button>
                     </BlockText>
 
                     <BlockText
@@ -165,8 +160,6 @@ export default function Optimizer(props) {
                 </Card>
               )}
 
-              <Messages />
-
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
                   <CardBody>
@@ -178,12 +171,19 @@ export default function Optimizer(props) {
           </Stack>
         </LayoutItem>
 
-        <CollapsibleLayoutItem
-          triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
-          type={LayoutItem.TYPE.SPLIT_RIGHT}
-        >
-          <QuickStart />
-        </CollapsibleLayoutItem>
+        {userConfig && !userConfig.quickstartDismissed && (
+          <LayoutItem
+            type={CollapsibleLayoutItem.TYPE.SPLIT_RIGHT}
+            triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
+            style={{
+              overflowY: 'hidden',
+              overflowX: 'hidden',
+              paddingTop: '20%'
+            }}
+          >
+            <QuickStart />
+          </LayoutItem>
+        )}
       </Layout>
     </>
   );

@@ -9,7 +9,9 @@ import {
   HeadingText,
   Card,
   CardBody,
-  Button
+  Button,
+  navigation,
+  Icon
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -25,7 +27,8 @@ export default function Optimizer(props) {
     fetchingAccountCollection,
     accountCollection,
     selectedAccount,
-    updateDataState
+    updateDataState,
+    userConfig
   } = dataContext;
 
   if (fetchingAccountCollection) {
@@ -74,6 +77,8 @@ export default function Optimizer(props) {
               ) : (
                 <Card style={{ overflowY: 'hidden' }}>
                   <CardBody>
+                    <Messages />
+
                     <HeadingText
                       type={HeadingText.TYPE.HEADING_3}
                       style={{
@@ -82,7 +87,22 @@ export default function Optimizer(props) {
                         fontSize: '18px'
                       }}
                     >
-                      Workload Collections from {account}
+                      <span style={{ paddingRight: '10px' }}>
+                        Workload Collections from {account}
+                      </span>
+
+                      <Button
+                        style={{ marginTop: '2px' }}
+                        sizeType={Button.SIZE_TYPE.SMALL}
+                        onClick={() =>
+                          navigation.replaceNerdlet({ id: 'optimizer-beta' })
+                        }
+                        iconType={
+                          Icon.TYPE.INTERFACE__ARROW__ARROW_RIGHT__V_ALTERNATE
+                        }
+                      >
+                        Switch to beta
+                      </Button>
                     </HeadingText>
                     <BlockText
                       type={BlockText.TYPE.PARAGRAPH}
@@ -140,8 +160,6 @@ export default function Optimizer(props) {
                 </Card>
               )}
 
-              <Messages />
-
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
                   <CardBody>
@@ -153,14 +171,18 @@ export default function Optimizer(props) {
           </Stack>
         </LayoutItem>
 
-        {accountCollection && accountCollection.length === 0 && (
-          <CollapsibleLayoutItem
+        {userConfig && !userConfig.quickstartDismissed && (
+          <LayoutItem
             type={CollapsibleLayoutItem.TYPE.SPLIT_RIGHT}
             triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
-            style={{ overflowY: 'hidden', overflowX: 'hidden' }}
+            style={{
+              overflowY: 'hidden',
+              overflowX: 'hidden',
+              paddingTop: '20%'
+            }}
           >
             <QuickStart />
-          </CollapsibleLayoutItem>
+          </LayoutItem>
         )}
       </Layout>
     </>

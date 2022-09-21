@@ -1,5 +1,11 @@
-import React, { useContext } from 'react';
-import { Steps, StepsItem, Button, HeadingText } from 'nr1';
+import React, { useContext, useState } from 'react';
+import {
+  Steps,
+  StepsItem,
+  Button,
+  HeadingText,
+  UserStorageMutation
+} from 'nr1';
 import DataContext from '../../context/data';
 import runOption from '../../images/runOption.png';
 import histOption from '../../images/histOption.png';
@@ -7,30 +13,55 @@ import histOption from '../../images/histOption.png';
 // eslint-disable-next-line no-unused-vars
 export default function QuickStart(props) {
   const dataContext = useContext(DataContext);
-  const { updateDataState } = dataContext;
+  const { updateDataState, getUserConfig, userConfig } = dataContext;
+  const [dismissing, setDismissing] = useState(false);
+
+  const dismissQuickStart = async () => {
+    setDismissing(true);
+    await UserStorageMutation.mutate({
+      actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+      collection: 'USER_CONFIG',
+      documentId: 'config',
+      document: { ...userConfig, quickstartDismissed: true }
+    });
+    await getUserConfig();
+    setDismissing(false);
+  };
 
   return (
-    <>
-      <HeadingText
-        type={HeadingText.TYPE.HEADING_2}
-        style={{
-          paddingTop: '100%',
-          paddingLeft: '25px',
-          paddingBottom: '10px'
-        }}
-      >
+    <div
+      style={{
+        overflowX: 'hidden',
+        overflowY: 'hidden',
+        marginTop: '20px'
+      }}
+    >
+      <HeadingText style={{ fontSize: '18px', paddingBottom: '10px' }}>
         Quick Start Guide
       </HeadingText>
 
       <Steps
         defaultValue="create-workload-entities"
-        style={{ paddingLeft: '25px' }}
+        style={{ paddingLeft: '25px', paddingBottom: '25px' }}
       >
-        <StepsItem
-          style={{ fontSize: 'unset' }}
-          label="Create a workload of entities to optimize"
-          value="add-data"
-        >
+        <StepsItem label="Create a collection" value="create-collection">
+          A collection is a group of workloads stored under an account but can
+          contain workloads from other accounts
+          <br />
+          <br />
+          <Button
+            onClick={() => updateDataState({ createCollectionOpen: true })}
+            sizeType={Button.SIZE_TYPE.SMALL}
+          >
+            Create collection
+          </Button>
+          <br />
+          <br />
+          1. Name your collection <br />
+          2. Select existing workloads <br />
+          <br />
+          (Optional) Create new workloads and refresh the list to select <br />{' '}
+          <br />
           <Button
             onClick={() =>
               window.open(
@@ -38,39 +69,32 @@ export default function QuickStart(props) {
                 '_blank'
               )
             }
+            sizeType={Button.SIZE_TYPE.SMALL}
           >
             Create a workload
           </Button>
         </StepsItem>
-        <StepsItem
-          label="Create a collection of workload(s) to target"
-          value="create-collection"
-        >
-          <Button
-            onClick={() => updateDataState({ createCollectionOpen: true })}
-          >
-            Create collection
-          </Button>
-        </StepsItem>
 
         <StepsItem
-          label="Click the 'Run' action in the table row to optimize your collection"
+          label="Analyze optimization opportunities"
           value="optimize-collection"
         >
           Large workloads may take time to process.
-          <br />
+          <br /> <br />
           <img src={runOption} alt="Run" />
         </StepsItem>
-        <StepsItem
-          label="Click 'Results' to view your optimization history"
-          value="view-history"
-        >
+        <StepsItem label="View your optimization results" value="view-history">
           <img src={histOption} alt="History" />
         </StepsItem>
-        <StepsItem label="Improve your stack how you see fit" value="finish">
-          Rinse and repeat.
-        </StepsItem>
       </Steps>
-    </>
+
+      <Button
+        onClick={() => dismissQuickStart()}
+        sizeType={Button.SIZE_TYPE.SMALL}
+        loading={dismissing}
+      >
+        Dismiss
+      </Button>
+    </div>
   );
 }
