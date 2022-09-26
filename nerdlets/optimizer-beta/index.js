@@ -1,11 +1,12 @@
 import React, { useEffect, useContext } from 'react';
 import { PlatformStateContext, nerdlet } from 'nr1';
-import { DataProvider } from './context/data';
+import DataContext, { DataProvider } from './context/data';
 import CollectionCreateModal from './components/collectionCreate';
 import Optimizer from './components/optimizer';
 import CollectionEditModal from './components/collectionEdit';
 import JobHistoryModal from './components/jobHistory';
 import SettingsModal from './components/settings/modal';
+import AdminBar from '../shared/components/adminBar';
 
 function OptimizerRoot() {
   useEffect(() => {
@@ -20,6 +21,8 @@ function OptimizerRoot() {
   return (
     <div>
       <DataProvider {...platformContext}>
+        <AdminBar DataContext={DataContext} />
+
         <CollectionEditModal />
         <CollectionCreateModal />
         <JobHistoryModal />

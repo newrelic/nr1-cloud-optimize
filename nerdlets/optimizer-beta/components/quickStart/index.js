@@ -125,7 +125,7 @@ export default function QuickStart(props) {
       <br />
       <br />
       <Checkbox
-        onChange={e => setDontShowAgain(e.checked)}
+        onChange={e => setDontShowAgain(e.target.checked)}
         checked={dontShowAgain}
         label="Don't show me this guide again"
       />
