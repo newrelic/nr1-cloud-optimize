@@ -4,7 +4,8 @@ import {
   StepsItem,
   Button,
   HeadingText,
-  UserStorageMutation
+  UserStorageMutation,
+  Checkbox
 } from 'nr1';
 import DataContext from '../../context/data';
 import runOption from '../../images/runOption.png';
@@ -14,18 +15,24 @@ import histOption from '../../images/histOption.png';
 export default function QuickStart(props) {
   const dataContext = useContext(DataContext);
   const { updateDataState, getUserConfig, userConfig } = dataContext;
+  const { setHideQuickStart } = props;
   const [dismissing, setDismissing] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   const dismissQuickStart = async () => {
-    setDismissing(true);
-    await UserStorageMutation.mutate({
-      actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
-      collection: 'USER_CONFIG',
-      documentId: 'config',
-      document: { ...userConfig, quickstartDismissed: true }
-    });
-    await getUserConfig();
-    setDismissing(false);
+    if (dontShowAgain) {
+      setDismissing(true);
+      await UserStorageMutation.mutate({
+        actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+        collection: 'USER_CONFIG',
+        documentId: 'config',
+        document: { ...userConfig, quickstartDismissed: true }
+      });
+      await getUserConfig();
+      setDismissing(false);
+    } else {
+      setHideQuickStart(true);
+    }
   };
 
   return (
@@ -39,7 +46,6 @@ export default function QuickStart(props) {
       <HeadingText style={{ fontSize: '18px', paddingBottom: '10px' }}>
         Quick Start Guide
       </HeadingText>
-
       <Steps
         defaultValue="create-workload-entities"
         style={{ paddingLeft: '25px', paddingBottom: '25px' }}
@@ -109,14 +115,20 @@ export default function QuickStart(props) {
           <img src={histOption} alt="History" />
         </StepsItem>
       </Steps>
-
       <Button
         onClick={() => dismissQuickStart()}
         sizeType={Button.SIZE_TYPE.SMALL}
         loading={dismissing}
       >
-        Dismiss
+        Close
       </Button>
+      <br />
+      <br />
+      <Checkbox
+        onChange={e => setDontShowAgain(e.checked)}
+        checked={dontShowAgain}
+        label="Don't show me this guide again"
+      />
     </div>
   );
 }

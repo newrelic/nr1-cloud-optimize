@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   BlockText,
   Layout,
@@ -12,7 +12,8 @@ import {
   Button,
   navigation,
   Icon,
-  UserStorageMutation
+  UserStorageMutation,
+  AutoSizer
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -31,6 +32,7 @@ export default function Optimizer(props) {
     updateDataState,
     userConfig
   } = dataContext;
+  const [hideQuickStart, setHideQuickStart] = useState(false);
 
   if (fetchingAccountCollection) {
     return (
@@ -48,8 +50,35 @@ export default function Optimizer(props) {
   const { id, name } = selectedAccount;
   const account = name || id;
 
+  const renderQuickStart = () => {
+    if (!userConfig || hideQuickStart || userConfig.quickstartDismissed) {
+      return <></>;
+    }
+
+    return (
+      <LayoutItem
+        type={CollapsibleLayoutItem.TYPE.SPLIT_RIGHT}
+        triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
+        style={{
+          overflowY: 'hidden',
+          overflowX: 'hidden'
+        }}
+      >
+        <AutoSizer>
+          {({ height }) => {
+            return (
+              <div style={{ marginTop: height / 3 }}>
+                <QuickStart setHideQuickStart={setHideQuickStart} />
+              </div>
+            );
+          }}
+        </AutoSizer>
+      </LayoutItem>
+    );
+  };
+
   return (
-    <>
+    <div style={{ height: '100%' }}>
       <Layout fullHeight style={{ overflowY: 'hidden' }}>
         <LayoutItem>
           <Stack directionType={Stack.DIRECTION_TYPE.VERTICAL} fullWidth>
@@ -183,20 +212,8 @@ export default function Optimizer(props) {
           </Stack>
         </LayoutItem>
 
-        {userConfig && !userConfig.quickstartDismissed && (
-          <LayoutItem
-            type={CollapsibleLayoutItem.TYPE.SPLIT_RIGHT}
-            triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
-            style={{
-              overflowY: 'hidden',
-              overflowX: 'hidden',
-              paddingTop: '20%'
-            }}
-          >
-            <QuickStart />
-          </LayoutItem>
-        )}
+        {renderQuickStart()}
       </Layout>
-    </>
+    </div>
   );
 }
