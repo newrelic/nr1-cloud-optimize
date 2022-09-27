@@ -321,12 +321,15 @@ export default function CollectionList(props) {
 
 function postData(url = '', key, data = {}) {
   return new Promise(resolve => {
+    // eslint-disable-next-line eslint-comments/no-unlimited-disable, no-console
+    console.log(window.location.host);
+
     fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'NR-API-KEY': key,
-        'NR-REGION': (window?.location?.host || '').includes('one.eu.')
+        'NR-REGION': (window?.location?.host || '').includes('.eu.')
           ? 'EU'
           : undefined
       },
