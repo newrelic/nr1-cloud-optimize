@@ -321,7 +321,7 @@ export default function CollectionList(props) {
 
 function postData(url = '', key, data = {}) {
   return new Promise(resolve => {
-    // eslint-disable-next-line eslint-comments/no-unlimited-disable, no-console
+    // eslint-disable-next-line
     console.log(window.location.host);
 
     fetch(url, {
