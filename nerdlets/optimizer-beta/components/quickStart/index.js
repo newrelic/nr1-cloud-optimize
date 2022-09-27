@@ -54,9 +54,13 @@ export default function QuickStart(props) {
           Cloud Optimize uses Workloads to analyze specific sets of entities.
           Workloads allow you to group related entities, using logical
           categories such as cloud region, business capability, or business
-          owner. If the grouping of entities that you need does not yet exist,
-          go ahead click "Create a workload" now. If the the Workloads you need
-          have already been created, move on to the next step.
+          owner. <br />
+          <br />
+          If the grouping of entities that you need does not yet exist, go ahead
+          click "Create a workload" now. <br />
+          <br />
+          If the the Workloads you need have already been created, move on to
+          the next step.
           <br />
           <br />
           <Button
@@ -79,10 +83,11 @@ export default function QuickStart(props) {
         <StepsItem label="Create a collection" value="create-collection">
           While Workloads are used to efficiently target logically related
           groups of entities, a Cloud Optimize collection allows you to assemble
-          one or more Workloads together for analysis. Click on "Create
-          collection" to select the Workloads you need to include. If the
-          Workload you need isn't listed, return to the previous step to create
-          it.
+          one or more Workloads together for analysis. <br />
+          <br />
+          Click on "Create collection" to select the Workloads you need to
+          include. If the Workload you need isn't listed, return to the previous
+          step to create it.
           <br />
           <br />
           <Button
@@ -97,20 +102,27 @@ export default function QuickStart(props) {
         <StepsItem label="Analyze the collection" value="optimize-collection">
           Your collection should now show up in the collections table. At the
           end of the row for your collection, click on the '...' to see the set
-          of available actions. Run an analysis by selecting either the "Run
-          (analyze past 7 days)" or "Run with time range" options. If your
-          collection contains a large workload, the analysis may take some time
-          to process.
+          of available actions.
+          <br />
+          <br /> Run an analysis by selecting either the "Run (analyze past 7
+          days)" or "Run with time range" options. <br />
+          <br />
+          If your collection contains a large workload, the analysis may take
+          some time to process.
           <br /> <br />
           <img src={runOption} alt="Run" />
         </StepsItem>
         <StepsItem label="View the Results" value="view-results">
           Once the analysis is complete, a "Results" option will now be
           available as an action for your collection (click on '...' in the
-          table row). Select "Results" to see the optimization and cost analysis
-          generated for your collection! If you would like to change the
-          settings used in the analysis, use the "Edit Optimization Config" or
-          "Edit Suggestions Config" actions for your collection.
+          table row).
+          <br />
+          <br /> Select "Results" to see the optimization and cost analysis
+          generated for your collection! <br />
+          <br />
+          If you would like to change the settings used in the analysis, use the
+          "Edit Optimization Config" or "Edit Suggestions Config" actions for
+          your collection.
           <br /> <br />
           <img src={histOption} alt="History" />
         </StepsItem>

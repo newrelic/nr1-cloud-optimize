@@ -1,9 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import {
   BlockText,
   Layout,
   LayoutItem,
-  CollapsibleLayoutItem,
   Stack,
   StackItem,
   HeadingText,
@@ -12,8 +11,7 @@ import {
   Button,
   navigation,
   Icon,
-  UserStorageMutation,
-  AutoSizer
+  UserStorageMutation
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -32,7 +30,6 @@ export default function Optimizer(props) {
     updateDataState,
     userConfig
   } = dataContext;
-  const [hideQuickStart, setHideQuickStart] = useState(false);
 
   if (fetchingAccountCollection) {
     return (
@@ -49,33 +46,6 @@ export default function Optimizer(props) {
 
   const { id, name } = selectedAccount;
   const account = name || id;
-
-  const renderQuickStart = () => {
-    if (!userConfig || hideQuickStart || userConfig.quickstartDismissed) {
-      return <></>;
-    }
-
-    return (
-      <LayoutItem
-        type={CollapsibleLayoutItem.TYPE.SPLIT_RIGHT}
-        triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
-        style={{
-          overflowY: 'hidden',
-          overflowX: 'hidden'
-        }}
-      >
-        <AutoSizer>
-          {({ height }) => {
-            return (
-              <div style={{ marginTop: height / 3 }}>
-                <QuickStart setHideQuickStart={setHideQuickStart} />
-              </div>
-            );
-          }}
-        </AutoSizer>
-      </LayoutItem>
-    );
-  };
 
   return (
     <div style={{ height: '100%' }}>
@@ -107,8 +77,6 @@ export default function Optimizer(props) {
               ) : (
                 <Card style={{ overflowY: 'hidden' }}>
                   <CardBody>
-                    <Messages />
-
                     <HeadingText
                       type={HeadingText.TYPE.HEADING_3}
                       style={{
@@ -201,6 +169,9 @@ export default function Optimizer(props) {
                 </Card>
               )}
 
+              <Messages />
+              <QuickStart />
+
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
                   <CardBody>
@@ -211,8 +182,6 @@ export default function Optimizer(props) {
             </StackItem>
           </Stack>
         </LayoutItem>
-
-        {renderQuickStart()}
       </Layout>
     </div>
   );

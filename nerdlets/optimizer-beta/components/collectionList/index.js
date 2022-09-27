@@ -248,7 +248,7 @@ export default function CollectionList(props) {
       <TextField
         type={TextField.TYPE.SEARCH}
         placeholder="Search..."
-        style={{ width: '100%', paddingBottom: '5px' }}
+        style={{ width: '98.5%', paddingBottom: '5px' }}
         onChange={e => setSearch(e.target.value)}
       />
 

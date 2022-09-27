@@ -22,7 +22,6 @@ function OptimizerRoot() {
     <div>
       <DataProvider {...platformContext}>
         <AdminBar DataContext={DataContext} />
-
         <CollectionEditModal />
         <CollectionCreateModal />
         <JobHistoryModal />
