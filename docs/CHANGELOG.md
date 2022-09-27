@@ -1,3 +1,10 @@
+# [3.26.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.25.0...v3.26.0) (2022-09-27)
+
+
+### Features
+
+* update eslint ([978d69a](https://github.com/newrelic/nr1-cloud-optimize/commit/978d69a122eced9c926cf73e11282693b24f0251))
+
 # [3.25.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.24.1...v3.25.0) (2022-09-27)
 
 
