@@ -1,3 +1,10 @@
+# [3.25.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.24.1...v3.25.0) (2022-09-27)
+
+
+### Features
+
+* bump version ([#129](https://github.com/newrelic/nr1-cloud-optimize/issues/129)) ([dd2bbe1](https://github.com/newrelic/nr1-cloud-optimize/commit/dd2bbe18caa85cd89ff342166259d6d7b68d535e))
+
 ## [3.24.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.24.0...v3.24.1) (2022-09-27)
 
 

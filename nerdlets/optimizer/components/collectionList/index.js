@@ -323,7 +323,7 @@ function postData(url = '', key, data = {}) {
   return new Promise(resolve => {
     // eslint-disable-next-line
     console.log(window.location.host);
-
+    //
     fetch(url, {
       method: 'POST',
       headers: {
