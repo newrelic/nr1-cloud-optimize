@@ -9,7 +9,6 @@
 This application analyzes your environment using various integrations eg. Cloud Integrations, Infrastructure Agent, Kubernetes etc.
 It shows cost and performance metrics per service so you can understand the potential impact to your environment as well as utilize the cost optimization suggestions.
 
-
 ### Features
 - Historical Tracking
   - Compare & analysis before and after or against major events eg. Black friday
