@@ -1,3 +1,10 @@
+# [3.28.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.27.0...v3.28.0) (2022-09-29)
+
+
+### Features
+
+* determine region on backend ([4ec4c7c](https://github.com/newrelic/nr1-cloud-optimize/commit/4ec4c7cbd49d7e0af7d0ab8c93fd5a3db4a0436c))
+
 # [3.27.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.26.0...v3.27.0) (2022-09-29)
 
 
