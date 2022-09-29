@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 // https://github.com/node-fetch/node-fetch#commonjs
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -15,10 +16,6 @@ module.exports.router = async (event, context, callback) => {
   const nerdGraphKey =
     event.headers?.['NR-API-KEY'] || event.headers?.['nr-api-key'];
 
-  const region =
-    event?.headers?.['NR-REGION'] || event?.headers?.['nr-region'] || 'US';
-  const nerdGraphUrl = NERDGRAPH_URL[region] || NERDGRAPH_URL.US;
-
   if (!nerdGraphKey) {
     const response = {
       statusCode: 400,
@@ -33,20 +30,63 @@ module.exports.router = async (event, context, callback) => {
     callback(null, response);
   } else {
     // validate api key
-    const response = await fetch(nerdGraphUrl, {
-      method: 'post',
-      body: JSON.stringify({
-        query:
-          '{\n  actor {\n    user {\n      email\n      id\n    }\n  }\n}\n'
+    // check whether US or EU since as can't determine from the nerdpack side
+    const responses = [
+      fetch(NERDGRAPH_URL.US, {
+        method: 'post',
+        body: JSON.stringify({
+          query:
+            '{\n  actor {\n    user {\n      email\n      id\n    }\n  }\n}\n'
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'API-Key': nerdGraphKey
+        }
       }),
-      headers: {
-        'Content-Type': 'application/json',
-        'API-Key': nerdGraphKey
-      }
-    });
+      fetch(NERDGRAPH_URL.EU, {
+        method: 'post',
+        body: JSON.stringify({
+          query:
+            '{\n  actor {\n    user {\n      email\n      id\n    }\n  }\n}\n'
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'API-Key': nerdGraphKey
+        }
+      })
+    ];
 
-    const httpData = await response.json();
-    const user = httpData?.data?.actor?.user || null;
+    const responseData = await Promise.allSettled(responses);
+    const responseValues = await Promise.allSettled(
+      responseData.map(d => d.value.json())
+    );
+
+    let user = null;
+
+    if (responseValues[0].status === 'fulfilled') {
+      // US REGION
+      event.headers['NR-REGION'] = 'US';
+      event.headers['nr-region'] = 'US';
+      user = responseValues[0]?.value?.data?.actor?.user || null;
+    } else if (responseValues[1].status === 'fulfilled') {
+      // EU Region
+      event.headers['NR-REGION'] = 'EU';
+      event.headers['nr-region'] = 'EU';
+      user = responseValues[1]?.value?.data?.actor?.user || null;
+    } else {
+      // unable to determine region or validate token
+      const response = {
+        statusCode: 403,
+        headers: {
+          ...BASE_HEADERS
+        },
+        body: JSON.stringify({
+          success: false,
+          message: 'unable to determine region or validate token'
+        })
+      };
+      callback(null, response);
+    }
 
     if (!user) {
       const response = {
@@ -57,7 +97,7 @@ module.exports.router = async (event, context, callback) => {
         body: JSON.stringify({
           success: false,
           message: 'invalid api key',
-          response: httpData
+          response: user
         })
       };
       callback(null, response);
