@@ -52,7 +52,7 @@ function SuggestionsView(props) {
 
           if (filteredEntities.length === 0) {
             return (
-              <Card collapsible>
+              <Card collapsible key={guid}>
                 <CardHeader style={{ fontSize: '16px' }}>
                   {data.name}
                 </CardHeader>
