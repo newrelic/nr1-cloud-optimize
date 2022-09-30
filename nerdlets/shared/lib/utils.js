@@ -10,9 +10,9 @@ import {
   AccountStorageMutation,
   NerdGraphQuery,
   EntityStorageQuery,
-  AccountStorageQuery
+  AccountStorageQuery,
+  ngql
 } from 'nr1';
-import gql from 'graphql-tag';
 import {
   categoryTypes,
   entityMetricModel,
@@ -291,7 +291,7 @@ export const deleteAccountDocument = async (
   return result;
 };
 
-export const accountsQuery = gql`
+export const accountsQuery = ngql`
   {
     actor {
       accounts {
@@ -315,7 +315,7 @@ export const getInstanceData = (accountId, cloudLabelAttributes) => {
     cloudLabelAttributes
       .map(att => `latest(\`${att}\`) as '${att}'`)
       .join(', ');
-  return gql`{
+  return ngql`{
     actor {
       account(id: ${accountId}) {
         system: nrql(query: "FROM SystemSample SELECT latest(entityName) as 'entityName', latest(timestamp) as 'timestamp', latest(apmApplicationNames) as 'apmApplicationNames', latest(providerAccountName) as 'providerAccountName', latest(entityGuid) as 'entityGuid', latest(awsRegion) as 'awsRegion', latest(regionName) as 'regionName', latest(zone) as 'zone', latest(coreCount) as 'numCpu', latest(memoryTotalBytes) as 'memTotalBytes', latest(operatingSystem) as 'operatingSystem', latest(ec2InstanceType) as 'ec2InstanceType', max(cpuPercent) as 'maxCpuPercent', max(memoryUsedBytes/memoryTotalBytes)*100 as 'maxMemoryPercent', latest(instanceType) as 'instanceType', latest(ec2InstanceId) as 'ec2InstanceId'${cloudLabelSelectString} FACET hostname WHERE coreCount is not null and ((instanceType is not null AND instanceType != 'unknown') OR ec2InstanceType is not null) LIMIT 2000 since 1 week ago", timeout: 30000) {
@@ -331,8 +331,8 @@ export const getInstanceData = (accountId, cloudLabelAttributes) => {
 
 // Taken from Lew's nr1-container-explorer https://github.com/newrelic/nr1-container-explorer/
 export const accountsWithData = async eventType => {
-  const gql = `{actor {accounts {name id reportingEventTypes(filter:["${eventType}"])}}}`;
-  const result = await NerdGraphQuery.query({ query: gql });
+  const ngql = `{actor {accounts {name id reportingEventTypes(filter:["${eventType}"])}}}`;
+  const result = await NerdGraphQuery.query({ query: ngql });
   if (result.error) {
     console.log(
       "Can't get reporting event types because NRDB is grumpy at NerdGraph.",

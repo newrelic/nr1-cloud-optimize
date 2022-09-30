@@ -118,7 +118,7 @@ export default function Optimizer(props) {
                       }}
                     >
                       <span style={{ paddingRight: '10px' }}>
-                        BETA: Workload Collections from {account}
+                        Workload Collections from {account}
                       </span>
 
                       <Button

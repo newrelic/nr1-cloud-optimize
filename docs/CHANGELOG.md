@@ -1,3 +1,38 @@
+# [3.28.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.27.0...v3.28.0) (2022-09-29)
+
+
+### Features
+
+* determine region on backend ([4ec4c7c](https://github.com/newrelic/nr1-cloud-optimize/commit/4ec4c7cbd49d7e0af7d0ab8c93fd5a3db4a0436c))
+
+# [3.27.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.26.0...v3.27.0) (2022-09-29)
+
+
+### Features
+
+* bump version ([193e34c](https://github.com/newrelic/nr1-cloud-optimize/commit/193e34c15dc00beeae2d73e66ba66f5364bf9c3a))
+
+# [3.26.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.25.0...v3.26.0) (2022-09-27)
+
+
+### Features
+
+* update eslint ([978d69a](https://github.com/newrelic/nr1-cloud-optimize/commit/978d69a122eced9c926cf73e11282693b24f0251))
+
+# [3.25.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.24.1...v3.25.0) (2022-09-27)
+
+
+### Features
+
+* bump version ([#129](https://github.com/newrelic/nr1-cloud-optimize/issues/129)) ([dd2bbe1](https://github.com/newrelic/nr1-cloud-optimize/commit/dd2bbe18caa85cd89ff342166259d6d7b68d535e))
+
+## [3.24.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.24.0...v3.24.1) (2022-09-27)
+
+
+### Bug Fixes
+
+* eu patch ([20b5271](https://github.com/newrelic/nr1-cloud-optimize/commit/20b5271df5a55553bee700826621183f32d8af53))
+
 # [3.24.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.23.2...v3.24.0) (2022-09-15)
 
 

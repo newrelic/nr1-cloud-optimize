@@ -24,6 +24,7 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'react/prop-types': 0,
-    'eslint-comments/no-unused-disable': 0
+    'eslint-comments/no-unused-disable': 0,
+    'eslint-comments/no-unlimited-disable': 0
   }
 };
