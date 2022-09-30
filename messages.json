@@ -14,5 +14,13 @@
       "If you'd like a sense for what's coming, take a look at our Github project [https://github.com/orgs/newrelic/projects/70/views/1] - the project README has more details. And as we get ready to release changes, we'll be giving you a heads-up here, so you know what to expect, and when.",
       "While we go through the project, we'd love to hear your input - if you have thoughts to share, please post a comment in the project discussion thread (https://github.com/newrelic/nr1-cloud-optimize/discussions/127)."
     ]
+  },
+  {
+    "title":"Announcing the updated Quick Start guide!",
+    "messages":[
+      "To help save space on the screen, the Quick Start guide can now be closed temporarily, or dismissed permanently if you no longer need it.",
+      "If you would like to return to the current release, click the \"Switch to stable\" button.",
+      "Share your thoughts in the discussions thread: https://github.com/newrelic/nr1-cloud-optimize/discussions/127"
+    ]
   }
 ]
