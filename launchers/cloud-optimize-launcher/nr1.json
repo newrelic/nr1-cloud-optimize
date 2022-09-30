@@ -3,5 +3,5 @@
   "id": "cloud-optimize-launcher",
   "description": "Optimize your workloads",
   "displayName": "Cloud Optimize",
-  "rootNerdletId": "optimizer"
+  "rootNerdletId": "optimizer-beta"
 }

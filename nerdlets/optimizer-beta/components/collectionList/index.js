@@ -248,7 +248,7 @@ export default function CollectionList(props) {
       <TextField
         type={TextField.TYPE.SEARCH}
         placeholder="Search..."
-        style={{ width: '100%', paddingBottom: '5px' }}
+        style={{ width: '98.5%', paddingBottom: '5px' }}
         onChange={e => setSearch(e.target.value)}
       />
 
@@ -326,7 +326,7 @@ function postData(url = '', key, data = {}) {
       headers: {
         'Content-Type': 'application/json',
         'NR-API-KEY': key,
-        'NR-REGION': (window?.location?.host || '').includes('.eu.')
+        'NR-REGION': (window?.location?.host || '').includes('one.eu.')
           ? 'EU'
           : undefined
       },

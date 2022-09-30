@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   BlockText,
   Layout,
   LayoutItem,
+  CollapsibleLayoutItem,
   Stack,
   StackItem,
   HeadingText,
@@ -11,7 +12,8 @@ import {
   Button,
   navigation,
   Icon,
-  UserStorageMutation
+  UserStorageMutation,
+  AutoSizer
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
@@ -30,6 +32,7 @@ export default function Optimizer(props) {
     updateDataState,
     userConfig
   } = dataContext;
+  const [hideQuickStart, setHideQuickStart] = useState(false);
 
   if (fetchingAccountCollection) {
     return (
@@ -46,6 +49,33 @@ export default function Optimizer(props) {
 
   const { id, name } = selectedAccount;
   const account = name || id;
+
+  const renderQuickStart = () => {
+    if (!userConfig || hideQuickStart || userConfig.quickstartDismissed) {
+      return <></>;
+    }
+
+    return (
+      <LayoutItem
+        type={CollapsibleLayoutItem.TYPE.SPLIT_RIGHT}
+        triggerType={CollapsibleLayoutItem.TRIGGER_TYPE.INBUILT}
+        style={{
+          overflowY: 'hidden',
+          overflowX: 'hidden'
+        }}
+      >
+        <AutoSizer>
+          {({ height }) => {
+            return (
+              <div style={{ marginTop: height / 3 }}>
+                <QuickStart setHideQuickStart={setHideQuickStart} />
+              </div>
+            );
+          }}
+        </AutoSizer>
+      </LayoutItem>
+    );
+  };
 
   return (
     <div style={{ height: '100%' }}>
@@ -77,6 +107,8 @@ export default function Optimizer(props) {
               ) : (
                 <Card style={{ overflowY: 'hidden' }}>
                   <CardBody>
+                    <Messages />
+
                     <HeadingText
                       type={HeadingText.TYPE.HEADING_3}
                       style={{
@@ -100,17 +132,17 @@ export default function Optimizer(props) {
                             documentId: 'config',
                             document: {
                               ...userConfig,
-                              lastNerdlet: 'optimizer-beta'
+                              lastNerdlet: 'optimizer'
                             }
                           }).then(() => {
-                            navigation.replaceNerdlet({ id: 'optimizer-beta' });
+                            navigation.replaceNerdlet({ id: 'optimizer' });
                           });
                         }}
                         iconType={
                           Icon.TYPE.INTERFACE__ARROW__ARROW_RIGHT__V_ALTERNATE
                         }
                       >
-                        Switch to beta
+                        Switch to stable
                       </Button>
                     </HeadingText>
                     <BlockText
@@ -169,9 +201,6 @@ export default function Optimizer(props) {
                 </Card>
               )}
 
-              <Messages />
-              <QuickStart />
-
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
                   <CardBody>
@@ -182,6 +211,8 @@ export default function Optimizer(props) {
             </StackItem>
           </Stack>
         </LayoutItem>
+
+        {renderQuickStart()}
       </Layout>
     </div>
   );
