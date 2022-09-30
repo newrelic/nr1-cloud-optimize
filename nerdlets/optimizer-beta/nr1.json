@@ -1,6 +1,6 @@
 {
   "schemaType": "NERDLET",
   "id": "optimizer-beta",
-  "displayName": "Cloud Optimize",
+  "displayName": "Cloud Optimize (BETA)",
   "description": "Optimize your workloads"
 }
