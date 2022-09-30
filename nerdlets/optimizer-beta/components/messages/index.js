@@ -52,7 +52,7 @@ export default function Messages(props) {
 
           {filteredMessages.map((m, i) => {
             return (
-              <div key={i} style={{ paddingLeft: '20px' }}>
+              <div key={i} style={{ paddingLeft: '20px', paddingTop: '10px' }}>
                 <h4 style={{ paddingBottom: '10px' }}>
                   <span>{m.title}</span>&nbsp;{' '}
                   <Button
