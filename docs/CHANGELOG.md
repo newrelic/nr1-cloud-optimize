@@ -1,3 +1,10 @@
+# [3.29.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.28.0...v3.29.0) (2022-09-30)
+
+
+### Features
+
+* optInOut ([#132](https://github.com/newrelic/nr1-cloud-optimize/issues/132)) ([fb7e3ea](https://github.com/newrelic/nr1-cloud-optimize/commit/fb7e3ea1f0d68de568c7a3608a116b0aab695ad2)), closes [#117](https://github.com/newrelic/nr1-cloud-optimize/issues/117)
+
 # [3.28.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.27.0...v3.28.0) (2022-09-29)
 
 
