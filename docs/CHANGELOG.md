@@ -1,3 +1,10 @@
+# [3.31.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.30.0...v3.31.0) (2022-09-30)
+
+
+### Features
+
+* add padding to beta nerdlet msgs ([fa60e81](https://github.com/newrelic/nr1-cloud-optimize/commit/fa60e812e5415f5d56f505ed67f801ce1cdccd52))
+
 # [3.30.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.29.0...v3.30.0) (2022-09-30)
 
 
