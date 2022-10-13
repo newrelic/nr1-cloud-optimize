@@ -11,6 +11,7 @@ const fetch = (...args) =>
 const logger = require('pino')();
 const { workloadEntityFetchQuery } = require('./queries');
 const { NERDGRAPH_URL } = require('./constants');
+const { calculate } = require('./utils/calculate');
 
 const WORKLOAD_QUEUE_LIMIT = 5; // how many workloads to handle async
 const ENTITY_TYPE_QUEUE_LIMIT = 3; // how many entity types to process async
@@ -139,10 +140,12 @@ module.exports.optimize = async (event, context, callback) => {
     config,
     timeNrql,
     timeRange,
-    totalPeriodMs
+    totalPeriodMs,
+    nerdGraphUrl
   );
 
   // logJob.info({ workloadResults });
+  const cost = calculate(workloadResults);
 
   // write results result to workload entity storage
   const writeData = await workloadsResultsWriter(
@@ -153,7 +156,7 @@ module.exports.optimize = async (event, context, callback) => {
     nerdGraphUrl
   );
 
-  logJob.info({ writeData });
+  logJob.info({ cost, writeData });
 
   // update nerdstorage status doc
   await writeJobStatusEvent(
@@ -169,7 +172,8 @@ module.exports.optimize = async (event, context, callback) => {
     'complete',
     timeNrql,
     timeRange,
-    totalPeriodMs
+    totalPeriodMs,
+    cost
   );
 
   callback(null, null);
@@ -273,29 +277,35 @@ const processWorkloads = (
   config,
   timeNrql,
   timeRange,
-  totalPeriodMs
+  totalPeriodMs,
+  nerdGraphUrl
 ) => {
   return new Promise(resolve => {
     const workloadData = [];
     const workloadQueue = async.queue((workload, callback) => {
-      processWorkload(workload, key, config, timeNrql, totalPeriodMs).then(
-        value => {
-          const { entityTypeData, entityTypeCost } = value;
-          workloadData.push({
-            // name: workload.name,
-            guid: workload.guid,
-            timeNrql,
-            timeRange,
-            entityTypeCost,
-            processedAt: new Date().getTime(),
-            // unpack the map into a flat array
-            results: Object.keys(entityTypeData || {})
-              .map(key => entityTypeData[key].map(e => e))
-              .flat()
-          });
-          callback();
-        }
-      );
+      processWorkload(
+        workload,
+        key,
+        config,
+        timeNrql,
+        totalPeriodMs,
+        nerdGraphUrl
+      ).then(value => {
+        const { entityTypeData, entityTypeCost } = value;
+        workloadData.push({
+          // name: workload.name,
+          guid: workload.guid,
+          timeNrql,
+          timeRange,
+          entityTypeCost,
+          processedAt: new Date().getTime(),
+          // unpack the map into a flat array
+          results: Object.keys(entityTypeData || {})
+            .map(key => entityTypeData[key].map(e => e))
+            .flat()
+        });
+        callback();
+      });
     }, WORKLOAD_QUEUE_LIMIT);
 
     workloadQueue.push(workloadEntityData);
@@ -306,7 +316,14 @@ const processWorkloads = (
   });
 };
 
-const processWorkload = (workload, key, config, timeNrql, totalPeriodMs) => {
+const processWorkload = (
+  workload,
+  key,
+  config,
+  timeNrql,
+  totalPeriodMs,
+  nerdGraphUrl
+) => {
   // sort entity types within
   return new Promise(resolve => {
     // group entities
@@ -345,13 +362,18 @@ const processWorkload = (workload, key, config, timeNrql, totalPeriodMs) => {
 
       if (run) {
         try {
-          run(entities, key, config || {}, timeNrql, totalPeriodMs).then(
-            values => {
-              entityTypeData[fullType] = values;
-              entityTypeCost[fullType] = buildCost(values);
-              callback();
-            }
-          );
+          run(
+            entities,
+            key,
+            config || {},
+            timeNrql,
+            totalPeriodMs,
+            nerdGraphUrl
+          ).then(values => {
+            entityTypeData[fullType] = values;
+            entityTypeCost[fullType] = buildCost(values);
+            callback();
+          });
         } catch (e) {
           console.log(`${fullType} run failed`, e); // eslint-disable-line no-console
           entityTypeData[fullType] = entities;
@@ -560,7 +582,8 @@ const writeJobStatusEvent = async (
   status,
   timeNrql,
   timeRange,
-  totalPeriodMs
+  totalPeriodMs,
+  cost
 ) => {
   const document = {
     startedAt,
@@ -572,6 +595,7 @@ const writeJobStatusEvent = async (
     STAGE: process.env.STAGE
   };
 
+  if (cost) document.cost = cost;
   if (collectionId) document.collectionId = collectionId;
   if (identifier) document.identifier = identifier;
   if (status === 'complete') document.completedAt = new Date().getTime();

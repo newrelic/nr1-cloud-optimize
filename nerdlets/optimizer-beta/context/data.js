@@ -64,6 +64,7 @@ export class DataProvider extends Component {
       timeRange: null,
       messages: [],
       userConfig: null,
+      collectionView: 'list',
       obfuscate: false
     };
   }

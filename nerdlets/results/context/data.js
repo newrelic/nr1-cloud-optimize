@@ -71,8 +71,7 @@ export class DataProvider extends Component {
   fetchCollectionConfig(props) {
     const { account } = props;
     const documentId = props.wlCollectionId || this.state.wlCollectionId;
-    const accountId =
-      account?.id || this.state.account?.id || this.state.accountId;
+    const accountId = account?.id || this.state?.account?.id;
 
     return new Promise(resolve => {
       AccountStorageQuery.query({

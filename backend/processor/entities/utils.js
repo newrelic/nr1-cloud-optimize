@@ -50,7 +50,7 @@ const defaultAllowedTags = [
 
 exports.BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
 
-exports.batchEntityQuery = (key, query, entities, config) => {
+exports.batchEntityQuery = (key, query, entities, config, nerdGraphUrl) => {
   return new Promise(resolve => {
     // chunk entity guids
     const guidChunks = chunk(
@@ -63,7 +63,7 @@ exports.batchEntityQuery = (key, query, entities, config) => {
 
     let entityData = [];
     const entityQueue = async.queue((guids, callback) => {
-      fetch('https://api.newrelic.com/graphql', {
+      fetch(nerdGraphUrl || 'https://api.newrelic.com/graphql', {
         method: 'post',
         body: JSON.stringify({
           query,
@@ -113,24 +113,26 @@ exports.batchEntityQuery = (key, query, entities, config) => {
   });
 };
 
-exports.nrqlQuery = (key, accountId, nrql, timeout) => {
+exports.nrqlQuery = (key, accountId, nrql, timeout, nerdGraphUrl) => {
   return new Promise(resolve => {
     async.retry(
       retryConfig,
       callback => {
-        this.doNrqlQuery(key, accountId, nrql, timeout).then(nrqlResult => {
-          const { nrqlData, error, errors } = nrqlResult;
+        this.doNrqlQuery(key, accountId, nrql, timeout, nerdGraphUrl).then(
+          nrqlResult => {
+            const { nrqlData, error, errors } = nrqlResult;
 
-          if (!error && !errors) {
-            callback(null, nrqlData);
-          } else if (error) {
-            callback({ error }, nrqlData);
-          } else if (errors) {
-            callback({ errors }, nrqlData);
-          } else {
-            callback({ error: 'unknown error' }, nrqlData);
+            if (!error && !errors) {
+              callback(null, nrqlData);
+            } else if (error) {
+              callback({ error }, nrqlData);
+            } else if (errors) {
+              callback({ errors }, nrqlData);
+            } else {
+              callback({ error: 'unknown error' }, nrqlData);
+            }
           }
-        });
+        );
       },
       (err, result) => {
         if (err) {
@@ -148,7 +150,7 @@ exports.nrqlQuery = (key, accountId, nrql, timeout) => {
   });
 };
 
-exports.doNrqlQuery = (key, accountId, nrql, timeout) => {
+exports.doNrqlQuery = (key, accountId, nrql, timeout, nerdGraphUrl) => {
   return new Promise(resolve => {
     const query = `query NrqlQuery($accountId: Int!, $nrql: Nrql!) {
       actor {
@@ -160,7 +162,7 @@ exports.doNrqlQuery = (key, accountId, nrql, timeout) => {
       }
     }`;
 
-    fetch('https://api.newrelic.com/graphql', {
+    fetch(nerdGraphUrl || 'https://api.newrelic.com/graphql', {
       method: 'post',
       body: JSON.stringify({
         query,
