@@ -170,7 +170,7 @@ export default function CollectionCard(props) {
                   <DropdownItem
                     onClick={() => {
                       const nerdlet = {
-                        id: 'suggestions-configuration-nerdlet',
+                        id: 'optimization-configuration-nerdlet',
                         urlState: {
                           wlCollectionId: collection.id,
                           document: collection.document,
@@ -182,7 +182,7 @@ export default function CollectionCard(props) {
                       navigation.openStackedNerdlet(nerdlet);
                     }}
                   >
-                    Edit suggestions config
+                    Edit recommendations config
                   </DropdownItem>
                   <DropdownItem
                     onClick={() => deleteWorkloadCollection(collection.id)}

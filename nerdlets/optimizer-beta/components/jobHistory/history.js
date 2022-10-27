@@ -38,30 +38,6 @@ export default function History(props) {
       j.id.includes(searchText.toLowerCase())
   );
 
-  // const writeDocument = () => {
-  //   setWriteState(true);
-
-  //   const document = {
-  //     name,
-  //     createdBy: email,
-  //     lastEditedBy: email
-  //   };
-
-  //   AccountStorageMutation.mutate({
-  //     accountId: selectedAccount.id,
-  //     actionType: AccountStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
-  //     collection: 'workloadCollections',
-  //     documentId: uuidv4(),
-  //     document
-  //   }).then(value => {
-  //     // eslint-disable-next-line no-console
-  //     console.log('wrote document', value);
-
-  //     setWriteState(false);
-  //     updateDataState({ jobHistoryOpen: false });
-  //   });
-  // };
-
   const currentTime = new Date().getTime();
 
   const onClickTableHeaderCell = (nextColumn, { nextSortingType }) => {
