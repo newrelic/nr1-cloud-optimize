@@ -36,6 +36,7 @@ export default function Optimizer(props) {
   const [hideQuickStart, setHideQuickStart] = useState(false);
   const [collectionView, setCollectionView] = useState('list');
   const [searchText, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('Most recent');
 
   if (fetchingAccountCollection) {
     return (
@@ -193,6 +194,8 @@ export default function Optimizer(props) {
                       setSearch={setSearch}
                       setCollectionView={setCollectionView}
                       collectionView={collectionView}
+                      setSortBy={setSortBy}
+                      sortBy={sortBy}
                     />
                   </CardBody>
                 </Card>
@@ -202,9 +205,9 @@ export default function Optimizer(props) {
                 <Card>
                   <CardBody>
                     {collectionView === 'list' ? (
-                      <CollectionList searchText={searchText} />
+                      <CollectionList searchText={searchText} sortBy={sortBy} />
                     ) : (
-                      <CollectionCard searchText={searchText} />
+                      <CollectionCard searchText={searchText} sortBy={sortBy} />
                     )}
                   </CardBody>
                 </Card>

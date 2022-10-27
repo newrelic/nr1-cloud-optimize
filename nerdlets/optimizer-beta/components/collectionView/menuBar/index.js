@@ -4,7 +4,9 @@ import {
   Button,
   SegmentedControl,
   SegmentedControlItem,
-  TextField
+  TextField,
+  Dropdown,
+  DropdownItem
 } from 'nr1';
 import DataContext from '../../../context/data';
 
@@ -12,7 +14,13 @@ import DataContext from '../../../context/data';
 export default function CollectionMenuBar(props) {
   const dataContext = useContext(DataContext);
   const { updateDataState } = dataContext;
-  const { collectionView, setCollectionView, setSearch } = props;
+  const {
+    collectionView,
+    setCollectionView,
+    setSearch,
+    sortBy,
+    setSortBy
+  } = props;
 
   return useMemo(() => {
     return (
@@ -28,6 +36,7 @@ export default function CollectionMenuBar(props) {
             </Button>
           </BlockText>
         </div>
+
         <div style={{ float: 'right' }}>
           <SegmentedControl
             onChange={(evt, value) => setCollectionView(value)}
@@ -48,6 +57,15 @@ export default function CollectionMenuBar(props) {
           </SegmentedControl>
         </div>
 
+        <div style={{ float: 'right', paddingRight: '15px' }}>
+          <Dropdown title={sortBy} label="Sort by" labelInline>
+            <DropdownItem onClick={() => setSortBy('Most recent')}>
+              Most recent
+            </DropdownItem>
+            <DropdownItem onClick={() => setSortBy('Cost')}>Cost</DropdownItem>
+          </Dropdown>
+        </div>
+
         <br />
 
         <TextField
@@ -58,5 +76,5 @@ export default function CollectionMenuBar(props) {
         />
       </>
     );
-  }, [collectionView]);
+  }, [collectionView, sortBy]);
 }

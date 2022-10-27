@@ -27,7 +27,7 @@ export default function CollectionCard(props) {
     obfuscate
   } = dataContext;
 
-  const { searchText } = props;
+  const { searchText, sortBy } = props;
   const isLocal =
     !window.location.href.includes('https://one.newrelic.com') &&
     !window.location.href.includes('https://one.eu.newrelic.com');
@@ -47,9 +47,29 @@ export default function CollectionCard(props) {
     });
   };
 
-  const filteredAccountCollection = accountCollection.filter(a =>
-    a.document.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredAccountCollection = accountCollection
+    .filter(a =>
+      a.document.name.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .sort((a, b) => {
+      const sb = sortBy || 'Most recent';
+      const aDoc = a?.history?.[0]?.document;
+      const bDoc = b?.history?.[0]?.document;
+
+      if (sb === 'Cost') {
+        const valueA = (aDoc?.cost?.known || 0) + (aDoc?.cost?.estimated || 0);
+        const valueB = (bDoc?.cost?.known || 0) + (bDoc?.cost?.estimated || 0);
+
+        return valueB - valueA;
+      } else if (sb === 'Most recent') {
+        const valueA = (aDoc?.completedAt || 0) + (aDoc?.completedAt || 0);
+        const valueB = (bDoc?.completedAt || 0) + (bDoc?.completedAt || 0);
+
+        return valueB - valueA;
+      }
+
+      return -1;
+    });
 
   const getLatestConfiguration = documentId => {
     return new Promise(resolve => {
@@ -112,6 +132,7 @@ export default function CollectionCard(props) {
           style={{
             paddingLeft: '15px',
             paddingRight: '15px',
+            paddingBottom: '15px',
             display: 'inline-block'
           }}
         >
@@ -119,7 +140,7 @@ export default function CollectionCard(props) {
             style={{
               width: '350px',
               backgroundColor: '#FFFFFF',
-              borderTop: '5px solid green',
+              borderTop: '5px solid #252627',
               borderLeft: '1px solid #e3e3e3',
               borderRight: '1px solid #e3e3e3',
               borderBottom: '1px solid #e3e3e3',

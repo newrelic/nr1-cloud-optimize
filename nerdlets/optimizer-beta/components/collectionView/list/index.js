@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import {
   Toast,
-  TextField,
   Table,
   TableRow,
   TableRowCell,
@@ -31,7 +30,7 @@ export default function CollectionList(props) {
     obfuscate
   } = dataContext;
 
-  const { searchText } = props;
+  const { searchText, sortBy } = props;
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
@@ -64,9 +63,29 @@ export default function CollectionList(props) {
     }
   };
 
-  const filteredAccountCollection = accountCollection.filter(a =>
-    a.document.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredAccountCollection = accountCollection
+    .filter(a =>
+      a.document.name.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .sort((a, b) => {
+      const sb = sortBy || 'Most recent';
+      const aDoc = a?.history?.[0]?.document;
+      const bDoc = b?.history?.[0]?.document;
+
+      if (sb === 'Cost') {
+        const valueA = (aDoc?.cost?.known || 0) + (aDoc?.cost?.estimated || 0);
+        const valueB = (bDoc?.cost?.known || 0) + (bDoc?.cost?.estimated || 0);
+
+        return valueB - valueA;
+      } else if (sb === 'Most recent') {
+        const valueA = (aDoc?.completedAt || 0) + (aDoc?.completedAt || 0);
+        const valueB = (bDoc?.completedAt || 0) + (bDoc?.completedAt || 0);
+
+        return valueB - valueA;
+      }
+
+      return -1;
+    });
 
   const getLatestConfiguration = documentId => {
     return new Promise(resolve => {
