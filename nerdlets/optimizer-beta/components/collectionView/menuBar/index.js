@@ -34,6 +34,14 @@ export default function CollectionMenuBar(props) {
             >
               Create Collection
             </Button>
+            &nbsp;&nbsp;
+            <Button
+              sizeType={Button.SIZE_TYPE.SMALL}
+              onClick={() => updateDataState({ jobHistoryOpen: true })}
+              iconType={Button.ICON_TYPE.DATE_AND_TIME__DATE_AND_TIME__DATE}
+            >
+              Manage History
+            </Button>
           </BlockText>
         </div>
 

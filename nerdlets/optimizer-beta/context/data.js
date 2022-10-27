@@ -204,13 +204,6 @@ export class DataProvider extends Component {
                         this.updateDataState({ createCollectionOpen: true })
                     },
                     {
-                      label: 'History',
-                      type: 'secondary',
-                      iconType: Icon.TYPE.DATE_AND_TIME__DATE_AND_TIME__DATE,
-                      onClick: () =>
-                        this.updateDataState({ jobHistoryOpen: true })
-                    },
-                    {
                       label: 'Settings',
                       type: 'secondary',
                       iconType: Icon.TYPE.INTERFACE__OPERATIONS__CONFIGURE,
@@ -439,8 +432,23 @@ export class DataProvider extends Component {
     }
   };
 
+  deleteMultiJobHistory = selected => {
+    return new Promise(resolve => {
+      this.setState({ deletingJobDocuments: true }, async () => {
+        const deletePromises = selected.map(data =>
+          this.deleteJobHistory(data)
+        );
+        await Promise.all(deletePromises);
+        this.setState({ deletingJobDocuments: false }, () => {
+          this.fetchJobStatus();
+          resolve();
+        });
+      });
+    });
+  };
+
   deleteJobHistory = data => {
-    this.setState({ deletingJobDocuments: true }, async () => {
+    return new Promise(async resolve => {
       const { accountId, jobStatus } = this.state;
       const { id, document } = data;
       const { workloadGuids } = document;
@@ -486,9 +494,7 @@ export class DataProvider extends Component {
 
       await Promise.all(docDeletePromises);
 
-      this.fetchJobStatus();
-
-      this.setState({ deletingJobDocuments: false });
+      resolve();
     });
   };
 
@@ -518,6 +524,7 @@ export class DataProvider extends Component {
           fetchWorkloadCollections: this.fetchWorkloadCollections,
           fetchJobStatus: this.fetchJobStatus,
           deleteJobHistory: this.deleteJobHistory,
+          deleteMultiJobHistory: this.deleteMultiJobHistory,
           getUserConfig: this.getUserConfig
         }}
       >

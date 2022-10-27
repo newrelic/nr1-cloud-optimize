@@ -16,10 +16,16 @@ import DataContext from '../../context/data';
 // eslint-disable-next-line no-unused-vars
 export default function History(props) {
   const dataContext = useContext(DataContext);
-  const { jobStatus, deleteJobHistory, updateDataState } = dataContext;
+  const {
+    jobStatus,
+    deletingJobDocuments,
+    deleteMultiJobHistory,
+    updateDataState
+  } = dataContext;
   // const [writingDocument, setWriteState] = useState(false);
   const [searchText, setSearch] = useState('');
   const [column, setColumn] = useState(0);
+  const [selected, setSelected] = useState({});
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
   );
@@ -67,19 +73,9 @@ export default function History(props) {
     }
   };
 
-  const actions = () => {
-    const allActions = [
-      {
-        label: 'Delete',
-        type: TableRow.ACTION_TYPE.DESTRUCTIVE,
-        onClick: (evt, { item }) => {
-          deleteJobHistory(item);
-        }
-      }
-    ];
-
-    return allActions;
-  };
+  const selectedJobs = filteredJobs.filter(job =>
+    Object.keys(selected).find(key => key === job.id)
+  );
 
   return (
     <div>
@@ -106,6 +102,12 @@ export default function History(props) {
           items={filteredJobs}
           multivalue
           style={{ padding: '0px', fontSize: '12px', maxHeight: '500px' }}
+          selected={({ item }) => selected?.[item.id] === true}
+          onSelect={(evt, { item }) => {
+            selected[item.id] = evt.target.checked;
+            if (selected[item.id] === false) delete selected[item.id];
+            setSelected(selected);
+          }}
         >
           <TableHeader>
             <TableHeaderCell
@@ -139,7 +141,7 @@ export default function History(props) {
             const failed = currentTime - startedAt > 900000 && !completedAt; // 15m
 
             return (
-              <TableRow actions={actions()}>
+              <TableRow>
                 <TableRowCell
                   additionalValue={wlCollectionName ? item.id : undefined}
                 >
@@ -168,14 +170,17 @@ export default function History(props) {
         'No job history found'
       )}
       <br />
-      {/* <Button
-        loading={writingDocument}
-        type={Button.TYPE.PRIMARY}
-        disabled={checkboxValues.length === 0 || !name.trim()}
-        onClick={() => writeDocument()}
+      <Button
+        enabled={selectedJobs.length > 0}
+        style={{ float: 'left' }}
+        loading={deletingJobDocuments}
+        disabled={selectedJobs.length === 0}
+        onClick={() => {
+          deleteMultiJobHistory(selectedJobs);
+        }}
       >
-        Create
-      </Button> */}
+        Delete selected
+      </Button>
       &nbsp;
       <Button
         style={{ float: 'right' }}
