@@ -6,17 +6,18 @@ import {
   SegmentedControlItem,
   TextField,
   Dropdown,
-  DropdownItem
+  DropdownItem,
+  UserStorageMutation
 } from 'nr1';
 import DataContext from '../../../context/data';
 
 // eslint-disable-next-line no-unused-vars
 export default function CollectionMenuBar(props) {
   const dataContext = useContext(DataContext);
-  const { updateDataState } = dataContext;
+  const { updateDataState, userConfig } = dataContext;
   const {
     collectionView,
-    setCollectionView,
+    // setCollectionView,
     setSearch,
     sortBy,
     setSortBy
@@ -47,20 +48,29 @@ export default function CollectionMenuBar(props) {
 
         <div style={{ float: 'right' }}>
           <SegmentedControl
-            onChange={(evt, value) => setCollectionView(value)}
-            value={collectionView}
+            onChange={(evt, value) => {
+              const newUserConfig = { ...userConfig, collectionView: value };
+              updateDataState({ userConfig: newUserConfig });
+              UserStorageMutation.mutate({
+                actionType: UserStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
+                collection: 'USER_CONFIG',
+                documentId: 'config',
+                document: newUserConfig
+              });
+            }}
+            value={userConfig?.collectionView}
           >
+            <SegmentedControlItem
+              value="card"
+              label="Card"
+              iconType={SegmentedControlItem.ICON_TYPE.INTERFACE__SIGN__NUMBER}
+            />
             <SegmentedControlItem
               value="list"
               label="List"
               iconType={
                 SegmentedControlItem.ICON_TYPE.DATAVIZ__DATAVIZ__TABLE_CHART
               }
-            />
-            <SegmentedControlItem
-              value="card"
-              label="Card"
-              iconType={SegmentedControlItem.ICON_TYPE.INTERFACE__SIGN__NUMBER}
             />
           </SegmentedControl>
         </div>
@@ -71,6 +81,7 @@ export default function CollectionMenuBar(props) {
               Most recent
             </DropdownItem>
             <DropdownItem onClick={() => setSortBy('Cost')}>Cost</DropdownItem>
+            <DropdownItem onClick={() => setSortBy('Name')}>Name</DropdownItem>
           </Dropdown>
         </div>
 
@@ -84,5 +95,5 @@ export default function CollectionMenuBar(props) {
         />
       </>
     );
-  }, [collectionView, sortBy]);
+  }, [userConfig, collectionView, sortBy]);
 }

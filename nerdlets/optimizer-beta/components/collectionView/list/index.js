@@ -97,6 +97,10 @@ export default function CollectionList(props) {
     });
   };
 
+  const numberWithCommas = x => {
+    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   const actions = hasResults => {
     const allActions = [
       {
@@ -175,26 +179,10 @@ export default function CollectionList(props) {
         }
       },
       {
-        label: 'Edit Optimization Config',
+        label: 'Edit recommendations config',
         onClick: (evt, { item }) => {
           const nerdlet = {
             id: 'optimization-configuration-nerdlet',
-            urlState: {
-              wlCollectionId: item.id,
-              document: item.document,
-              account: selectedAccount,
-              email
-            }
-          };
-
-          navigation.openStackedNerdlet(nerdlet);
-        }
-      },
-      {
-        label: 'Edit Suggestions Config',
-        onClick: (evt, { item }) => {
-          const nerdlet = {
-            id: 'suggestions-configuration-nerdlet',
             urlState: {
               wlCollectionId: item.id,
               document: item.document,
@@ -240,13 +228,28 @@ export default function CollectionList(props) {
   const headers = [
     { value: ({ item }) => item.document.name, width: '40%', key: 'Name' },
     {
+      value: ({ item }) => {
+        const lastHistory = item.history?.[0];
+        const cost = lastHistory?.document?.cost || {};
+        const knownAndEstimated = (
+          cost?.known ||
+          0 + cost?.estimated ||
+          0
+        ).toFixed(2);
+
+        return knownAndEstimated;
+      },
+      width: '5%',
+      key: 'Latest cost'
+    },
+    {
       value: ({ item }) => item.document.workloads.length,
       width: '10%',
       key: 'Workloads'
     },
     {
       value: ({ item }) => item.document.createdBy,
-      width: '25%',
+      width: '20%',
       key: 'Created By'
     },
     {
@@ -299,9 +302,22 @@ export default function CollectionList(props) {
             lastHistory?.document?.status === 'pending' && !failed;
 
           const hasResults = (history || []).length > 0;
+
+          const cost = lastHistory?.document?.cost || {};
+          const knownAndEstimated = (
+            cost?.known ||
+            0 + cost?.estimated ||
+            0
+          ).toFixed(2);
+          const costStr = lastHistory?.document?.cost
+            ? `$${numberWithCommas(knownAndEstimated)}`
+            : '-';
+
           return (
             <TableRow actions={actions(hasResults)}>
               <TableRowCell additionalValue={id}>{document.name}</TableRowCell>
+
+              <TableRowCell>{costStr}</TableRowCell>
 
               <TableRowCell>{document.workloads.length}</TableRowCell>
 

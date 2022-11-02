@@ -6,7 +6,8 @@ import {
   DropdownItem,
   navigation,
   AccountStorageQuery,
-  AccountStorageMutation
+  AccountStorageMutation,
+  Spinner
 } from 'nr1';
 import DataContext from '../../../context/data';
 
@@ -66,6 +67,8 @@ export default function CollectionCard(props) {
         const valueB = (bDoc?.completedAt || 0) + (bDoc?.completedAt || 0);
 
         return valueB - valueA;
+      } else if (sb === 'Name') {
+        return (a?.document?.name || '').localeCompare(b?.document?.name || '');
       }
 
       return -1;
@@ -133,7 +136,8 @@ export default function CollectionCard(props) {
             paddingLeft: '15px',
             paddingRight: '15px',
             paddingBottom: '15px',
-            display: 'inline-block'
+            display: 'inline-block',
+            opacity: isRunning ? '50%' : undefined
           }}
         >
           <div
@@ -163,6 +167,7 @@ export default function CollectionCard(props) {
                 </span>
               </div>
               <div style={{ float: 'right' }}>
+                {isRunning && <Spinner />}
                 <Dropdown
                   title=""
                   iconType={Dropdown.ICON_TYPE.INTERFACE__OPERATIONS__MORE}
@@ -217,7 +222,15 @@ export default function CollectionCard(props) {
                 <div style={{ float: 'left', fontWeight: 'bold' }}>
                   Latest cost
                 </div>
-                <div style={{ float: 'right' }}>{costStr}</div>
+                <div
+                  style={{
+                    float: 'right',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {costStr}
+                </div>
                 <br />
               </div>
               <div

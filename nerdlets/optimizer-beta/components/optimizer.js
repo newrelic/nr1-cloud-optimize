@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import {
-  BlockText,
   Layout,
   LayoutItem,
   CollapsibleLayoutItem,
@@ -34,7 +33,7 @@ export default function Optimizer(props) {
     userConfig
   } = dataContext;
   const [hideQuickStart, setHideQuickStart] = useState(false);
-  const [collectionView, setCollectionView] = useState('list');
+  // const [collectionView, setCollectionView] = useState('card');
   const [searchText, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('Most recent');
 
@@ -56,7 +55,7 @@ export default function Optimizer(props) {
 
   const renderQuickStart = () => {
     if (!userConfig || hideQuickStart || userConfig.quickstartDismissed) {
-      return <></>;
+      return;
     }
 
     return (
@@ -148,52 +147,14 @@ export default function Optimizer(props) {
                       >
                         Switch to stable
                       </Button>
-
-                      <BlockText
-                        type={BlockText.TYPE.PARAGRAPH}
-                        style={{ float: 'right' }}
-                      >
-                        <Button
-                          type={Button.TYPE.PRIMARY}
-                          sizeType={Button.SIZE_TYPE.SMALL}
-                          iconType={
-                            Button.ICON_TYPE.INTERFACE__SIGN__EXCLAMATION
-                          }
-                          onClick={() =>
-                            window.open(
-                              'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=bug%2C+needs-triage&template=bug_report.md&title=',
-                              '_blank'
-                            )
-                          }
-                        >
-                          New Issue
-                        </Button>
-                        &nbsp;
-                        <Button
-                          type={Button.TYPE.PRIMARY}
-                          sizeType={Button.SIZE_TYPE.SMALL}
-                          iconType={
-                            Button.ICON_TYPE
-                              .PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD
-                          }
-                          onClick={() =>
-                            window.open(
-                              'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=enhancement%2C+needs-triage&template=enhancement.md&title=',
-                              '_blank'
-                            )
-                          }
-                        >
-                          Feature Request
-                        </Button>
-                      </BlockText>
                     </HeadingText>
                     <br />
 
                     <CollectionMenuBar
                       searchText={searchText}
                       setSearch={setSearch}
-                      setCollectionView={setCollectionView}
-                      collectionView={collectionView}
+                      // setCollectionView={setCollectionView}
+                      // collectionView={collectionView}
                       setSortBy={setSortBy}
                       sortBy={sortBy}
                     />
@@ -204,10 +165,10 @@ export default function Optimizer(props) {
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
                   <CardBody>
-                    {collectionView === 'list' ? (
-                      <CollectionList searchText={searchText} sortBy={sortBy} />
-                    ) : (
+                    {userConfig?.collectionView === 'card' ? (
                       <CollectionCard searchText={searchText} sortBy={sortBy} />
+                    ) : (
+                      <CollectionList searchText={searchText} sortBy={sortBy} />
                     )}
                   </CardBody>
                 </Card>

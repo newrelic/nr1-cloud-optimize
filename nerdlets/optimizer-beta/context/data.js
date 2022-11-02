@@ -65,6 +65,7 @@ export class DataProvider extends Component {
       messages: [],
       userConfig: null,
       collectionView: 'list',
+      fetchingUserConfig: true,
       obfuscate: false
     };
   }
@@ -115,9 +116,12 @@ export class DataProvider extends Component {
         collection: 'USER_CONFIG',
         documentId: 'config'
       }).then(document => {
-        this.setState({ userConfig: document?.data || {} }, () => {
-          resolve(document?.data);
-        });
+        this.setState(
+          { userConfig: document?.data || {}, fetchingUserConfig: false },
+          () => {
+            resolve(document?.data);
+          }
+        );
       });
     });
   };
@@ -197,11 +201,35 @@ export class DataProvider extends Component {
                   actionControls: true,
                   actionControlButtons: [
                     {
-                      label: 'Create Collection',
+                      label: 'New Issue',
                       type: 'secondary',
-                      iconType: Icon.TYPE.INTERFACE__SIGN__PLUS,
+                      iconType: Icon.TYPE.INTERFACE__SIGN__EXCLAMATION,
                       onClick: () =>
-                        this.updateDataState({ createCollectionOpen: true })
+                        window.open(
+                          'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=bug%2C+needs-triage&template=bug_report.md&title=',
+                          '_blank'
+                        )
+                    },
+                    {
+                      label: 'Feature Request',
+                      type: 'secondary',
+                      iconType:
+                        Icon.TYPE.PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD,
+                      onClick: () =>
+                        window.open(
+                          'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=enhancement%2C+needs-triage&template=enhancement.md&title=',
+                          '_blank'
+                        )
+                    },
+                    {
+                      label: 'ReadMe',
+                      type: 'secondary',
+                      iconType: Icon.TYPE.DOCUMENTS__DOCUMENTS__NOTES,
+                      onClick: () =>
+                        window.open(
+                          'https://github.com/newrelic/nr1-cloud-optimize',
+                          '_blank'
+                        )
                     },
                     {
                       label: 'Settings',
