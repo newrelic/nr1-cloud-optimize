@@ -70,18 +70,26 @@ export default function CollectionList(props) {
     .sort((a, b) => {
       const sb = sortBy || 'Most recent';
       const aDoc = a?.history?.[0]?.document;
+      const aDocPrior = a?.history?.[1]?.document;
       const bDoc = b?.history?.[0]?.document;
+      const bDocPrior = b?.history?.[1]?.document;
 
       if (sb === 'Cost') {
-        const valueA = (aDoc?.cost?.known || 0) + (aDoc?.cost?.estimated || 0);
-        const valueB = (bDoc?.cost?.known || 0) + (bDoc?.cost?.estimated || 0);
+        const valueA =
+          (aDoc?.cost?.known || aDocPrior?.cost?.known || 0) +
+          (aDoc?.cost?.estimated || aDocPrior?.cost?.estimated || 0);
+        const valueB =
+          (bDoc?.cost?.known || bDocPrior?.cost?.known || 0) +
+          (bDoc?.cost?.estimated || bDocPrior?.cost?.estimated || 0);
 
         return valueB - valueA;
       } else if (sb === 'Most recent') {
-        const valueA = (aDoc?.completedAt || 0) + (aDoc?.completedAt || 0);
-        const valueB = (bDoc?.completedAt || 0) + (bDoc?.completedAt || 0);
+        const valueA = aDoc?.completedAt || aDocPrior?.completedAt || 0;
+        const valueB = bDoc?.completedAt || bDocPrior?.completedAt || 0;
 
         return valueB - valueA;
+      } else if (sb === 'Name') {
+        return (a?.document?.name || '').localeCompare(b?.document?.name || '');
       }
 
       return -1;
@@ -289,8 +297,16 @@ export default function CollectionList(props) {
           const currentTime = new Date().getTime();
           const lastHistory = history?.[0];
           const startedAt = lastHistory?.document?.startedAt;
+          const completedAt =
+            lastHistory?.document?.startedAt +
+              lastHistory?.document?.totalPeriodMs || 0;
+
           const startedAtText = lastHistory
             ? new Date(startedAt).toLocaleString()
+            : undefined;
+
+          const completedAtText = lastHistory
+            ? new Date(completedAt).toLocaleString()
             : undefined;
 
           const failed =
@@ -327,7 +343,9 @@ export default function CollectionList(props) {
                 {document.createdBy}
               </TableRowCell>
 
-              <TableRowCell>{startedAtText}</TableRowCell>
+              <TableRowCell additionalValue={completedAtText}>
+                {startedAtText}
+              </TableRowCell>
 
               {isRunning ? (
                 <TableRowCell style={{ textAlign: 'right' }}>

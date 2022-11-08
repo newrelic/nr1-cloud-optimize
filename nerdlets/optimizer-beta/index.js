@@ -7,6 +7,7 @@ import CollectionEditModal from './components/collectionEdit';
 import JobHistoryModal from './components/jobHistory';
 import SettingsModal from './components/settings/modal';
 import AdminBar from '../shared/components/adminBar';
+import HelpModal from './components/helpModal';
 
 function OptimizerRoot() {
   useEffect(() => {
@@ -22,6 +23,7 @@ function OptimizerRoot() {
     <div>
       <DataProvider {...platformContext}>
         <AdminBar DataContext={DataContext} />
+        <HelpModal />
         <CollectionEditModal />
         <CollectionCreateModal />
         <JobHistoryModal />

@@ -46,7 +46,11 @@ export default function CollectionMenuBar(props) {
           </BlockText>
         </div>
 
-        <div style={{ float: 'right' }}>
+        <div
+          style={{
+            float: 'right'
+          }}
+        >
           <SegmentedControl
             onChange={(evt, value) => {
               const newUserConfig = { ...userConfig, collectionView: value };
@@ -75,7 +79,13 @@ export default function CollectionMenuBar(props) {
           </SegmentedControl>
         </div>
 
-        <div style={{ float: 'right', paddingRight: '15px' }}>
+        <div
+          style={{
+            float: 'right',
+            paddingRight: '15px',
+            display: userConfig?.collectionView === 'list' ? 'none' : ''
+          }}
+        >
           <Dropdown title={sortBy} label="Sort by" labelInline>
             <DropdownItem onClick={() => setSortBy('Most recent')}>
               Most recent

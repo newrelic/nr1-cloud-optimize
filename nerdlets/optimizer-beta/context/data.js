@@ -51,6 +51,7 @@ export class DataProvider extends Component {
       fetchingAccountCollection: false,
       accountCollection: null,
       createCollectionOpen: false,
+      helpModalOpen: false,
       editCollectionOpen: false,
       editCollectionId: null,
       email: null,
@@ -201,35 +202,11 @@ export class DataProvider extends Component {
                   actionControls: true,
                   actionControlButtons: [
                     {
-                      label: 'New Issue',
+                      label: 'Help',
                       type: 'secondary',
-                      iconType: Icon.TYPE.INTERFACE__SIGN__EXCLAMATION,
+                      iconType: Icon.TYPE.INTERFACE__INFO__HELP,
                       onClick: () =>
-                        window.open(
-                          'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=bug%2C+needs-triage&template=bug_report.md&title=',
-                          '_blank'
-                        )
-                    },
-                    {
-                      label: 'Feature Request',
-                      type: 'secondary',
-                      iconType:
-                        Icon.TYPE.PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD,
-                      onClick: () =>
-                        window.open(
-                          'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=enhancement%2C+needs-triage&template=enhancement.md&title=',
-                          '_blank'
-                        )
-                    },
-                    {
-                      label: 'ReadMe',
-                      type: 'secondary',
-                      iconType: Icon.TYPE.DOCUMENTS__DOCUMENTS__NOTES,
-                      onClick: () =>
-                        window.open(
-                          'https://github.com/newrelic/nr1-cloud-optimize',
-                          '_blank'
-                        )
+                        this.updateDataState({ helpModalOpen: true })
                     },
                     {
                       label: 'Settings',

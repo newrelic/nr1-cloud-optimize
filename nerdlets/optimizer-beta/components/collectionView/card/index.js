@@ -55,16 +55,22 @@ export default function CollectionCard(props) {
     .sort((a, b) => {
       const sb = sortBy || 'Most recent';
       const aDoc = a?.history?.[0]?.document;
+      const aDocPrior = a?.history?.[1]?.document;
       const bDoc = b?.history?.[0]?.document;
+      const bDocPrior = b?.history?.[1]?.document;
 
       if (sb === 'Cost') {
-        const valueA = (aDoc?.cost?.known || 0) + (aDoc?.cost?.estimated || 0);
-        const valueB = (bDoc?.cost?.known || 0) + (bDoc?.cost?.estimated || 0);
+        const valueA =
+          (aDoc?.cost?.known || aDocPrior?.cost?.known || 0) +
+          (aDoc?.cost?.estimated || aDocPrior?.cost?.estimated || 0);
+        const valueB =
+          (bDoc?.cost?.known || bDocPrior?.cost?.known || 0) +
+          (bDoc?.cost?.estimated || bDocPrior?.cost?.estimated || 0);
 
         return valueB - valueA;
       } else if (sb === 'Most recent') {
-        const valueA = (aDoc?.completedAt || 0) + (aDoc?.completedAt || 0);
-        const valueB = (bDoc?.completedAt || 0) + (bDoc?.completedAt || 0);
+        const valueA = aDoc?.completedAt || aDocPrior?.completedAt || 0;
+        const valueB = bDoc?.completedAt || bDocPrior?.completedAt || 0;
 
         return valueB - valueA;
       } else if (sb === 'Name') {
@@ -95,18 +101,17 @@ export default function CollectionCard(props) {
     const currentTime = new Date().getTime();
     const lastHistory = history?.[0];
     const startedAt = lastHistory?.document?.startedAt;
+    const completedAt =
+      lastHistory?.document?.startedAt + lastHistory?.document?.totalPeriodMs ||
+      0;
+
     const startedAtText = lastHistory
       ? new Date(startedAt).toLocaleString()
       : undefined;
 
-    let startDate = '';
-    let startTime = '';
-
-    if (startedAtText) {
-      const startSplit = startedAtText.split(',');
-      startDate = startSplit[0];
-      startTime = startSplit[1];
-    }
+    const completedAtText = lastHistory
+      ? new Date(completedAt).toLocaleString()
+      : undefined;
 
     const failed =
       startedAt &&
@@ -219,7 +224,13 @@ export default function CollectionCard(props) {
                   borderBottom: '1px solid #e3e3e3'
                 }}
               >
-                <div style={{ float: 'left', fontWeight: 'bold' }}>
+                <div
+                  style={{
+                    float: 'left',
+                    fontWeight: 'bold',
+                    fontSize: '14px'
+                  }}
+                >
                   Latest cost
                 </div>
                 <div
@@ -257,14 +268,14 @@ export default function CollectionCard(props) {
                 }}
               >
                 <div style={{ float: 'left', fontWeight: 'bold' }}>
-                  Latest request
+                  Latest run
                 </div>
                 <div style={{ float: 'right', fontWeight: 'bold' }}>
-                  {startDate}
+                  {startedAtText}
                 </div>
                 <br />
                 <div style={{ float: 'left' }} />
-                <div style={{ float: 'right' }}>{startTime}</div>
+                <div style={{ float: 'right' }}>{completedAtText}</div>
               </div>
               <div
                 style={{
