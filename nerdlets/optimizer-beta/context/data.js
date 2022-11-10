@@ -27,6 +27,7 @@ import {
   catalogNerdpacksQuery
 } from './queries';
 import queue from 'async/queue';
+import { sort } from 'semver';
 
 const nr1json = require('../nr1.json');
 
@@ -67,7 +68,8 @@ export class DataProvider extends Component {
       userConfig: null,
       collectionView: 'list',
       fetchingUserConfig: true,
-      obfuscate: false
+      obfuscate: false,
+      sortBy: 'Most recent'
     };
   }
 
@@ -190,7 +192,7 @@ export class DataProvider extends Component {
             this.setState(
               {
                 fetchingAccountCollection: false,
-                accountCollection: data,
+                accountCollection: this.sortAccountCollection(data),
                 accountSelectError: foundAccount
                   ? null
                   : 'Please change account or subscribe this application to the relevant accounts'
@@ -298,15 +300,49 @@ export class DataProvider extends Component {
       }).then(({ data }) => {
         this.setState({
           fetchingAccountCollection: false,
-          accountCollection: data
+          accountCollection: this.sortAccountCollection(data)
         });
       });
     });
   };
 
+  sortAccountCollection = collection => {
+    const { sortBy } = this.state;
+    return collection.sort((a, b) => {
+      const sb = sortBy || 'Most recent';
+      const aDoc = a?.history?.[0]?.document;
+      const aDocPrior = a?.history?.[1]?.document;
+      const bDoc = b?.history?.[0]?.document;
+      const bDocPrior = b?.history?.[1]?.document;
+
+      if (sb === 'Cost') {
+        const valueA =
+          (aDoc?.cost?.known || aDocPrior?.cost?.known || 0) +
+          (aDoc?.cost?.estimated || aDocPrior?.cost?.estimated || 0);
+        const valueB =
+          (bDoc?.cost?.known || bDocPrior?.cost?.known || 0) +
+          (bDoc?.cost?.estimated || bDocPrior?.cost?.estimated || 0);
+
+        return valueB - valueA;
+      } else if (sb === 'Most recent') {
+        const valueA = aDoc?.completedAt || aDocPrior?.completedAt || 0;
+        const valueB = bDoc?.completedAt || bDocPrior?.completedAt || 0;
+
+        return valueB - valueA;
+      } else if (sb === 'Name') {
+        return (a?.document?.name || '').localeCompare(b?.document?.name || '');
+      } else if (b?.document?.startedAt && a?.document?.startedAt) {
+        return b?.document?.startedAt - a?.document?.startedAt;
+      }
+
+      return -1;
+    });
+  };
+
   fetchJobStatus = accountId => {
-    const { selectedAccount, accountCollection } = this.state;
+    const { selectedAccount, accountCollection, sortBy } = this.state;
     const id = accountId || selectedAccount?.id;
+
     if (id) {
       this.setState({ fetchingJobStatus: true }, () => {
         AccountStorageQuery.query({
@@ -338,10 +374,25 @@ export class DataProvider extends Component {
             };
           });
 
+          const sortedAccountCollection = this.sortAccountCollection(
+            newAccountCollection
+          );
+
+          // used to handle the temp loading state
+          setTimeout(() => {
+            const unloadKeys = {};
+            Object.keys(this.state).forEach(key => {
+              if (key.startsWith('loading')) {
+                unloadKeys[key] = null;
+              }
+            });
+            this.setState({ ...unloadKeys });
+          }, 15000);
+
           this.setState({
             fetchingJobStatus: false,
             jobStatus: newJobStatus || [],
-            accountCollection: newAccountCollection || []
+            accountCollection: sortedAccountCollection
           });
         });
       });

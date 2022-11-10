@@ -14,12 +14,11 @@ import DataContext from '../../../context/data';
 // eslint-disable-next-line no-unused-vars
 export default function CollectionMenuBar(props) {
   const dataContext = useContext(DataContext);
-  const { updateDataState, userConfig } = dataContext;
+  const { updateDataState, userConfig, sortBy } = dataContext;
   const {
     collectionView,
     // setCollectionView,
     setSearch,
-    sortBy,
     setSortBy
   } = props;
 

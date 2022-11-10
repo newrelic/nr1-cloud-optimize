@@ -30,12 +30,17 @@ export default function Optimizer(props) {
     fetchingAccountCollection,
     accountCollection,
     selectedAccount,
-    userConfig
+    userConfig,
+    sortBy,
+    updateDataState
   } = dataContext;
   const [hideQuickStart, setHideQuickStart] = useState(false);
   // const [collectionView, setCollectionView] = useState('card');
   const [searchText, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('Most recent');
+
+  const setSortBy = value => {
+    updateDataState({ sortBy: value });
+  };
 
   if (fetchingAccountCollection) {
     return (

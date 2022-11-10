@@ -23,12 +23,12 @@ export default function CollectionCard(props) {
     apiUrlProd,
     optimizerKey,
     uuid,
-    timeRange,
     email,
-    obfuscate
+    obfuscate,
+    sortBy
   } = dataContext;
 
-  const { searchText, sortBy } = props;
+  const { searchText } = props;
   const isLocal =
     !window.location.href.includes('https://one.newrelic.com') &&
     !window.location.href.includes('https://one.eu.newrelic.com');
@@ -101,24 +101,39 @@ export default function CollectionCard(props) {
     const currentTime = new Date().getTime();
     const lastHistory = history?.[0];
     const startedAt = lastHistory?.document?.startedAt;
-    const completedAt =
-      lastHistory?.document?.startedAt + lastHistory?.document?.totalPeriodMs ||
-      0;
+    const timeRange = lastHistory?.document?.timeRange;
 
     const startedAtText = lastHistory
       ? new Date(startedAt).toLocaleString()
       : undefined;
 
-    const completedAtText = lastHistory
-      ? new Date(completedAt).toLocaleString()
-      : undefined;
+    let timeText = '';
+    if (!timeRange && lastHistory?.document?.startedAt) {
+      const start = new Date(lastHistory?.document?.startedAt);
+      const end = new Date(lastHistory?.document?.startedAt - 86400000 * 7);
+      timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+    } else if (timeRange?.duration && lastHistory?.document?.startedAt) {
+      const start = new Date(lastHistory?.document?.startedAt);
+      const end = new Date(
+        lastHistory?.document?.startedAt - timeRange.duration
+      );
+      timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+    } else if (timeRange?.begin_time && timeRange?.end_time) {
+      const end = new Date(timeRange.begin_time);
+      const start = new Date(timeRange.end_time);
+      timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+    }
 
     const failed =
       startedAt &&
       currentTime - startedAt > 900000 &&
       !lastHistory?.document?.completedAt; // 15m
 
-    const isRunning = lastHistory?.document?.status === 'pending' && !failed;
+    const loadingState = dataContext[`loading-${collection.id}`];
+
+    const isRunning =
+      loadingState === true ||
+      (lastHistory?.document?.status === 'pending' && !failed);
 
     const hasResults = (history || []).length > 0;
 
@@ -127,9 +142,10 @@ export default function CollectionCard(props) {
       : lastHistory?.document?.status || '-';
 
     const cost = lastHistory?.document?.cost || {};
-    const knownAndEstimated = (cost?.known || 0 + cost?.estimated || 0).toFixed(
-      2
-    );
+    const knownAndEstimated = (
+      (cost?.known || 0) + (cost?.estimated || 0)
+    ).toFixed(2);
+
     const costStr = lastHistory?.document?.cost
       ? `$${numberWithCommas(knownAndEstimated)}`
       : '-';
@@ -273,10 +289,25 @@ export default function CollectionCard(props) {
                 <div style={{ float: 'right', fontWeight: 'bold' }}>
                   {startedAtText}
                 </div>
-                <br />
-                <div style={{ float: 'left' }} />
-                <div style={{ float: 'right' }}>{completedAtText}</div>
               </div>
+
+              <>
+                <div
+                  style={{
+                    paddingTop: '10px',
+                    paddingBottom: '30px',
+                    borderBottom: '1px solid #e3e3e3'
+                  }}
+                >
+                  <div style={{ float: 'left', fontWeight: 'bold' }}>
+                    Period
+                  </div>
+                  <div style={{ float: 'right', fontWeight: 'bold' }}>
+                    {timeText}
+                  </div>
+                </div>
+              </>
+
               <div
                 style={{
                   paddingTop: '5px',
@@ -298,6 +329,9 @@ export default function CollectionCard(props) {
                     type={Button.TYPE.SECONDARY}
                     sizeType={Button.SIZE_TYPE.SMALL}
                     onClick={async () => {
+                      updateDataState({
+                        [`loading-${collection.id}`]: true
+                      });
                       Toast.showToast({
                         title: 'Requesting job',
                         type: Toast.TYPE.TERTIARY
@@ -342,6 +376,9 @@ export default function CollectionCard(props) {
                     type={Button.TYPE.TERTIARY}
                     sizeType={Button.SIZE_TYPE.SMALL}
                     onClick={async () => {
+                      updateDataState({
+                        [`loading-${collection.id}`]: true
+                      });
                       Toast.showToast({
                         title: 'Requesting job',
                         type: Toast.TYPE.TERTIARY
@@ -349,6 +386,7 @@ export default function CollectionCard(props) {
                       const config = await getLatestConfiguration(
                         collection.id
                       );
+
                       postData(`${apiUrl}/optimize`, optimizerKey.key, {
                         workloadGuids: collection.document.workloads.map(
                           w => w.guid
@@ -356,7 +394,7 @@ export default function CollectionCard(props) {
                         accountId: selectedAccount.id,
                         nerdpackUUID: uuid,
                         collectionId: collection.id,
-                        timeRange,
+                        timeRange: dataContext.timeRange,
                         config
                       }).then(data => {
                         if (data?.success) {

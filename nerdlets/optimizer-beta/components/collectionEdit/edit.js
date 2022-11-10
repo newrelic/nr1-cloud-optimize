@@ -22,7 +22,6 @@ export default function CollectionEdit(props) {
     workloads,
     updateDataState,
     fetchingAccessibleWorkloads,
-    fetchWorkloadCollections,
     editCollectionId,
     accountCollection,
     optimizerKey,
@@ -59,6 +58,11 @@ export default function CollectionEdit(props) {
 
   const writeDocument = () => {
     setWriteState(true);
+
+    updateDataState({
+      [`loading-${editCollectionId}`]: true
+    });
+
     const filteredWorkloads = workloads
       .filter(w => checkboxValues.includes(w.guid))
       .map(w => ({
@@ -85,8 +89,15 @@ export default function CollectionEdit(props) {
       console.log('updated document', value);
 
       setWriteState(false);
-      fetchWorkloadCollections();
-      updateDataState({ editCollectionOpen: false });
+
+      for (let z = 0; z < accountCollection.length; z++) {
+        if (accountCollection[z].id === editCollectionId) {
+          accountCollection[z].document = document;
+          break;
+        }
+      }
+
+      updateDataState({ editCollectionOpen: false, accountCollection });
 
       // trigger 7 day analysis
 

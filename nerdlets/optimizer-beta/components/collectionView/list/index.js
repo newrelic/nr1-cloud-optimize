@@ -27,10 +27,11 @@ export default function CollectionList(props) {
     uuid,
     timeRange,
     email,
-    obfuscate
+    obfuscate,
+    sortBy
   } = dataContext;
 
-  const { searchText, sortBy } = props;
+  const { searchText } = props;
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
@@ -114,6 +115,9 @@ export default function CollectionList(props) {
       {
         label: 'Run (Analyze past 7 days)',
         onClick: async (evt, { item }) => {
+          updateDataState({
+            [`loading-${item.id}`]: true
+          });
           Toast.showToast({
             title: 'Requesting job',
             type: Toast.TYPE.NORMAL
@@ -147,11 +151,15 @@ export default function CollectionList(props) {
       {
         label: 'Run with time range',
         onClick: async (evt, { item }) => {
+          updateDataState({
+            [`loading-${item.id}`]: true
+          });
           Toast.showToast({
             title: 'Requesting job',
             type: Toast.TYPE.NORMAL
           });
           const config = await getLatestConfiguration(item.id);
+
           postData(`${apiUrl}/optimize`, optimizerKey.key, {
             workloadGuids: item.document.workloads.map(w => w.guid),
             accountId: selectedAccount.id,
@@ -234,7 +242,7 @@ export default function CollectionList(props) {
   };
 
   const headers = [
-    { value: ({ item }) => item.document.name, width: '40%', key: 'Name' },
+    { value: ({ item }) => item.document.name, key: 'Name' },
     {
       value: ({ item }) => {
         const lastHistory = item.history?.[0];
@@ -247,7 +255,7 @@ export default function CollectionList(props) {
 
         return knownAndEstimated;
       },
-      width: '5%',
+      width: '10%',
       key: 'Latest cost'
     },
     {
@@ -263,12 +271,12 @@ export default function CollectionList(props) {
     {
       value: ({ item }) => item?.history?.[0]?.document?.startedAt,
       width: '15%',
-      key: 'Last Optimization Request'
+      key: 'Latest Request'
     },
     {
       value: ({ item }) => item?.history?.[0]?.document?.status,
-      key: 'Latest status',
-      alignmentType: TableRowCell.ALIGNMENT_TYPE.RIGHT
+      key: 'Latest status'
+      // alignmentType: TableRowCell.ALIGNMENT_TYPE.RIGHT
     }
   ];
 
@@ -297,25 +305,40 @@ export default function CollectionList(props) {
           const currentTime = new Date().getTime();
           const lastHistory = history?.[0];
           const startedAt = lastHistory?.document?.startedAt;
-          const completedAt =
-            lastHistory?.document?.startedAt +
-              lastHistory?.document?.totalPeriodMs || 0;
-
           const startedAtText = lastHistory
             ? new Date(startedAt).toLocaleString()
             : undefined;
+          const timeRange = lastHistory?.document?.timeRange;
 
-          const completedAtText = lastHistory
-            ? new Date(completedAt).toLocaleString()
-            : undefined;
+          let timeText = '';
+          if (!timeRange && lastHistory?.document?.startedAt) {
+            const start = new Date(lastHistory?.document?.startedAt);
+            const end = new Date(
+              lastHistory?.document?.startedAt - 86400000 * 7
+            );
+            timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+          } else if (timeRange?.duration && lastHistory?.document?.startedAt) {
+            const start = new Date(lastHistory?.document?.startedAt);
+            const end = new Date(
+              lastHistory?.document?.startedAt - timeRange.duration
+            );
+            timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+          } else if (timeRange?.begin_time && timeRange?.end_time) {
+            const end = new Date(timeRange.begin_time);
+            const start = new Date(timeRange.end_time);
+            timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+          }
 
           const failed =
             startedAt &&
             currentTime - startedAt > 900000 &&
             !lastHistory?.document?.completedAt; // 15m
 
+          const loadingState = dataContext[`loading-${id}`];
+
           const isRunning =
-            lastHistory?.document?.status === 'pending' && !failed;
+            loadingState === true ||
+            (lastHistory?.document?.status === 'pending' && !failed);
 
           const hasResults = (history || []).length > 0;
 
@@ -343,16 +366,16 @@ export default function CollectionList(props) {
                 {document.createdBy}
               </TableRowCell>
 
-              <TableRowCell additionalValue={completedAtText}>
+              <TableRowCell additionalValue={timeText}>
                 {startedAtText}
               </TableRowCell>
 
               {isRunning ? (
-                <TableRowCell style={{ textAlign: 'right' }}>
+                <TableRowCell>
                   <Spinner inline type={Spinner.TYPE.DOT} />
                 </TableRowCell>
               ) : (
-                <TableRowCell style={{ textAlign: 'right' }}>
+                <TableRowCell>
                   {failed ? 'FAILED' : lastHistory?.document?.status}
                 </TableRowCell>
               )}

@@ -84,16 +84,22 @@ module.exports.optimize = async (event, context, callback) => {
 
   let totalPeriodMs = 0;
 
+  let queryStartTime = startedAt;
+  let queryEndTime = 0;
+
   // default 7 days
   if (!timeRange) {
-    totalPeriodMs = startedAt - new Date(startedAt - 86400000 * 7).getTime();
+    queryEndTime = new Date(startedAt - 86400000 * 7).getTime();
+    totalPeriodMs = startedAt - queryEndTime;
   } else if (timeRange.duration) {
     totalPeriodMs =
       startedAt - new Date(startedAt - timeRange.duration).getTime();
   } else if (timeRange.begin_time && timeRange.end_time) {
     const start = new Date(timeRange.begin_time);
     const end = new Date(timeRange.end_time);
-    totalPeriodMs = end.getTime() - start.getTime();
+    queryStartTime = start.getTime();
+    queryEndTime = end.getTime();
+    totalPeriodMs = queryEndTime - queryStartTime;
   }
 
   // perform a nerdstorage check to see if same UUIDs inflight
@@ -121,7 +127,9 @@ module.exports.optimize = async (event, context, callback) => {
     'pending',
     timeNrql,
     timeRange,
-    totalPeriodMs
+    totalPeriodMs,
+    queryStartTime,
+    queryEndTime
   );
 
   // fetch all guids attached to each workload
@@ -173,6 +181,8 @@ module.exports.optimize = async (event, context, callback) => {
     timeNrql,
     timeRange,
     totalPeriodMs,
+    queryStartTime,
+    queryEndTime,
     cost
   );
 
@@ -583,6 +593,8 @@ const writeJobStatusEvent = async (
   timeNrql,
   timeRange,
   totalPeriodMs,
+  queryStartTime,
+  queryEndTime,
   cost
 ) => {
   const document = {
@@ -592,6 +604,8 @@ const writeJobStatusEvent = async (
     timeNrql,
     timeRange,
     totalPeriodMs,
+    queryStartTime,
+    queryEndTime,
     STAGE: process.env.STAGE
   };
 
