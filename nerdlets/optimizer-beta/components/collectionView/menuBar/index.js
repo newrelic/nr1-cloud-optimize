@@ -37,7 +37,7 @@ export default function CollectionMenuBar(props) {
             </Button>
             &nbsp;&nbsp;
             <Button
-              type={Button.TYPE.NORMAL}
+              type={Button.TYPE.SECONDARY}
               sizeType={Button.SIZE_TYPE.SMALL}
               onClick={() => updateDataState({ jobHistoryOpen: true })}
               iconType={Button.ICON_TYPE.DATE_AND_TIME__DATE_AND_TIME__DATE}
