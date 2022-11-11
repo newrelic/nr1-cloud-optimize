@@ -44,7 +44,7 @@ export default function Help(props) {
       <Tile
         onClick={() =>
           window.open(
-            'https://github.com/newrelic/nr1-cloud-optimize/discussions',
+            'https://github.com/newrelic/nr1-cloud-optimize/discussions/new',
             '_blank'
           )
         }

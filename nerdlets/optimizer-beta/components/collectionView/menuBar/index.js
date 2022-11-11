@@ -28,6 +28,7 @@ export default function CollectionMenuBar(props) {
         <div style={{ float: 'left' }}>
           <BlockText type={BlockText.TYPE.PARAGRAPH}>
             <Button
+              type={Button.TYPE.PRIMARY}
               sizeType={Button.SIZE_TYPE.SMALL}
               onClick={() => updateDataState({ createCollectionOpen: true })}
               iconType={Button.ICON_TYPE.DOCUMENTS__DOCUMENTS__NOTES__A_ADD}
@@ -36,6 +37,7 @@ export default function CollectionMenuBar(props) {
             </Button>
             &nbsp;&nbsp;
             <Button
+              type={Button.TYPE.NORMAL}
               sizeType={Button.SIZE_TYPE.SMALL}
               onClick={() => updateDataState({ jobHistoryOpen: true })}
               iconType={Button.ICON_TYPE.DATE_AND_TIME__DATE_AND_TIME__DATE}
@@ -99,7 +101,7 @@ export default function CollectionMenuBar(props) {
         <TextField
           type={TextField.TYPE.SEARCH}
           placeholder="Search..."
-          style={{ width: '98.5%', paddingTop: '20px' }}
+          style={{ width: '100%', paddingTop: '20px' }}
           onChange={e => setSearch(e.target.value)}
         />
       </>
