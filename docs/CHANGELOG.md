@@ -1,3 +1,10 @@
+# [3.32.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.31.0...v3.32.0) (2022-11-11)
+
+
+### Features
+
+* add card collection listing & help ([#144](https://github.com/newrelic/nr1-cloud-optimize/issues/144)) ([6e87c01](https://github.com/newrelic/nr1-cloud-optimize/commit/6e87c016cfb71ee6cf7eaf2d584c35df455da6c0))
+
 # [3.31.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.30.0...v3.31.0) (2022-09-30)
 
 
