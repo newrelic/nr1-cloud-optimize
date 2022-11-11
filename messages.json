@@ -1,26 +1,9 @@
 [
   {
-    "title":"We've redesigned this application completely!",
+    "title":"Announcing the updated Collections Listing",
     "messages":[
-      "Why? We started from EC2s and the requirements for new services kept growing!",
-      "Customers unanimously wanted more services and to view the cost and performance by workload.",
-      "We had to re-architect the application completely so we can continue to add new services and functionality easily."
-    ]
-  },
-  {
-    "title":"Upcoming updates",
-    "messages":[
-      "Hi everyone! New Relic Labs here, and we wanted to let you know that some changes will be coming to Cloud Optimize over the next few months. We're undertaking a full refresh of the app interface; while it will have the same functionality, we will be giving it a facelift with a focus on making it easier to use.",
-      "If you'd like a sense for what's coming, take a look at our Github project [https://github.com/orgs/newrelic/projects/70/views/1] - the project README has more details. And as we get ready to release changes, we'll be giving you a heads-up here, so you know what to expect, and when.",
-      "While we go through the project, we'd love to hear your input - if you have thoughts to share, please post a comment in the project discussion thread (https://github.com/newrelic/nr1-cloud-optimize/discussions/127)."
-    ]
-  },
-  {
-    "title":"Announcing the updated Quick Start guide!",
-    "messages":[
-      "To help save space on the screen, the Quick Start guide can now be closed temporarily, or dismissed permanently if you no longer need it.",
-      "If you would like to return to the current release, click the \"Switch to stable\" button.",
-      "Share your thoughts in the discussions thread: https://github.com/newrelic/nr1-cloud-optimize/discussions/127"
+      "New Relic Labs is happy to announce the release of the updated Collections listing, which lets you choose between the existing table layout, or a Card-based grid view that surfaces key Collection attributes and actions more prominently. We have also added some additional ways to connect with us, and collected them all under Help in the top right corner of the window. Check it all out in the Beta view!",
+      "More details on this release are available in the discussions thread: https://github.com/newrelic/nr1-cloud-optimize/discussions/127"
     ]
   }
 ]
