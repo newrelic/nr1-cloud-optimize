@@ -205,7 +205,7 @@ export class DataProvider extends Component {
                   actionControlButtons: [
                     {
                       label: 'Help',
-                      type: 'secondary',
+                      type: 'primary',
                       iconType: Icon.TYPE.INTERFACE__INFO__HELP,
                       onClick: () =>
                         this.updateDataState({ helpModalOpen: true })

@@ -20,7 +20,7 @@ export default function Help(props) {
         <div style={{ display: 'inline-block' }}>
           <HeadingText type={HeadingText.TYPE.HEADING_5}>
             <Icon type={Icon.TYPE.INTERFACE__SIGN__EXCLAMATION} />
-            &nbsp; New Issue
+            &nbsp; Report a Bug
           </HeadingText>
         </div>
       </Tile>
@@ -36,7 +36,7 @@ export default function Help(props) {
         <div style={{ display: 'inline-block' }}>
           <HeadingText type={HeadingText.TYPE.HEADING_5}>
             <Icon type={Icon.TYPE.PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD} />
-            &nbsp; Feature Request
+            &nbsp; Submit a Feature Request
           </HeadingText>
         </div>
       </Tile>
@@ -44,23 +44,7 @@ export default function Help(props) {
       <Tile
         onClick={() =>
           window.open(
-            'https://github.com/newrelic/nr1-cloud-optimize',
-            '_blank'
-          )
-        }
-      >
-        <div style={{ display: 'inline-block' }}>
-          <HeadingText type={HeadingText.TYPE.HEADING_5}>
-            <Icon type={Icon.TYPE.DOCUMENTS__DOCUMENTS__NOTES} />
-            &nbsp; ReadMe
-          </HeadingText>
-        </div>
-      </Tile>
-      <br />
-      <Tile
-        onClick={() =>
-          window.open(
-            'https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936',
+            'https://github.com/newrelic/nr1-cloud-optimize/discussions',
             '_blank'
           )
         }
@@ -68,7 +52,23 @@ export default function Help(props) {
         <div style={{ display: 'inline-block' }}>
           <HeadingText type={HeadingText.TYPE.HEADING_5}>
             <Icon type={Icon.TYPE.PROFILES__USERS__ORGANIZATION} />
-            &nbsp; Discuss
+            &nbsp; Ask a Question
+          </HeadingText>
+        </div>
+      </Tile>
+      <br />
+      <Tile
+        onClick={() =>
+          window.open(
+            'https://github.com/newrelic/nr1-cloud-optimize#readme',
+            '_blank'
+          )
+        }
+      >
+        <div style={{ display: 'inline-block' }}>
+          <HeadingText type={HeadingText.TYPE.HEADING_5}>
+            <Icon type={Icon.TYPE.DOCUMENTS__DOCUMENTS__NOTES} />
+            &nbsp; Open the Documentation
           </HeadingText>
         </div>
       </Tile>
