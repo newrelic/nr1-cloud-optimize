@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import {
   Toast,
-  TextField,
   Table,
   TableRow,
   TableRowCell,
@@ -12,7 +11,7 @@ import {
   AccountStorageMutation,
   Spinner
 } from 'nr1';
-import DataContext from '../../context/data';
+import DataContext from '../../../context/data';
 
 // eslint-disable-next-line no-unused-vars
 export default function CollectionList(props) {
@@ -28,11 +27,11 @@ export default function CollectionList(props) {
     uuid,
     timeRange,
     email,
-    obfuscate
+    obfuscate,
+    sortBy
   } = dataContext;
 
-  // const [name, setName] = useState("");
-  const [searchText, setSearch] = useState('');
+  const { searchText } = props;
   const [column, setColumn] = useState(0);
   const [sortingType, setSortingType] = useState(
     TableHeaderCell.SORTING_TYPE.NONE
@@ -65,9 +64,37 @@ export default function CollectionList(props) {
     }
   };
 
-  const filteredAccountCollection = accountCollection.filter(a =>
-    a.document.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredAccountCollection = accountCollection
+    .filter(a =>
+      a.document.name.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .sort((a, b) => {
+      const sb = sortBy || 'Most recent';
+      const aDoc = a?.history?.[0]?.document;
+      const aDocPrior = a?.history?.[1]?.document;
+      const bDoc = b?.history?.[0]?.document;
+      const bDocPrior = b?.history?.[1]?.document;
+
+      if (sb === 'Cost') {
+        const valueA =
+          (aDoc?.cost?.known || aDocPrior?.cost?.known || 0) +
+          (aDoc?.cost?.estimated || aDocPrior?.cost?.estimated || 0);
+        const valueB =
+          (bDoc?.cost?.known || bDocPrior?.cost?.known || 0) +
+          (bDoc?.cost?.estimated || bDocPrior?.cost?.estimated || 0);
+
+        return valueB - valueA;
+      } else if (sb === 'Most recent') {
+        const valueA = aDoc?.completedAt || aDocPrior?.completedAt || 0;
+        const valueB = bDoc?.completedAt || bDocPrior?.completedAt || 0;
+
+        return valueB - valueA;
+      } else if (sb === 'Name') {
+        return (a?.document?.name || '').localeCompare(b?.document?.name || '');
+      }
+
+      return -1;
+    });
 
   const getLatestConfiguration = documentId => {
     return new Promise(resolve => {
@@ -79,11 +106,18 @@ export default function CollectionList(props) {
     });
   };
 
+  const numberWithCommas = x => {
+    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   const actions = hasResults => {
     const allActions = [
       {
         label: 'Run (Analyze past 7 days)',
         onClick: async (evt, { item }) => {
+          updateDataState({
+            [`loading-${item.id}`]: true
+          });
           Toast.showToast({
             title: 'Requesting job',
             type: Toast.TYPE.NORMAL
@@ -117,11 +151,15 @@ export default function CollectionList(props) {
       {
         label: 'Run with time range',
         onClick: async (evt, { item }) => {
+          updateDataState({
+            [`loading-${item.id}`]: true
+          });
           Toast.showToast({
             title: 'Requesting job',
             type: Toast.TYPE.NORMAL
           });
           const config = await getLatestConfiguration(item.id);
+
           postData(`${apiUrl}/optimize`, optimizerKey.key, {
             workloadGuids: item.document.workloads.map(w => w.guid),
             accountId: selectedAccount.id,
@@ -157,26 +195,10 @@ export default function CollectionList(props) {
         }
       },
       {
-        label: 'Edit Optimization Config',
+        label: 'Edit recommendations config',
         onClick: (evt, { item }) => {
           const nerdlet = {
             id: 'optimization-configuration-nerdlet',
-            urlState: {
-              wlCollectionId: item.id,
-              document: item.document,
-              account: selectedAccount,
-              email
-            }
-          };
-
-          navigation.openStackedNerdlet(nerdlet);
-        }
-      },
-      {
-        label: 'Edit Suggestions Config',
-        onClick: (evt, { item }) => {
-          const nerdlet = {
-            id: 'suggestions-configuration-nerdlet',
             urlState: {
               wlCollectionId: item.id,
               document: item.document,
@@ -220,7 +242,22 @@ export default function CollectionList(props) {
   };
 
   const headers = [
-    { value: ({ item }) => item.document.name, width: '40%', key: 'Name' },
+    { value: ({ item }) => item.document.name, key: 'Name' },
+    {
+      value: ({ item }) => {
+        const lastHistory = item.history?.[0];
+        const cost = lastHistory?.document?.cost || {};
+        const knownAndEstimated = (
+          cost?.known ||
+          0 + cost?.estimated ||
+          0
+        ).toFixed(2);
+
+        return knownAndEstimated;
+      },
+      width: '10%',
+      key: 'Latest cost'
+    },
     {
       value: ({ item }) => item.document.workloads.length,
       width: '10%',
@@ -228,30 +265,23 @@ export default function CollectionList(props) {
     },
     {
       value: ({ item }) => item.document.createdBy,
-      width: '25%',
+      width: '20%',
       key: 'Created By'
     },
     {
       value: ({ item }) => item?.history?.[0]?.document?.startedAt,
       width: '15%',
-      key: 'Last Optimization Request'
+      key: 'Latest Request'
     },
     {
       value: ({ item }) => item?.history?.[0]?.document?.status,
-      key: 'Latest status',
-      alignmentType: TableRowCell.ALIGNMENT_TYPE.RIGHT
+      key: 'Latest status'
+      // alignmentType: TableRowCell.ALIGNMENT_TYPE.RIGHT
     }
   ];
 
   return (
     <>
-      <TextField
-        type={TextField.TYPE.SEARCH}
-        placeholder="Search..."
-        style={{ width: '98.5%', paddingBottom: '5px' }}
-        onChange={e => setSearch(e.target.value)}
-      />
-
       <Table ariaLabel="" items={filteredAccountCollection} multivalue>
         <TableHeader>
           {headers.map((h, i) => (
@@ -278,19 +308,55 @@ export default function CollectionList(props) {
           const startedAtText = lastHistory
             ? new Date(startedAt).toLocaleString()
             : undefined;
+          const timeRange = lastHistory?.document?.timeRange;
+
+          let timeText = '';
+          if (!timeRange && lastHistory?.document?.startedAt) {
+            const start = new Date(lastHistory?.document?.startedAt);
+            const end = new Date(
+              lastHistory?.document?.startedAt - 86400000 * 7
+            );
+            timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+          } else if (timeRange?.duration && lastHistory?.document?.startedAt) {
+            const start = new Date(lastHistory?.document?.startedAt);
+            const end = new Date(
+              lastHistory?.document?.startedAt - timeRange.duration
+            );
+            timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+          } else if (timeRange?.begin_time && timeRange?.end_time) {
+            const end = new Date(timeRange.begin_time);
+            const start = new Date(timeRange.end_time);
+            timeText = `${end.toLocaleDateString()} - ${start.toLocaleDateString()}`;
+          }
 
           const failed =
             startedAt &&
             currentTime - startedAt > 900000 &&
             !lastHistory?.document?.completedAt; // 15m
 
+          const loadingState = dataContext[`loading-${id}`];
+
           const isRunning =
-            lastHistory?.document?.status === 'pending' && !failed;
+            loadingState === true ||
+            (lastHistory?.document?.status === 'pending' && !failed);
 
           const hasResults = (history || []).length > 0;
+
+          const cost = lastHistory?.document?.cost || {};
+          const knownAndEstimated = (
+            cost?.known ||
+            0 + cost?.estimated ||
+            0
+          ).toFixed(2);
+          const costStr = lastHistory?.document?.cost
+            ? `$${numberWithCommas(knownAndEstimated)}`
+            : '-';
+
           return (
             <TableRow actions={actions(hasResults)}>
               <TableRowCell additionalValue={id}>{document.name}</TableRowCell>
+
+              <TableRowCell>{costStr}</TableRowCell>
 
               <TableRowCell>{document.workloads.length}</TableRowCell>
 
@@ -300,14 +366,16 @@ export default function CollectionList(props) {
                 {document.createdBy}
               </TableRowCell>
 
-              <TableRowCell>{startedAtText}</TableRowCell>
+              <TableRowCell additionalValue={timeText}>
+                {startedAtText}
+              </TableRowCell>
 
               {isRunning ? (
-                <TableRowCell style={{ textAlign: 'right' }}>
+                <TableRowCell>
                   <Spinner inline type={Spinner.TYPE.DOT} />
                 </TableRowCell>
               ) : (
-                <TableRowCell style={{ textAlign: 'right' }}>
+                <TableRowCell>
                   {failed ? 'FAILED' : lastHistory?.document?.status}
                 </TableRowCell>
               )}

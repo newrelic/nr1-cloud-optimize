@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import {
-  BlockText,
   Layout,
   LayoutItem,
   CollapsibleLayoutItem,
@@ -17,9 +16,11 @@ import {
 } from 'nr1';
 import DataContext from '../context/data';
 import Loader from '../../shared/components/loader';
-import CollectionList from './collectionList';
+import CollectionList from './collectionView/list';
 import QuickStart from './quickStart';
 import Messages from './messages';
+import CollectionCard from './collectionView/card';
+import CollectionMenuBar from './collectionView/menuBar';
 
 // eslint-disable-next-line no-unused-vars
 export default function Optimizer(props) {
@@ -29,10 +30,17 @@ export default function Optimizer(props) {
     fetchingAccountCollection,
     accountCollection,
     selectedAccount,
-    updateDataState,
-    userConfig
+    userConfig,
+    sortBy,
+    updateDataState
   } = dataContext;
   const [hideQuickStart, setHideQuickStart] = useState(false);
+  // const [collectionView, setCollectionView] = useState('card');
+  const [searchText, setSearch] = useState('');
+
+  const setSortBy = value => {
+    updateDataState({ sortBy: value });
+  };
 
   if (fetchingAccountCollection) {
     return (
@@ -52,7 +60,7 @@ export default function Optimizer(props) {
 
   const renderQuickStart = () => {
     if (!userConfig || hideQuickStart || userConfig.quickstartDismissed) {
-      return <></>;
+      return;
     }
 
     return (
@@ -145,58 +153,16 @@ export default function Optimizer(props) {
                         Switch to stable
                       </Button>
                     </HeadingText>
-                    <BlockText
-                      type={BlockText.TYPE.PARAGRAPH}
-                      style={{ float: 'left', paddingTop: '10px' }}
-                    >
-                      <Button
-                        sizeType={Button.SIZE_TYPE.SMALL}
-                        onClick={() =>
-                          updateDataState({ createCollectionOpen: true })
-                        }
-                        iconType={
-                          Button.ICON_TYPE.DOCUMENTS__DOCUMENTS__NOTES__A_ADD
-                        }
-                      >
-                        Create Collection
-                      </Button>
-                    </BlockText>
+                    <br />
 
-                    <BlockText
-                      type={BlockText.TYPE.PARAGRAPH}
-                      style={{ float: 'right' }}
-                    >
-                      <Button
-                        type={Button.TYPE.PRIMARY}
-                        sizeType={Button.SIZE_TYPE.SMALL}
-                        iconType={Button.ICON_TYPE.INTERFACE__SIGN__EXCLAMATION}
-                        onClick={() =>
-                          window.open(
-                            'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=bug%2C+needs-triage&template=bug_report.md&title=',
-                            '_blank'
-                          )
-                        }
-                      >
-                        New Issue
-                      </Button>
-                      &nbsp;
-                      <Button
-                        type={Button.TYPE.PRIMARY}
-                        sizeType={Button.SIZE_TYPE.SMALL}
-                        iconType={
-                          Button.ICON_TYPE
-                            .PROFILES__EVENTS__FAVORITE__WEIGHT_BOLD
-                        }
-                        onClick={() =>
-                          window.open(
-                            'https://github.com/newrelic/nr1-cloud-optimize/issues/new?assignees=&labels=enhancement%2C+needs-triage&template=enhancement.md&title=',
-                            '_blank'
-                          )
-                        }
-                      >
-                        Feature Request
-                      </Button>
-                    </BlockText>
+                    <CollectionMenuBar
+                      searchText={searchText}
+                      setSearch={setSearch}
+                      // setCollectionView={setCollectionView}
+                      // collectionView={collectionView}
+                      setSortBy={setSortBy}
+                      sortBy={sortBy}
+                    />
                   </CardBody>
                 </Card>
               )}
@@ -204,7 +170,11 @@ export default function Optimizer(props) {
               {accountCollection && accountCollection.length > 0 && (
                 <Card>
                   <CardBody>
-                    <CollectionList />
+                    {userConfig?.collectionView === 'card' ? (
+                      <CollectionCard searchText={searchText} sortBy={sortBy} />
+                    ) : (
+                      <CollectionList searchText={searchText} sortBy={sortBy} />
+                    )}
                   </CardBody>
                 </Card>
               )}

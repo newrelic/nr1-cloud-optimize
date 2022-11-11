@@ -8,7 +8,8 @@ import {
   Checkbox,
   CheckboxGroup,
   TextField,
-  AccountStorageMutation
+  AccountStorageMutation,
+  Toast
 } from 'nr1';
 import DataContext from '../../context/data';
 
@@ -21,9 +22,12 @@ export default function CollectionEdit(props) {
     workloads,
     updateDataState,
     fetchingAccessibleWorkloads,
-    fetchWorkloadCollections,
     editCollectionId,
-    accountCollection
+    accountCollection,
+    optimizerKey,
+    apiUrlDev,
+    apiUrlProd,
+    uuid
   } = dataContext;
 
   const [writingDocument, setWriteState] = useState(false);
@@ -33,6 +37,11 @@ export default function CollectionEdit(props) {
   const filteredWorkloads = workloads.filter(w =>
     w.name.toLowerCase().includes(searchText.toLocaleLowerCase())
   );
+
+  const isLocal =
+    !window.location.href.includes('https://one.newrelic.com') &&
+    !window.location.href.includes('https://one.eu.newrelic.com');
+  const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   useEffect(() => {
     const foundCollection = (accountCollection || []).find(
@@ -49,6 +58,11 @@ export default function CollectionEdit(props) {
 
   const writeDocument = () => {
     setWriteState(true);
+
+    updateDataState({
+      [`loading-${editCollectionId}`]: true
+    });
+
     const filteredWorkloads = workloads
       .filter(w => checkboxValues.includes(w.guid))
       .map(w => ({
@@ -75,8 +89,40 @@ export default function CollectionEdit(props) {
       console.log('updated document', value);
 
       setWriteState(false);
-      fetchWorkloadCollections();
-      updateDataState({ editCollectionOpen: false });
+
+      for (let z = 0; z < accountCollection.length; z++) {
+        if (accountCollection[z].id === editCollectionId) {
+          accountCollection[z].document = document;
+          break;
+        }
+      }
+
+      updateDataState({ editCollectionOpen: false, accountCollection });
+
+      // trigger 7 day analysis
+
+      postData(`${apiUrl}/optimize`, optimizerKey.key, {
+        workloadGuids: document.workloads.map(w => w.guid),
+        accountId: selectedAccount.id,
+        nerdpackUUID: uuid,
+        collectionId: editCollectionId,
+        config: document
+      }).then(data => {
+        if (data?.success) {
+          Toast.showToast({
+            title: 'Job sent successfully',
+            description: 'Processing... can take up to 15m',
+            type: Toast.TYPE.TERTIARY
+          });
+        } else {
+          Toast.showToast({
+            title: 'Job failed to send',
+            description:
+              data?.message || 'Check... console & network logs for errors',
+            type: Toast.TYPE.CRITICAL
+          });
+        }
+      });
     });
   };
 
@@ -140,7 +186,7 @@ export default function CollectionEdit(props) {
         disabled={checkboxValues.length === 0 || !name.trim()}
         onClick={() => writeDocument()}
       >
-        Edit
+        Save
       </Button>
       &nbsp;
       <Button
@@ -151,4 +197,29 @@ export default function CollectionEdit(props) {
       </Button>
     </>
   );
+}
+
+function postData(url = '', key, data = {}) {
+  return new Promise(resolve => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'NR-API-KEY': key,
+        'NR-REGION': (window?.location?.host || '').includes('one.eu.')
+          ? 'EU'
+          : undefined
+      },
+      body: JSON.stringify(data)
+    })
+      .then(async response => {
+        const responseData = await response.json();
+        resolve(responseData);
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        resolve({ success: false, error });
+        resolve();
+      });
+  });
 }
