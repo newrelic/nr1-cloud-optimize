@@ -25,7 +25,7 @@ export default function CostSummary(props) {
         {/* <div style={{ display: 'flex', justifyContent: 'center' }}> */}
         <Stack style={{ paddingBottom: '10px' }}>
           <StackItem>
-            <Tile type={Tile.TYPE[tileType || 'SOLID']}>
+            <Tile type={Tile.TYPE[tileType || 'SOLID']} disabled={!cost?.known}>
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
                 Known Cost&nbsp;{' '}
                 <Popover openOnHover>
@@ -44,7 +44,10 @@ export default function CostSummary(props) {
             </Tile>
           </StackItem>
           <StackItem>
-            <Tile type={Tile.TYPE[tileType || 'SOLID']}>
+            <Tile
+              type={Tile.TYPE[tileType || 'SOLID']}
+              disabled={!cost?.estimated}
+            >
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
                 Estimated Cost&nbsp;{' '}
                 <Popover openOnHover>
@@ -62,7 +65,10 @@ export default function CostSummary(props) {
             </Tile>
           </StackItem>
           <StackItem>
-            <Tile type={Tile.TYPE[tileType || 'SOLID']}>
+            <Tile
+              type={Tile.TYPE[tileType || 'SOLID']}
+              disabled={!cost?.estimated && !cost?.known}
+            >
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
                 Known + Estimated Cost&nbsp;{' '}
                 <Popover openOnHover>
@@ -102,7 +108,10 @@ export default function CostSummary(props) {
             </Tile>
           </StackItem> */}
           <StackItem>
-            <Tile type={Tile.TYPE[tileType || 'SOLID']}>
+            <Tile
+              type={Tile.TYPE[tileType || 'SOLID']}
+              disabled={!cost?.potentialSaving}
+            >
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
                 Potential Saving{' '}
                 <Popover openOnHover>

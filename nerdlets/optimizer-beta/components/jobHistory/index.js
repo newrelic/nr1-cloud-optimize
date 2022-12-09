@@ -11,7 +11,15 @@ export default function JobHistoryModal(props) {
   return (
     <Modal
       hidden={!jobHistoryOpen}
-      onClose={() => updateDataState({ jobHistoryOpen: false })}
+      onClose={() =>
+        updateDataState({
+          jobHistoryOpen: false,
+          jobHistoryFilter: null,
+          jobHistoryFilterName: null,
+          selectedHistory: {},
+          selectedJobs: []
+        })
+      }
     >
       <History />
     </Modal>
