@@ -179,7 +179,13 @@ export default function History(props) {
       &nbsp;
       <Button
         style={{ float: 'right' }}
-        onClick={() => updateDataState({ jobHistoryOpen: false })}
+        onClick={() =>
+          updateDataState({
+            jobHistoryOpen: false,
+            jobHistoryFilter: null,
+            jobHistoryFilterName: null
+          })
+        }
       >
         Close
       </Button>

@@ -491,13 +491,19 @@ export class DataProvider extends Component {
   deleteMultiJobHistory = selected => {
     return new Promise(resolve => {
       this.setState({ deletingJobDocuments: true }, async () => {
-        const deletePromises = selected.map(data =>
-          this.deleteJobHistory(data)
-        );
-        await Promise.all(deletePromises);
-        this.setState({ deletingJobDocuments: false }, () => {
-          this.fetchJobStatus();
-          resolve();
+        const workloadQueue = queue((workload, callback) => {
+          this.deleteJobHistory(workload).then(() => {
+            callback();
+          });
+        }, 5);
+
+        workloadQueue.push(selected);
+
+        workloadQueue.drain(() => {
+          this.setState({ deletingJobDocuments: false }, () => {
+            this.fetchJobStatus();
+            resolve();
+          });
         });
       });
     });

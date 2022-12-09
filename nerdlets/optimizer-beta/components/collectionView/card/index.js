@@ -211,6 +211,17 @@ export default function CollectionCard(props) {
                     Edit recommendations config
                   </DropdownItem>
                   <DropdownItem
+                    onClick={() =>
+                      updateDataState({
+                        jobHistoryOpen: true,
+                        jobHistoryFilter: collection.id,
+                        jobHistoryFilterName: document.name
+                      })
+                    }
+                  >
+                    Manage History
+                  </DropdownItem>
+                  <DropdownItem
                     onClick={() => deleteWorkloadCollection(collection.id)}
                   >
                     Delete config
