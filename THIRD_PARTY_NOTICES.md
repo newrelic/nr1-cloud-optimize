@@ -43,7 +43,7 @@ code, the source code can be found at [https://github.com/newrelic/nr1-cloud-opt
 
 ### async
 
-This product includes source derived from [async](https://github.com/caolan/async) ([v3.2.0](https://github.com/caolan/async/tree/v3.2.0)), distributed under the [MIT License](https://github.com/caolan/async/blob/v3.2.0/LICENSE):
+This product includes source derived from [async](https://github.com/caolan/async) ([v3.2.4](https://github.com/caolan/async/tree/v3.2.4)), distributed under the [MIT License](https://github.com/caolan/async/blob/v3.2.4/LICENSE):
 
 ```
 Copyright (c) 2010-2018 Caolan McMahon
@@ -70,12 +70,12 @@ THE SOFTWARE.
 
 ### graphql-tag
 
-This product includes source derived from [graphql-tag](https://github.com/apollographql/graphql-tag) ([v2.11.0](https://github.com/apollographql/graphql-tag/tree/v2.11.0)), distributed under the [MIT License](https://github.com/apollographql/graphql-tag/blob/v2.11.0/LICENSE):
+This product includes source derived from [graphql-tag](https://github.com/apollographql/graphql-tag) ([v2.12.6](https://github.com/apollographql/graphql-tag/tree/v2.12.6)), distributed under the [MIT License](https://github.com/apollographql/graphql-tag/blob/v2.12.6/LICENSE):
 
 ```
 The MIT License (MIT)
 
-Copyright (c) 2020 Meteor Development Group, Inc.
+Copyright (c) 2021 Apollo Graph, Inc. (Formerly Meteor Development Group, Inc.)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -218,7 +218,7 @@ terms above.
 
 ### prop-types
 
-This product includes source derived from [prop-types](https://github.com/facebook/prop-types) ([v15.7.2](https://github.com/facebook/prop-types/tree/v15.7.2)), distributed under the [MIT License](https://github.com/facebook/prop-types/blob/v15.7.2/LICENSE):
+This product includes source derived from [prop-types](https://github.com/facebook/prop-types) ([v15.8.1](https://github.com/facebook/prop-types/tree/v15.8.1)), distributed under the [MIT License](https://github.com/facebook/prop-types/blob/v15.8.1/LICENSE):
 
 ```
 MIT License
@@ -275,7 +275,7 @@ SOFTWARE.
 
 ### react-modal
 
-This product includes source derived from [react-modal](https://github.com/reactjs/react-modal) ([v3.14.4](https://github.com/reactjs/react-modal/tree/v3.14.4)), distributed under the [MIT License](https://github.com/reactjs/react-modal/blob/v3.14.4/LICENSE):
+This product includes source derived from [react-modal](https://github.com/reactjs/react-modal) ([v3.15.1](https://github.com/reactjs/react-modal/tree/v3.15.1)), distributed under the [MIT License](https://github.com/reactjs/react-modal/blob/v3.15.1/LICENSE):
 
 ```
 Copyright (c) 2017 Ryan Florence
@@ -375,7 +375,7 @@ SOFTWARE.
 
 ### semver
 
-This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.5](https://github.com/npm/node-semver/tree/v7.3.5)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.5/LICENSE):
+This product includes source derived from [semver](https://github.com/npm/node-semver) ([v7.3.7](https://github.com/npm/node-semver/tree/v7.3.7)), distributed under the [ISC License](https://github.com/npm/node-semver/blob/v7.3.7/LICENSE):
 
 ```
 The ISC License
@@ -656,7 +656,7 @@ SOFTWARE.
 
 ### @semantic-release/git
 
-This product includes source derived from [@semantic-release/git](https://github.com/semantic-release/git) ([v9.0.0](https://github.com/semantic-release/git/tree/v9.0.0)), distributed under the [MIT License](https://github.com/semantic-release/git/blob/v9.0.0/LICENSE):
+This product includes source derived from [@semantic-release/git](https://github.com/semantic-release/git) ([v9.0.1](https://github.com/semantic-release/git/tree/v9.0.1)), distributed under the [MIT License](https://github.com/semantic-release/git/blob/v9.0.1/LICENSE):
 
 ```
 MIT License
