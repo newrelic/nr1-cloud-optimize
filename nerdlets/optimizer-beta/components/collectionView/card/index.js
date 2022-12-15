@@ -437,7 +437,7 @@ export default function CollectionCard(props) {
                   type={Button.TYPE.PRIMARY}
                   onClick={() => {
                     const nerdlet = {
-                      id: 'results-nerdlet',
+                      id: 'results-nerdlet-beta',
                       urlState: {
                         wlCollectionId: collection.id,
                         ...collection.document,
