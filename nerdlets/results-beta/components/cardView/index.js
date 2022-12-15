@@ -1,3 +1,4 @@
+/* eslint-disable */ // REMOVE THIS FOR LATER
 import React, { useContext } from 'react';
 import { Button, Icon } from 'nr1';
 import { numberWithCommas } from '../../../shared/utils';
