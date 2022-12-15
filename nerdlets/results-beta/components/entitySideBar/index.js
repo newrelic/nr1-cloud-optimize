@@ -64,12 +64,22 @@ export default function EntitySideBar(props) {
                 <table>
                   {Object.keys(additionalFields).map(field => {
                     const { key, value } = additionalFields[field];
+
+                    const fieldValue = value({ item: entitySideBarOpen });
+
+                    const style =
+                      fieldValue &&
+                      (key.includes('Sav') || key.includes('Optimized'))
+                        ? {
+                            border: '1px solid #0B6ACB',
+                            backgroundColor: '#F6FAFD'
+                          }
+                        : {};
+
                     return (
-                      <tr key={field.key}>
+                      <tr key={field.key} style={style}>
                         <td style={{ fontWeight: 'bold' }}>{key}</td>
-                        <td style={{ textAlign: 'right' }}>
-                          {value({ item: entitySideBarOpen })}
-                        </td>
+                        <td style={{ textAlign: 'right' }}>{fieldValue}</td>
                       </tr>
                     );
                   })}

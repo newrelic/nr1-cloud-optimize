@@ -111,6 +111,10 @@ export default function CostSummary(props) {
             <Tile
               type={Tile.TYPE[tileType || 'SOLID']}
               disabled={!cost?.potentialSaving}
+              style={{
+                border: '1px solid #0B6ACB',
+                backgroundColor: '#F6FAFD'
+              }}
             >
               <HeadingText type={HeadingText.TYPE.HEADING_6}>
                 Potential Saving{' '}

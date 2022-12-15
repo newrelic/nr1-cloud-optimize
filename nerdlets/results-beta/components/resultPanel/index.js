@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useSetState } from '@mantine/hooks';
 import {
   SectionMessage,
   Button,
@@ -29,6 +30,7 @@ export default function ResultsPanel(props) {
   } = dataContext;
   // eslint-disable-next-line
   const [view, setView] = useState('cost');
+  const [state, setState] = useSetState({});
 
   if (fetchingWorkloadData) {
     return (
@@ -150,7 +152,13 @@ export default function ResultsPanel(props) {
                   return (
                     <StackItem key={wl} grow style={{ width: '99%' }}>
                       <React.Fragment key={wl}>
-                        <Card collapsible defaultCollapsed>
+                        <Card
+                          collapsible
+                          defaultCollapsed
+                          onChange={(e, collapsed) =>
+                            setState({ [wl]: collapsed })
+                          }
+                        >
                           <CardHeader
                             style={{
                               fontSize: '16px',
@@ -175,7 +183,7 @@ export default function ResultsPanel(props) {
                               <div style={{ float: 'left' }}>
                                 <CostSummary cost={wlCost} />
                               </div>
-                              <CostBar />
+                              {state[wl] === false && <CostBar />}
                             </div>
                             <br />
                           </CardHeader>
