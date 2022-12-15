@@ -1,31 +1,31 @@
 {
-  "lastUpdated": "Mon Apr 25 2022 07:39:34 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Fri Dec 09 2022 03:31:33 GMT+0000 (Coordinated Universal Time)",
   "projectName": "nr1-cloud-optimize",
   "projectUrl": "https://github.com/newrelic/nr1-cloud-optimize",
-  "includeDev": true,
   "includeOptDeps": false,
+  "includeDev": true,
   "dependencies": {
-    "async@3.2.0": {
+    "async@3.2.4": {
       "name": "async",
-      "version": "3.2.0",
+      "version": "3.2.4",
       "range": "^3.2.0",
       "licenses": "MIT",
       "repoUrl": "https://github.com/caolan/async",
-      "versionedRepoUrl": "https://github.com/caolan/async/tree/v3.2.0",
+      "versionedRepoUrl": "https://github.com/caolan/async/tree/v3.2.4",
       "licenseFile": "node_modules/async/LICENSE",
-      "licenseUrl": "https://github.com/caolan/async/blob/v3.2.0/LICENSE",
+      "licenseUrl": "https://github.com/caolan/async/blob/v3.2.4/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Caolan McMahon"
     },
-    "graphql-tag@2.11.0": {
+    "graphql-tag@2.12.6": {
       "name": "graphql-tag",
-      "version": "2.11.0",
+      "version": "2.12.6",
       "range": "^2.10.4",
       "licenses": "MIT",
       "repoUrl": "https://github.com/apollographql/graphql-tag",
-      "versionedRepoUrl": "https://github.com/apollographql/graphql-tag/tree/v2.11.0",
+      "versionedRepoUrl": "https://github.com/apollographql/graphql-tag/tree/v2.12.6",
       "licenseFile": "node_modules/graphql-tag/LICENSE",
-      "licenseUrl": "https://github.com/apollographql/graphql-tag/blob/v2.11.0/LICENSE",
+      "licenseUrl": "https://github.com/apollographql/graphql-tag/blob/v2.12.6/LICENSE",
       "licenseTextSource": "file"
     },
     "graphql@14.7.0": {
@@ -64,15 +64,15 @@
       "publisher": "John-David Dalton",
       "email": "john.david.dalton@gmail.com"
     },
-    "prop-types@15.7.2": {
+    "prop-types@15.8.1": {
       "name": "prop-types",
-      "version": "15.7.2",
+      "version": "15.8.1",
       "range": "^15.6.2",
       "licenses": "MIT",
       "repoUrl": "https://github.com/facebook/prop-types",
-      "versionedRepoUrl": "https://github.com/facebook/prop-types/tree/v15.7.2",
+      "versionedRepoUrl": "https://github.com/facebook/prop-types/tree/v15.8.1",
       "licenseFile": "node_modules/prop-types/LICENSE",
-      "licenseUrl": "https://github.com/facebook/prop-types/blob/v15.7.2/LICENSE",
+      "licenseUrl": "https://github.com/facebook/prop-types/blob/v15.8.1/LICENSE",
       "licenseTextSource": "file"
     },
     "react-json-to-csv@1.0.4": {
@@ -89,15 +89,15 @@
       "email": "coston.perkins@ua.edu",
       "url": "https://coston.io"
     },
-    "react-modal@3.14.4": {
+    "react-modal@3.15.1": {
       "name": "react-modal",
-      "version": "3.14.4",
+      "version": "3.15.1",
       "range": "^3.14.4",
       "licenses": "MIT",
       "repoUrl": "https://github.com/reactjs/react-modal",
-      "versionedRepoUrl": "https://github.com/reactjs/react-modal/tree/v3.14.4",
+      "versionedRepoUrl": "https://github.com/reactjs/react-modal/tree/v3.15.1",
       "licenseFile": "node_modules/react-modal/LICENSE",
-      "licenseUrl": "https://github.com/reactjs/react-modal/blob/v3.14.4/LICENSE",
+      "licenseUrl": "https://github.com/reactjs/react-modal/blob/v3.15.1/LICENSE",
       "licenseTextSource": "file"
     },
     "react-select@3.2.0": {
@@ -139,16 +139,17 @@
       "publisher": "Levi Thomason",
       "email": "me@levithomason.com"
     },
-    "semver@7.3.5": {
+    "semver@7.3.7": {
       "name": "semver",
-      "version": "7.3.5",
+      "version": "7.3.7",
       "range": "^7.3.4",
       "licenses": "ISC",
       "repoUrl": "https://github.com/npm/node-semver",
-      "versionedRepoUrl": "https://github.com/npm/node-semver/tree/v7.3.5",
+      "versionedRepoUrl": "https://github.com/npm/node-semver/tree/v7.3.7",
       "licenseFile": "node_modules/semver/LICENSE",
-      "licenseUrl": "https://github.com/npm/node-semver/blob/v7.3.5/LICENSE",
-      "licenseTextSource": "file"
+      "licenseUrl": "https://github.com/npm/node-semver/blob/v7.3.7/LICENSE",
+      "licenseTextSource": "file",
+      "publisher": "GitHub Inc."
     },
     "uuid@8.3.2": {
       "name": "uuid",
@@ -188,15 +189,15 @@
       "publisher": "Pierre Vanduynslager",
       "url": "https://github.com/pvdlg"
     },
-    "@semantic-release/git@9.0.0": {
+    "@semantic-release/git@9.0.1": {
       "name": "@semantic-release/git",
-      "version": "9.0.0",
+      "version": "9.0.1",
       "range": "^9.0.0",
       "licenses": "MIT",
       "repoUrl": "https://github.com/semantic-release/git",
-      "versionedRepoUrl": "https://github.com/semantic-release/git/tree/v9.0.0",
+      "versionedRepoUrl": "https://github.com/semantic-release/git/tree/v9.0.1",
       "licenseFile": "node_modules/@semantic-release/git/LICENSE",
-      "licenseUrl": "https://github.com/semantic-release/git/blob/v9.0.0/LICENSE",
+      "licenseUrl": "https://github.com/semantic-release/git/blob/v9.0.1/LICENSE",
       "licenseTextSource": "file",
       "publisher": "Pierre Vanduynslager",
       "url": "https://github.com/pvdlg"

@@ -1,3 +1,10 @@
+# [3.33.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.32.0...v3.33.0) (2022-12-09)
+
+
+### Features
+
+* update manage history ([#146](https://github.com/newrelic/nr1-cloud-optimize/issues/146)) ([5c9dbd1](https://github.com/newrelic/nr1-cloud-optimize/commit/5c9dbd123289db2b1036dd2e437c909c07c805a9))
+
 # [3.32.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.31.0...v3.32.0) (2022-11-11)
 
 
