@@ -1,3 +1,10 @@
+# [3.34.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.33.0...v3.34.0) (2022-12-16)
+
+
+### Features
+
+* results table refresh ([#148](https://github.com/newrelic/nr1-cloud-optimize/issues/148)) ([a2d44fd](https://github.com/newrelic/nr1-cloud-optimize/commit/a2d44fd0d9d3f95e1400a5885887a3ce92e83049))
+
 # [3.33.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.32.0...v3.33.0) (2022-12-09)
 
 
