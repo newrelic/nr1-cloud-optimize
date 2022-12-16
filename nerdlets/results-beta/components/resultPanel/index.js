@@ -26,7 +26,8 @@ export default function ResultsPanel(props) {
     workloadData,
     costSummary,
     fetchingWorkloadData,
-    entitySideBarOpen
+    entitySideBarOpen,
+    updateDataState
   } = dataContext;
   // eslint-disable-next-line
   const [view, setView] = useState('cost');
@@ -155,9 +156,10 @@ export default function ResultsPanel(props) {
                         <Card
                           collapsible
                           defaultCollapsed
-                          onChange={(e, collapsed) =>
-                            setState({ [wl]: collapsed })
-                          }
+                          onChange={(e, collapsed) => {
+                            setState({ [wl]: collapsed });
+                            updateDataState({ entitySideBarOpen: null });
+                          }}
                         >
                           <CardHeader
                             style={{
