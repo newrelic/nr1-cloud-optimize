@@ -1,8 +1,8 @@
 [
   {
-    "title":"Announcing the updated Collections Listing",
-    "messages":[
-      "New Relic Labs is happy to announce the release of the updated Collections listing, which lets you choose between the existing table layout, or a Card-based grid view that surfaces key Collection attributes and actions more prominently. We have also added some additional ways to connect with us, and collected them all under Help in the top right corner of the window. Check it all out in the Beta view!",
+    "title": "Announcing the updated Results Page",
+    "messages": [
+      "New Relic Labs is happy to announce the release of the updated Results listing, updated with a streamlined layout that emphasizes cost impact. Check it out in the Beta view!",
       "More details on this release are available in the discussions thread: https://github.com/newrelic/nr1-cloud-optimize/discussions/127"
     ]
   }
