@@ -1,10 +1,23 @@
 {
-  "lastUpdated": "Fri Dec 09 2022 03:31:33 GMT+0000 (Coordinated Universal Time)",
+  "lastUpdated": "Fri Dec 16 2022 15:41:42 GMT+0000 (Coordinated Universal Time)",
   "projectName": "nr1-cloud-optimize",
   "projectUrl": "https://github.com/newrelic/nr1-cloud-optimize",
   "includeOptDeps": false,
   "includeDev": true,
   "dependencies": {
+    "@mantine/hooks@5.9.4": {
+      "name": "@mantine/hooks",
+      "version": "5.9.4",
+      "range": "^5.9.4",
+      "licenses": "MIT",
+      "repoUrl": "https://github.com/mantinedev/mantine",
+      "versionedRepoUrl": "https://github.com/mantinedev/mantine/tree/v5.9.4",
+      "licenseFile": "node_modules/@mantine/hooks/README.md",
+      "licenseUrl": "https://github.com/mantinedev/mantine/blob/v5.9.4/README.md",
+      "licenseTextSource": "spdx",
+      "publisher": "Vitaly Rtishchev",
+      "email": "rtivital@gmail.com"
+    },
     "async@3.2.4": {
       "name": "async",
       "version": "3.2.4",
