@@ -25,10 +25,11 @@ export default function EntitySideBar(props) {
             position: 'fixed',
             height: '100%',
             width,
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            borderRadius: '4px'
           }}
         >
-          <Card style={{ marginRight: '15px' }}>
+          <Card style={{ marginRight: '15px', borderRadius: '4px' }}>
             <CardHeader>
               {guid && (
                 <Button
