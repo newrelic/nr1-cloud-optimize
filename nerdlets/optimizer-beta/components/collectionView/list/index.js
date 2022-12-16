@@ -217,7 +217,7 @@ export default function CollectionList(props) {
         label: 'Results',
         onClick: (evt, { item }) => {
           const nerdlet = {
-            id: 'results-nerdlet',
+            id: 'results-nerdlet-beta',
             urlState: {
               wlCollectionId: item.id,
               ...item.document,

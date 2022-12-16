@@ -20,6 +20,7 @@
     "email": "opensource@newrelic.com"
   },
   "dependencies": {
+    "@mantine/hooks": "^5.9.4",
     "async": "^3.2.0",
     "graphql": "^14.7.0",
     "graphql-tag": "^2.10.4",
