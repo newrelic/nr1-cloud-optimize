@@ -105,7 +105,7 @@ export default function ResultsPanel(props) {
       )}
       {view === 'cost' && (
         <>
-          <StackItem grow style={{ width: '99%', paddingTop: '5px' }}>
+          <StackItem grow style={{ width: '99%', paddingTop: '15px' }}>
             <Card>
               <CardBody>
                 <div>
@@ -228,7 +228,11 @@ export default function ResultsPanel(props) {
             {entitySideBarOpen && (
               <LayoutItem
                 type={LayoutItem.TYPE.SPLIT_RIGHT}
-                style={{ backgroundColor: 'white', marginRight: '15px' }}
+                style={{
+                  backgroundColor: 'white',
+                  marginRight: '20px',
+                  borderRadius: '4px'
+                }}
                 sizeType={LayoutItem.SIZE_TYPE.MEDIUM}
               >
                 <EntitySideBar />

@@ -68,18 +68,35 @@ export default function EntitySideBar(props) {
                     const fieldValue = value({ item: entitySideBarOpen });
 
                     const style =
-                      fieldValue &&
-                      (key.includes('Sav') || key.includes('Optimized'))
+                      fieldValue && key.includes('Sav')
                         ? {
-                            border: '1px solid #0B6ACB',
+                            // border: '1px solid #0B6ACB',
                             backgroundColor: '#F6FAFD'
                           }
                         : {};
 
                     return (
-                      <tr key={field.key} style={style}>
-                        <td style={{ fontWeight: 'bold' }}>{key}</td>
-                        <td style={{ textAlign: 'right' }}>{fieldValue}</td>
+                      <tr key={field.key}>
+                        <td
+                          style={{
+                            fontWeight: 'bold',
+                            borderRadius: '10px 0 0 10px',
+                            borderRight: '0px',
+                            ...style
+                          }}
+                        >
+                          {key}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: 'right',
+                            borderRadius: '0 10px 10px 0',
+                            borderLeft: '0px',
+                            ...style
+                          }}
+                        >
+                          {fieldValue}
+                        </td>
                       </tr>
                     );
                   })}
