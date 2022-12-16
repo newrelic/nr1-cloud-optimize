@@ -1,3 +1,10 @@
+# [3.35.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.34.0...v3.35.0) (2022-12-16)
+
+
+### Features
+
+* close sidebar on workload collapse ([05c3864](https://github.com/newrelic/nr1-cloud-optimize/commit/05c386459ffaa5588a64ee99560762646bc6ad9d))
+
 # [3.34.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.33.0...v3.34.0) (2022-12-16)
 
 
