@@ -10,7 +10,8 @@ import {
   Checkbox,
   CheckboxGroup,
   TextField,
-  AccountStorageMutation
+  AccountStorageMutation,
+  Toast
 } from 'nr1';
 import DataContext from '../../context/data';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,8 +26,17 @@ export default function CollectionCreateModal(props) {
     workloads,
     updateDataState,
     fetchingAccessibleWorkloads,
-    fetchWorkloadCollections
+    fetchWorkloadCollections,
+    optimizerKey,
+    apiUrlDev,
+    apiUrlProd,
+    uuid
   } = dataContext;
+
+  const isLocal =
+    !window.location.href.includes('https://one.newrelic.com') &&
+    !window.location.href.includes('https://one.eu.newrelic.com');
+  const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const [writingDocument, setWriteState] = useState(false);
   const [name, setName] = useState('');
@@ -53,20 +63,45 @@ export default function CollectionCreateModal(props) {
       lastEditedBy: email
     };
 
+    const documentId = uuidv4();
+
     AccountStorageMutation.mutate({
       accountId: selectedAccount.id,
       actionType: AccountStorageMutation.ACTION_TYPE.WRITE_DOCUMENT,
       collection: 'workloadCollections',
-      documentId: uuidv4(),
+      documentId,
       document
-    }).then(value => {
+    }).then(config => {
       // eslint-disable-next-line no-console
-      console.log('wrote document', value);
+      console.log('wrote document', config);
 
       setWriteState(false);
       fetchWorkloadCollections();
       setCheckBoxValues([]);
       updateDataState({ createCollectionOpen: false });
+
+      postData(`${apiUrl}/optimize`, optimizerKey.key, {
+        workloadGuids: document.workloads.map(w => w.guid),
+        accountId: selectedAccount.id,
+        nerdpackUUID: uuid,
+        collectionId: documentId,
+        config
+      }).then(data => {
+        if (data?.success) {
+          Toast.showToast({
+            title: 'Job sent successfully',
+            description: 'Processing... can take up to 15m',
+            type: Toast.TYPE.NORMAL
+          });
+        } else {
+          Toast.showToast({
+            title: 'Job failed to send',
+            description:
+              data?.message || 'Check... console & network logs for errors',
+            type: Toast.TYPE.CRITICAL
+          });
+        }
+      });
     });
   };
 
@@ -157,4 +192,29 @@ export default function CollectionCreateModal(props) {
       </div>
     </Modal>
   );
+}
+
+function postData(url = '', key, data = {}) {
+  return new Promise(resolve => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'NR-API-KEY': key,
+        'NR-REGION': (window?.location?.host || '').includes('.eu.')
+          ? 'EU'
+          : undefined
+      },
+      body: JSON.stringify(data)
+    })
+      .then(async response => {
+        const responseData = await response.json();
+        resolve(responseData);
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        resolve({ success: false, error });
+        resolve();
+      });
+  });
 }
