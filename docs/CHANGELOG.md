@@ -1,3 +1,10 @@
+# [3.36.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.35.0...v3.36.0) (2022-12-19)
+
+
+### Features
+
+* analyze on create ([#149](https://github.com/newrelic/nr1-cloud-optimize/issues/149)) ([2cd41f6](https://github.com/newrelic/nr1-cloud-optimize/commit/2cd41f64e9118a7124dbca0e4487a5ed688d0625))
+
 # [3.35.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.34.0...v3.35.0) (2022-12-16)
 
 
