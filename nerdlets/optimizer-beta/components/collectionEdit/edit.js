@@ -34,6 +34,7 @@ export default function CollectionEdit(props) {
   const [name, setName] = useState('');
   const [searchText, setSearch] = useState('');
   const [checkboxValues, setCheckBoxValues] = useState([]);
+  const [originalCheckboxValues, setOriginalCheckBoxValues] = useState([]);
   const filteredWorkloads = workloads.filter(w =>
     w.name.toLowerCase().includes(searchText.toLocaleLowerCase())
   );
@@ -53,6 +54,7 @@ export default function CollectionEdit(props) {
       const values = document.workloads.map(w => w.guid);
       setName(document.name);
       setCheckBoxValues(values);
+      setOriginalCheckBoxValues(values);
     }
   }, [editCollectionId]);
 
@@ -99,30 +101,31 @@ export default function CollectionEdit(props) {
 
       updateDataState({ editCollectionOpen: false, accountCollection });
 
-      // trigger 7 day analysis
-
-      postData(`${apiUrl}/optimize`, optimizerKey.key, {
-        workloadGuids: document.workloads.map(w => w.guid),
-        accountId: selectedAccount.id,
-        nerdpackUUID: uuid,
-        collectionId: editCollectionId,
-        config: document
-      }).then(data => {
-        if (data?.success) {
-          Toast.showToast({
-            title: 'Job sent successfully',
-            description: 'Processing... can take up to 15m',
-            type: Toast.TYPE.TERTIARY
-          });
-        } else {
-          Toast.showToast({
-            title: 'Job failed to send',
-            description:
-              data?.message || 'Check... console & network logs for errors',
-            type: Toast.TYPE.CRITICAL
-          });
-        }
-      });
+      // trigger 7 day analysis only if workloads change
+      if (originalCheckboxValues.length !== checkboxValues.length) {
+        postData(`${apiUrl}/optimize`, optimizerKey.key, {
+          workloadGuids: document.workloads.map(w => w.guid),
+          accountId: selectedAccount.id,
+          nerdpackUUID: uuid,
+          collectionId: editCollectionId,
+          config: document
+        }).then(data => {
+          if (data?.success) {
+            Toast.showToast({
+              title: 'Job sent successfully',
+              description: 'Processing... can take up to 15m',
+              type: Toast.TYPE.TERTIARY
+            });
+          } else {
+            Toast.showToast({
+              title: 'Job failed to send',
+              description:
+                data?.message || 'Check... console & network logs for errors',
+              type: Toast.TYPE.CRITICAL
+            });
+          }
+        });
+      }
     });
   };
 
