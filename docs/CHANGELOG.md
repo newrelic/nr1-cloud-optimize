@@ -1,3 +1,10 @@
+# [3.37.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.36.0...v3.37.0) (2022-12-20)
+
+
+### Features
+
+* do not trigger analysis on name update [#143](https://github.com/newrelic/nr1-cloud-optimize/issues/143) ([547ec9e](https://github.com/newrelic/nr1-cloud-optimize/commit/547ec9ed99bc40aedd769ad8ca3ce97b156db60e))
+
 # [3.36.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.35.0...v3.36.0) (2022-12-19)
 
 
