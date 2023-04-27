@@ -351,6 +351,8 @@ exports.run = (
               if (cloud === 'google') {
                 const regionSplit = region.split('-');
                 adjustedRegion = `${regionSplit[0]}-${regionSplit[1]}`;
+              } else if (cloud === 'azure') {
+                adjustedRegion = region.toLowerCase();
               }
 
               return fetchPricing(
@@ -429,6 +431,16 @@ exports.run = (
                 for (let z = 0; z < cloudPrices.length; z++) {
                   if (selectedType && cloudPrices[z].type === selectedType) {
                     e.matches.exact.push(simplifyProduct(cloudPrices[z]));
+                  } else if (selectedType && e.cloud === 'azure') {
+                    const { tier, instanceName } = cloudPrices[z].attributes;
+                    if (
+                      selectedType.toLowerCase() ===
+                      `${tier}_${instanceName
+                        .replaceAll(' ', '_')
+                        .toLowerCase()}`
+                    ) {
+                      e.matches.exact.push(simplifyProduct(cloudPrices[z]));
+                    }
                   }
                 }
               }

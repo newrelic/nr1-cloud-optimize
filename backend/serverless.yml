@@ -2,7 +2,7 @@ service: ${file(./package.json):name}
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   memorySize: 256
   region: us-east-1
   stage: ${opt:stage, 'dev'}

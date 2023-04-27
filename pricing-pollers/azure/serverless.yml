@@ -1,0 +1,22 @@
+service: cloud-optimize-pricing-azure
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:List*"
+        - "s3:Get*"
+        - "s3:PutObject*"
+      Resource: "arn:aws:s3:::nr1-cloud-optimize*"
+
+functions:
+  vm:
+    name: cloud-optimize-vm-pricing-collector
+    memorySize: 2560
+    timeout: 180
+    handler: vm.handler
+    events:
+      - schedule: rate(12 hours)
