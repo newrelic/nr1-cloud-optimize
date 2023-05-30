@@ -28,11 +28,11 @@ It shows cost and performance metrics per service so you can understand the pote
 
 ###  Service support
 
-| AWS              | Azure     | GCP    | Alibaba Cloud | Other          | 
-| ---------------- | --------- | ------ | ------------- | -------------  |
-| EC2              | VMS       | VMS    | ECS           | K8s            |
-| RDS              |           |        |               |                |
-| APIGATEWAY       |           |        |               |                |
+| AWS              | Azure     | GCP    | Other          | 
+| ---------------- | --------- | ------ | -------------  |
+| EC2              | VMS       | VMS    | K8s            |
+| RDS              |           |        |                |
+| APIGATEWAY       |           |        |                |
 | ALB
 | ELB
 | SQS
