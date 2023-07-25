@@ -41,7 +41,7 @@ It shows cost and performance metrics per service so you can understand the pote
 | LAMBDA
 
 ### Contributing and improving
-We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think off. Please raise an issue with as much detail as possible.
+We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think of. Please raise an issue with as much detail as possible.
 
 ### Screenshots
 
@@ -110,7 +110,7 @@ Visit [https://one.newrelic.com](https://one.newrelic.com), navigate to the Nerd
 
 New Relic hosts and moderates an online forum where you can interact with New Relic employees as well as other customers to get help and share best practices. Like all New Relic open source community projects, there's a related topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
 
-[https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936](https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936)
+https://discuss.newrelic.com/t/cloud-optimizer-nerdpack/82936
 
 Please do not report issues with Optimizer to New Relic Global Technical Support. Instead, visit the [`Explorers Hub`](https://discuss.newrelic.com/c/build-on-new-relic) for troubleshooting and best-practices.
 
@@ -125,6 +125,6 @@ If you believe you have found a security vulnerability in this project or any of
 
 ## Contributing
 
-Contributions are welcome (and if you submit a Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](./CONTRIBUTING.md).
+Contributions are welcome (and if you submit an Enhancement Request, expect to be invited to contribute it yourself :grin:). Please review our [Contributors Guide](./CONTRIBUTING.md).
 
 Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. If you'd like to execute our corporate CLA, or if you have any questions, please drop us an email at opensource@newrelic.com.
