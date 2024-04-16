@@ -13,7 +13,7 @@
     "async": "^3.2.3",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
-    "node-fetch": "^3.2.1",
+    "node-fetch": "^3.2.10",
     "pino": "^7.8.0",
     "uuid": "^8.3.2"
   }
