@@ -1,3 +1,10 @@
+# [3.39.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.38.0...v3.39.0) (2023-04-27)
+
+
+### Features
+
+* add azure pricing poller ([9da503c](https://github.com/newrelic/nr1-cloud-optimize/commit/9da503c00d9ea61c23157a448eb6379b00e5a7dc))
+
 # [3.38.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.37.0...v3.38.0) (2023-01-24)
 
 
