@@ -10,35 +10,29 @@ This application is maintained by the New Relic Labs team. Connect with us direc
 
 ## Usage
 
-This application analyzes your environment using various integrations eg. Cloud Integrations, Infrastructure Agent, Kubernetes etc.
-It shows cost and performance metrics per service so you can understand the potential impact to your environment as well as utilize the cost optimization suggestions.
+This application offers comprehensive analysis of your environment through various integrations, such as Cloud Integrations, Infrastructure Agents, Kubernetes, and more. It provides detailed cost and performance metrics for each service, allowing you to gauge potential impacts on your environment and benefit from cost optimization suggestions.
 
 ### Features
-- Historical Tracking
-  - Compare & analysis before and after or against major events eg. Black friday
 
-- Time range support
-  - Isolate costs during specific periods
+- **Historical Tracking**: Enables comparison and analysis of data before and after major events, such as Black Friday.
+  
+- **Time Range Support**: Allows isolation of costs during specific time periods.
 
-- Tag filtering
-  - Isolate costs during specific periods
+- **Tag Filtering**: Supports isolating costs by specific tags for more precise analysis.
 
-- Tuneable suggestions system (beta)
-  - Provide high level insights and recommendations to teams
+- **Tuneable Suggestions System (Beta)**: Provides high-level insights and recommendations, aiding teams in decision-making.
 
-###  Service support
+### Service Support
 
-| AWS              | Azure     | GCP    | Other          | 
-| ---------------- | --------- | ------ | -------------  |
-| EC2              | VMS       | VMS    | K8s            |
-| RDS              |           |        |                |
-| APIGATEWAY       |           |        |                |
-| ALB
-| ELB
-| SQS
-| ELASTICSEARCH
-| ELASTICACHE
-| LAMBDA
+The following table outlines the services supported by the application across different cloud platforms:
+
+| Cloud Provider | Supported Services         |
+| -------------- | -------------------------- |
+| AWS            | EC2, RDS, API Gateway, ALB, ELB, SQS, Elasticsearch, ElastiCache, Lambda |
+| Azure          | VMs                        |
+| GCP            | VMs                        |
+| Other          | Kubernetes (K8s)           |
+
 
 ### Contributing and improving
 We are open to all suggestions that will help to improve the analysis, suggestions, services and any other capability you can think off. Please raise an issue with as much detail as possible.
@@ -88,21 +82,16 @@ nr1 nerdpack:serve
 
 Visit [https://one.newrelic.com/?nerdpacks=local](https://one.newrelic.com/?nerdpacks=local), navigate to the Nerdpack, and :sparkles:
 
-## Deploying this Nerdpack
+# Enabling this Nerdpack <a id="enable"></a>
 
-Open a command prompt in the nerdpack's directory and run the following commands.
+This pack of visualizations is available via the New Relic Catalog. 
 
-```bash
-# To create a new uuid for the nerdpack so that you can deploy it to your account:
-# nr1 nerdpack:uuid -g [--profile=your_profile_name]
+To enable it in your account, go to `Add Data > Apps and Visualzations` and search for "Labs Widget Pack". Click the icon and subscribe this to your accounts.
 
-# To see a list of API keys / profiles available in your development environment:
-# nr1 profiles:list
+Once subscribed you can browse to `Apps -> Custom Visualizations` to [add any of the widgets to a dashboard](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/add-custom-visualizations-your-dashboards/).
 
-nr1 nerdpack:publish [--profile=your_profile_name]
-nr1 nerdpack:deploy [-c [DEV|BETA|STABLE]] [--profile=your_profile_name]
-nr1 nerdpack:subscribe [-c [DEV|BETA|STABLE]] [--profile=your_profile_name]
-```
+#### Manual Deployment
+If you need to customize the widgets in this pack, you can fork the code base and follow the instructions on how to [Customize a Nerdpack](https://developer.newrelic.com/build-apps/customize-nerdpack). If you have a change you feel everyone can benefit from, [please submit a PR](#contrib)!
 
 Visit [https://one.newrelic.com](https://one.newrelic.com), navigate to the Nerdpack, and :sparkles:
 
