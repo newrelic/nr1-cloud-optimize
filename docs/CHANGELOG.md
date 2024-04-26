@@ -1,3 +1,10 @@
+# [3.41.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.40.0...v3.41.0) (2024-04-26)
+
+
+### Features
+
+* update docs ([ee84f2e](https://github.com/newrelic/nr1-cloud-optimize/commit/ee84f2ea92cc5668b75539a76a357118ffbb76d8))
+
 # [3.40.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.39.0...v3.40.0) (2024-04-16)
 
 
