@@ -48,7 +48,8 @@ const defaultAllowedTags = [
   'tags.ecs-cluster'
 ];
 
-exports.BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
+exports.BASE_URL =
+  'https://nr1-cloud-optimize-v2.s3.ap-southeast-2.amazonaws.com';
 
 exports.batchEntityQuery = (key, query, entities, config, nerdGraphUrl) => {
   return new Promise(resolve => {

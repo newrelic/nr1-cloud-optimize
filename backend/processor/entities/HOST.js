@@ -9,7 +9,8 @@ const {
   nrqlQuery
 } = require('./utils');
 
-const BASE_URL = 'https://nr1-cloud-optimize.s3.ap-southeast-2.amazonaws.com';
+const BASE_URL =
+  'https://nr1-cloud-optimize-v2.s3.ap-southeast-2.amazonaws.com';
 
 const SystemSampleQuery = `FROM SystemSample SELECT \
                                       latest(timestamp), latest(provider.instanceLifecycle), \

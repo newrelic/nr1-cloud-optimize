@@ -41,7 +41,7 @@ export class DataProvider extends Component {
     super(props);
 
     this.state = {
-      apiUrl: 'https://8qb8qau9g0.execute-api.us-east-1.amazonaws.com/dev',
+      apiUrl: 'https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/dev',
       fetchingJobStatus: false,
       fetchingWorkloadData: false,
       jobStatus: [],

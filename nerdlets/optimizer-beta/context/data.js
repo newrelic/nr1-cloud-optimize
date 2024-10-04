@@ -41,9 +41,8 @@ export class DataProvider extends Component {
     super(props);
 
     this.state = {
-      apiUrlProd:
-        'https://we3ei0yh76.execute-api.us-east-1.amazonaws.com/prod/',
-      apiUrlDev: 'https://8qb8qau9g0.execute-api.us-east-1.amazonaws.com/dev',
+      apiUrlProd: 'https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/dev',
+      apiUrlDev: 'https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/dev',
       initializing: true,
       accountId: null,
       accountSelectError: null,
@@ -411,6 +410,8 @@ export class DataProvider extends Component {
         const workloadQueue = queue((task, callback) => {
           const { query } = task;
 
+          console.log(query);
+
           NerdGraphQuery.query({
             query
           }).then(response => {
@@ -420,8 +421,12 @@ export class DataProvider extends Component {
             const cursor = workloadsData?.nextCursor;
 
             workloads = [...workloads, ...workloadEntities];
+
             if (cursor) {
-              workloadQueue.push(workloadDiscoveryQuery(accountId, cursor));
+              console.log(accountId, cursor);
+              workloadQueue.push({
+                query: workloadDiscoveryQuery(accountId, cursor)
+              });
             }
 
             callback();

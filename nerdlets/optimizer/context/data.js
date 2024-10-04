@@ -40,9 +40,8 @@ export class DataProvider extends Component {
     super(props);
 
     this.state = {
-      apiUrlProd:
-        'https://we3ei0yh76.execute-api.us-east-1.amazonaws.com/prod/',
-      apiUrlDev: 'https://8qb8qau9g0.execute-api.us-east-1.amazonaws.com/dev',
+      apiUrlProd: 'https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/dev',
+      apiUrlDev: 'https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/dev',
       initializing: true,
       accountId: null,
       accountSelectError: null,

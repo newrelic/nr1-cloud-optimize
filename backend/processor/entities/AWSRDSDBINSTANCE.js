@@ -25,7 +25,7 @@ latest(aws.region) as 'aws.region', latest(aws.rds.engine) as 'aws.engine', late
 FROM Metric FACET entity.name, entityName LIMIT 1`;
 
 const pricingUrl = (region, type, engine) =>
-  `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`;
+  `https://nr1-cloud-optimize-v2.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${type}/${engine}.json`;
 
 exports.run = (
   entities,
@@ -312,7 +312,7 @@ exports.run = (
                 DatastoreSample?.['aws.multiAz'] || tags?.['aws.multiAz']?.[0];
 
               fetch(
-                `https://nr1-cloud-optimize.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${determinedEngine}.json`
+                `https://nr1-cloud-optimize-v2.s3-ap-southeast-2.amazonaws.com/amazon/rds/pricing/${region}/${determinedEngine}.json`
               )
                 .then(response => {
                   return response.json();

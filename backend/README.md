@@ -4,8 +4,8 @@ This lambda contains the backend code that processes entities with their associa
 
 ## Requesting and optimization job
 - POST request is made to:
-  - DEV: https://8qb8qau9g0.execute-api.us-east-1.amazonaws.com/dev/optimize
-  - PROD: https://we3ei0yh76.execute-api.us-east-1.amazonaws.com/prod/optimize
+  - DEV: https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/dev/optimize
+  - PROD: https://wh7l38u7v7.execute-api.us-east-1.amazonaws.com/devoptimize
     - Headers
       - `nr-api-key` with the value of a NerdGraph User Key that has access to the apprioriate workloads/entities
         - This is required to query entities and write results to nerdstorage
