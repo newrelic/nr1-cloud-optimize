@@ -410,8 +410,6 @@ export class DataProvider extends Component {
         const workloadQueue = queue((task, callback) => {
           const { query } = task;
 
-          console.log(query);
-
           NerdGraphQuery.query({
             query
           }).then(response => {
