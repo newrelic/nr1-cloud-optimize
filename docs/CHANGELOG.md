@@ -1,3 +1,11 @@
+# [3.42.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.41.0...v3.42.0) (2024-10-04)
+
+
+### Features
+
+* remove console log ([6739fe9](https://github.com/newrelic/nr1-cloud-optimize/commit/6739fe95d818ac0d227f273a52d60d286e70489a))
+* update to new endpoint, patch wl ([55d290d](https://github.com/newrelic/nr1-cloud-optimize/commit/55d290d7aa0337417f1f36f5f5851ee6e2c3af31))
+
 # [3.41.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.40.0...v3.41.0) (2024-04-26)
 
 
