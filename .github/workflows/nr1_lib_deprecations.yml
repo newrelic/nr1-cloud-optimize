@@ -1,5 +1,9 @@
 name: NR1 Library Deprecation Checks
 
+permissions:
+  contents: read
+  issues: write
+
 on: [push, workflow_dispatch]
 
 jobs:
@@ -16,7 +20,9 @@ jobs:
             return data.data && data.data.default_branch === context.ref.split('/').slice(-1)[0]
       - name: Checkout Self
         if: ${{ steps.default-branch.outputs.result == 'true' }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Run Repolinter
         if: ${{ steps.default-branch.outputs.result == 'true' }}
         uses: newrelic/repolinter-action@v1
@@ -24,6 +30,5 @@ jobs:
           output_name: 'NR1 library deprecation issues'
           label_name: 'nr1-deprecations'
           label_color: '800000'
-          # FIXME: Replace with the appropriate ruleset URL
           config_url: https://raw.githubusercontent.com/newrelic/.github/main/repolinter-rulesets/nr1-lib-deprecations.yml
           output_type: issue

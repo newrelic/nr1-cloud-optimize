@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -16,23 +19,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 10.x
+          node-version: 16
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v1
-        env:
-          cache-name: node-modules
+        uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-node-modules-
 
       - name: Install Dependencies
         run: npm ci
@@ -52,25 +55,24 @@ jobs:
       # Checkout fetch-depth: 2 because there's a check to see if package.json
       # was updated, and need at least 2 commits for the check to function properly
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 10.x
+          node-version: 16
 
       - name: Download Cached Deps
         id: cache-node-modules
-        uses: actions/cache@v1
-        env:
-          cache-name: node-modules
+        uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-node-modules-
 
       - name: Install Dependencies
         run: npm ci
@@ -163,14 +165,15 @@ jobs:
       # Checkout ref: main because previous job committed third_party_notices and
       # we need to checkout main to pick up that commit
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: main
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Install dependencies
         run: npm ci
@@ -198,10 +201,10 @@ jobs:
         env:
           # Use nr-opensource-bot for authoring commits done by
           # semantic-release (rather than using @semantic-release-bot)
-          GIT_AUTHOR_NAME: "nr-opensource-bot"
-          GIT_AUTHOR_EMAIL: "opensource+bot@newrelic.com"
-          GIT_COMMITTER_NAME: "nr-opensource-bot"
-          GIT_COMMITTER_EMAIL: "opensource+bot@newrelic.com"
+          GIT_AUTHOR_NAME: 'nr-opensource-bot'
+          GIT_AUTHOR_EMAIL: 'opensource+bot@newrelic.com'
+          GIT_COMMITTER_NAME: 'nr-opensource-bot'
+          GIT_COMMITTER_EMAIL: 'opensource+bot@newrelic.com'
           GITHUB_TOKEN: ${{ secrets.OPENSOURCE_BOT_TOKEN }}
         run: npx semantic-release@^18.0.0
 
