@@ -6,6 +6,10 @@ name: Repolinter Action
 # filtered in the "Test Default Branch" step.
 on: [push, workflow_dispatch]
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   repolint:
     name: Run Repolinter
@@ -20,7 +24,9 @@ jobs:
             return data.data && data.data.default_branch === context.ref.split('/').slice(-1)[0]
       - name: Checkout Self
         if: ${{ steps.default-branch.outputs.result == 'true' }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Run Repolinter
         if: ${{ steps.default-branch.outputs.result == 'true' }}
         uses: newrelic/repolinter-action@v1
