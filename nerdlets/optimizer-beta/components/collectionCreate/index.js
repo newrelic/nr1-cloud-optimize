@@ -14,6 +14,7 @@ import {
   Toast
 } from 'nr1';
 import DataContext from '../../context/data';
+import { isLocalEnv, getRegionHeader } from '../../../shared/lib/env';
 import { v4 as uuidv4 } from 'uuid';
 
 // eslint-disable-next-line no-unused-vars
@@ -33,9 +34,7 @@ export default function CollectionCreateModal(props) {
     uuid
   } = dataContext;
 
-  const isLocal =
-    !window.location.href.includes('https://one.newrelic.com') &&
-    !window.location.href.includes('https://one.eu.newrelic.com');
+  const isLocal = isLocalEnv();
   const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   const [writingDocument, setWriteState] = useState(false);
@@ -201,9 +200,7 @@ function postData(url = '', key, data = {}) {
       headers: {
         'Content-Type': 'application/json',
         'NR-API-KEY': key,
-        'NR-REGION': (window?.location?.host || '').includes('.eu.')
-          ? 'EU'
-          : undefined
+        'NR-REGION': getRegionHeader()
       },
       body: JSON.stringify(data)
     })

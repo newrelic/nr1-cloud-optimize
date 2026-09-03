@@ -12,6 +12,7 @@ import {
   Toast
 } from 'nr1';
 import DataContext from '../../context/data';
+import { isLocalEnv, getRegionHeader } from '../../../shared/lib/env';
 
 // eslint-disable-next-line no-unused-vars
 export default function CollectionEdit(props) {
@@ -39,9 +40,7 @@ export default function CollectionEdit(props) {
     w.name.toLowerCase().includes(searchText.toLocaleLowerCase())
   );
 
-  const isLocal =
-    !window.location.href.includes('https://one.newrelic.com') &&
-    !window.location.href.includes('https://one.eu.newrelic.com');
+  const isLocal = isLocalEnv();
   const apiUrl = isLocal ? apiUrlDev : apiUrlProd;
 
   useEffect(() => {
@@ -209,9 +208,7 @@ function postData(url = '', key, data = {}) {
       headers: {
         'Content-Type': 'application/json',
         'NR-API-KEY': key,
-        'NR-REGION': (window?.location?.host || '').includes('one.eu.')
-          ? 'EU'
-          : undefined
+        'NR-REGION': getRegionHeader()
       },
       body: JSON.stringify(data)
     })
