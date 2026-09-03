@@ -1,3 +1,10 @@
+## [3.42.1](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.42.0...v3.42.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* use exact hostname checks for environment and region detection ([#170](https://github.com/newrelic/nr1-cloud-optimize/issues/170)) ([336cf02](https://github.com/newrelic/nr1-cloud-optimize/commit/336cf020b4a0ab68abc0efc9690aef07ccc7378d))
+
 # [3.42.0](https://github.com/newrelic/nr1-cloud-optimize/compare/v3.41.0...v3.42.0) (2024-10-04)
 
 
