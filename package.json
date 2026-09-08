@@ -32,7 +32,7 @@
     "react-select": "^3.1.1",
     "react-toastify": "^5.5.0",
     "semantic-ui-react": "^0.88.2",
-    "semver": "^7.3.4",
+    "semver": "^7.5.2",
     "uuid": "^8.3.2"
   },
   "browserslist": [
